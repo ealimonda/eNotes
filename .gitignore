@@ -1,0 +1,15 @@
+# Auto-generated files
+gen/
+# Binary output files
+bin/
+
+# Backup files from various programs
+.*.swp
+*.bak
+*.orig
+*~
+
+# Caches and extra files left behind by file managers
+.DS_Store
+.Apple*
+Thumbs.db
