@@ -1,0 +1,116 @@
+*******************************************************************************************
+NOTA INIZIALE: fare riferimento anche allo "Schema Presentazioni Laurea.txt", che
+fornisce utili ed indispensabili indicazioni, in particolar modo sulle regole di formattazione.
+*******************************************************************************************
+
+1) Introduzione (discorsiva)
+
+  1.1 Contesto e motivazioni
+      Introdurre l'argomento (qui siamo abbastanza sul generale)
+      Nota: NON HA SENSO QUI SCRIVERE COSE COME "L'obiettivo di questa tesi e'..."!!
+            Gli obiettivi vanno nella sezione apposita, qui si introduce solamente l'argomento!
+    
+      Risponde alla domanda "perchè ha senso questo lavoro?"
+      Qui si illustrano brevemente lo stato dell'arte (potrebbe non esserci a seconda del tipo di tesi)
+      e i suoi limiti, che ci portano alla motivazione della tesi.
+      (es. allo stato dell'arte manca questo e quest'altro, oppure, non e' mai
+      stata affrontata questa problematica, ecc.) (potrebbe non esserci a seconda del tipo di tesi)
+    
+  1.2 Obiettivi della tesi (es. si vuole realizzare (studiare, documentare e sviluppare) una app che
+      faccia questo e quest'altro (notare i tempi, che qui sono al PRESENTE). Gli obiettivi DEVONO essere
+      "logica" conseguenza dei punti precedenti (devono essere percepiti da chi legge come tali).
+      
+  1.3 contributo rispetto allo stato dell'arte (deve essere chiaro il contributo,
+      non basta affermare cose del tipo "noi siamo meglio"! Occorre motivare)
+      (potrebbe non esserci a seconda del tipo di tesi)
+      La trattazione deve essere sintetica ma chiara (una trattazione piu' esaustiva verra' posta
+      nel capitolo riguardante gli esperimenti).
+      
+  1.4 Attività della tesi: studio di questo, studio di quello, progettazione della applicazione, progettazione dei vari componenti,
+      stesura codice, test, documentazione, ecc
+      Nota: questo paragrafo e' MOLTO schematico, quasi un elenco.
+      
+  1.5 Schema della tesi (nel cap 2 c'è questo, nel cap 3 c'è quello, ecc.), discorsivo ma sintetico, 1 max 2 frasi per
+      ogni capitolo.
+      Nota: METTERE il numero del capitolo a cui ci si riferisce!!! Quindi, EVITARE di scrivere cose tipo "c'e' un capitolo
+      che parla di questo, un altro che parla di quest'altro, ecc."
+
+    
+Cercare di dare linearita' e continuita' all'esposizione, ogni sottopunto deve essere logica conseguenza dei punti
+precedenti. Es. gli obiettivi devono sembrare logica conseguenza di quanto detto nell'introduzione e nelle motivazioni.
+Allo stesso modo, l'introduzione deve portare come conseguenza "inevitabile" alle motivazioni e agli obiettivi,
+ in un discorso lineare, coerente e "logico".
+
+ 
+Nota: tenere sempre a mente che i punti sopra spiegati costituiscono il capitolo "Introduzione", quindi non ha senso
+      mettere qui dettagli tecnici, descrizione librerie, spiegazione/definizione di sigle/termini/ecc.
+      Tutti questi dettagli verranno trattati negli appositi capitoli successivi.
+      
+Nota: essendo tutti paragrafi dell'introduzione, devono essere ragionevolmente sintetici: trattazioni esaustive,
+      se previste e/o necessarie, vanno sviluppate in appositi capitoli successivi.
+
+   
+ 
+Capitoli intermedi:
+
+
+2) Stato dell'arte (che può essere scientfico o tecnologico) (potrebbe non esserci a seconda del tipo di tesi)
+   Qui ci va la descrizione dettagliata dello stato dell'arte con le reference.
+   Nota: tutto il materiale citato, se l'avete in pdf (o altro supporto), va salvato e mandato in allegato.
+   
+   
+Il resto dipende dalla tesi, es.
+
+  - descrizione dell'ambiente di lavoro (IDE, SDK, ecc.)
+  - descrizione di particolari librerie usate
+  - ecc.
+
+  Di sicuro non devono mancare:
+  - descrizione del lavoro
+  - esperimenti e risultati
+ 
+  
+y) Esperimenti e risultati (questo capitolo e' l'ultimo, prima del capitolo "Conclusioni")
+   Qui vanno spiegati tutti gli esperimenti effettuati a supporto del lavoro svolto. Come di consueto,
+   la trattazione deve essere lineare, omogenea e STRUTTURATA.
+   
+   Y.1 Introduzione
+       Introdurre gli esperimenti: perche' sono stati fatti (cosa vogliamo dimostrare),
+       come sono stati scelti, QUALI esperimenti si vogliono fare, ecc. Notare che' e' un'introduzione (per di piu' di un capitolo,
+       non dell'intera tesi), quindi ragionevolemente sintetica e discorsiva.
+   
+   y.2 Scelta degli esperimenti e Obiettivi
+       Si spiega innanzitutto perche' vogliamo fare degli esperimenti, cioe' cosa vogliamo dimostrare (= obiettivi).
+       Quindi, si spiegano gli esperimenti che si vogliono fare. 
+       Si spiega anche come sono stati scelti gli esperimenti.
+       Inoltre, se applicabile (e se ha senso per il tipo di lavoro), si descrive il setup degli esperimenti,
+       es: pc con processore...., 2gb di ram, ecc.
+       
+   Y.3 Esperimenti e Risultati
+       Si descrivono gli esperimenti nel dettaglio e i relativi risultati (se necessario, es. in caso di piu'
+       esperimenti, si possono organizzare in ulteriori sottoparagrafi)
+       
+   y.4 Contributo Scientifico e commenti
+       Dettagliare il contributo scientifico e commentare i risultati
+   
+  
+x) Conclusioni
+   simili alla intro ma NON SUDDIVISA IN PARAGRAFI:
+   l'obiettivo era (notare il tempo al passato) realizzare .... (quello che hai scritto negli obiettivi, anche 
+   piu' sinteticamente ovviamente, ma in maniera chiara ed ESPLICITA = ci deve essere scritto
+   esplicitamente quello che si voleva realizzare, niente giri di parole), quindi si e' realizzata una app
+   che fa questo e quest'altro.
+   Citare brevemente gli esperimenti fatti (se applicabile in base al tipo di tesi), i risultati e SOTTOLINEARE
+   IL CONTRIBUTO SCIENTIFICO.
+   Infine commenti, considerazioni, conclusioni e sviluppi futuri.
+   Quindi, l'impostazione da tenere a mente e': volevamo fare questo (=obiettivi), lo abbiamo fatto in questo 
+   e quest'altro modo (=come abbiamo raggiunto gli obiettivi). I risultati sono ..., il nostro contributo e'...
+
+
+
+Note:
+   - evitare immagini bitmap (bmp, jpg, ecc.)
+   - usare immagini vettoriali quando possibile
+   - le parole in inglese si lasciano al SINGOLARE
+
+   

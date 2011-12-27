@@ -1,0 +1,136 @@
+  - non usare tabulazioni, ma solo spazi. Tutti gli editor decenti consentono di impostare se inserire
+    spazi o tabulazioni quando si preme il tasto "tab". Usare 3 spazi al posto del tab.
+  
+  - commentare il codice SEMPRE e il PIU' POSSIBILE. Usare inoltre il formato JavaDoc.
+  
+  - usare le parentesi in questa forma:
+    
+      function {           // <== nota: 1 solo spazio tra "function" e "{"
+         xx;               // <== nota: 3 spazi di identazione
+         yy;
+      }                    // <== nota: la parentesi di chiusura e' allineata con l'inizio di "function"
+      
+      
+   - il codice DEVE ESSERE ORDINATO!!!!
+   
+      Esempio di codice inguardabile:
+      
+      function         {
+       a=3;
+          b=3+6+3+func(a,5,2,6)+4;
+         wte=a+c+d;
+         a=3;
+          b=3+6+3+func(a,5,2,6)+4;
+         wte=a+c+d;a=3;
+         if(3<4)
+        {
+          b=3+6+3+func(a,5,2,6)+4; }
+         wte=a+c+d;
+             }
+              b=3+6+3+func(a,5,2,6)+4;
+         wte=a+c+d;a=3;
+         
+         
+             
+      Esempio di codice scritto decentemente:
+      
+       function {
+          a = 3;
+          b = 3 + 6 + 3 + func(a, 5, 2, 6) + 4;
+          wte = a + c + d;
+          
+          a = 3;
+          b = 3 + 6 + 3 + func(a, 5, 2, 6) + 4;
+          wte = a + c + d;
+          
+          a = 3;
+                                    // <== nota: riga di separazione
+          if(3 < 4) {
+             b = 3 + 6 + 3 + func(a, 5, 2, 6) + 4;
+             wte = a + c + d;
+          }
+                                    // <== nota: riga di separazione
+          b = 3 + 6 + 3 + func(a, 5, 2, 6) + 4;
+          wte = a + c + d;
+       }
+       
+       Quindi:
+          - mettere gli spazi per separare variabili, numeri, operatori, ecc.
+          - mettere delle righe di separazione dove serve, per dare maggiore leggibilita',
+            es. per separare blocchi logici differenti, parti di codice diverse, ecc.
+            
+            
+   - usare SEMPRE le parentesi graffe per identificare l'inizio e la fine di un blocco, negli if-else,
+     anche se il blocco e di una sola riga! es.
+     
+     // ESEMPIO CORRETTO
+     if (a > 3) {
+        doSomething();
+     }
+     
+     
+     // ESEMPIO "NON" CORRETTO
+     if (a > 3)
+        doSomething();
+ 
+     Questo perche' non usando le parentesi graffe si puo' andare incontro ad errori, soprattutto
+     in caso di if-else anniddati. E' quindi buona regola di programmazione METTERLE SEMPRE.
+     
+
+
+
+**********************************************************************
+* USEFUL TIPS
+**********************************************************************
+
+Simple rules let your team deliver high-quality code as efficiently as possible.
+With this in mind, my agile coding convention consists of these simple rules:
+
+   1. Make your code look like other people's code.
+   2. Use the simplest design possible.
+   3. Don't re-invent the wheel.
+   4. Document your code.
+   5. Keep security in mind.
+   6. Work in increments.
+   7. Work in iterations.
+   8. Have your code reviewed.
+   9. Don't stay blocked.
+  10. Do unto others as you would have them do unto you. 
+
+
+  
+**********************************************************************
+* CONVENZIONI
+**********************************************************************
+- Commenti in inglese
+- Commentare ogni lavoro (micro lavoro, sul concetto di agile development) finito
+- Commentare, commentare, commentare!
+- Tutti i termini in inglese, senza eccezioni (nomi variabili, nomi tabelle, colonne db, ecc.)
+
+**********************************************************************
+
+     
+
+  
+**********************************************************************
+* SCELTA NOMI
+**********************************************************************
+Scegliere nomi significativi per le variabili, possibilmente rifacendosi
+anche all'oggetto originale, es.
+
+ArrayList arrayList;             // nome uguale all'oggetto, con la prima lettera ovviamente in minuscolo
+ArrayList arrayListRaceData;     // nome uguale all'oggetto, ma piu' significativo
+
+
+ASSOLUTAMENTE DA EVITARE: nomi di una sola lettera, es.
+
+ArrayList a;
+
+Evitare anche nomi troppo corti (1, 2 lettere).
+
+**********************************************************************
+
+
+NOTA: E' importante avere e seguire tutti le stesse convenzioni, per vari motivi
+ (una su tutte: sullo stesso codice ci possono mettere le mani persone diverse).
+ 

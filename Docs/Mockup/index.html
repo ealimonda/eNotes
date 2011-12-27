@@ -1,0 +1,289 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="it" lang="it">
+<head>
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+    <title>eNotes</title>
+    <style type="text/css">
+    html {
+        background-color: #fff;
+    }
+    body {
+        background-color: #ccc;
+        border-radius: 30px;
+        padding: 20px;
+        font-family: Arial, Helvetica, sans-serif;
+    }
+    h2 {
+        border-bottom: 1px solid #333;
+        clear: both;
+    }
+    h3 {
+        border-bottom: 1px solid #333;
+        width: 95%;
+    }
+    h4 {
+        font-style: italic;
+    }
+    .ImageContainer {
+        float: left;
+        padding-left: 0;
+        padding-right: 30px;
+        padding-top: 0;
+        padding-bottom: 30px;
+    }
+    p {
+        text-align: justify;
+    }
+    .Page {
+        clear: both;
+    }
+    .Page p {
+        padding: 60px 60px 0 20px;
+    }
+    </style>
+</head>
+<body>
+    <h1 id="documentTitle">eNotes</h1>
+    <h4>(Emanuele Alimonda 47190 emanuele.alimonda@gmail.com - Giovanni Serra 44140 giovanni.srr@gmail.com)</h4>
+    <hr/>
+    <p id="documentMetadata"></p>
+    <h2>Studio di fattibilità</h2>
+    <p>Il progetto assegnato richiede la realizzazione di un blocco note elettronico. Le singole note sono memorizzate usando il formato JSON, che quindi conterrà al suo interno tutti i dati della nota stessa (testo semplice e audio opportunamente codificato). Ad ogni nota sarà possibile allegare un contenuto multimediale di dimensione limitata (immagine, audio e video).</p>
+    <p>L'insieme delle note è memorizzato nel dispositivo utilizzando il database di Android (sqlite), secondo la seguente struttura: id/timestamp ultima modifica/nome della nota/json (json è memorizzato nel db).</p>
+    <p>Nel dettaglio l'applicazione dovrà avere le seguenti funzionalità:</p>
+
+    <div class="Page" id="note_list_page">
+        <h3>Note List</h3>
+        <div class="ImageContainer">
+            <img width="586" height="1162" alt="Note List" src="pages/note_list.png" usemap="#map_note_list" />
+        </div>
+        <map name="map_note_list" id="map_note_list">
+            <area shape="rect" coords="55,209,534,788" href="#view_note_page" title="Go to page 'View Note'" alt="Go to page 'View Note'" />
+            <area shape="rect" coords="174,940,293,996" href="#note_list_menu_page" title="Go to page 'Note List (Menu)'" alt="Go to page 'Note List (Menu)'" />
+        </map>
+        <p>La schermata principale è costituita da un elenco delle note organizzato in 2 colonne: nome della nota scelto dall'utente e data di ultima modifica. L'elenco delle note è “scrollabile” ed è ordinato per data di ultima modifica, la più recente in alto.</p>
+        <p>Sotto il nome di ciascuna nota, inoltre, sarà visualizzato l'elenco dei tag associati ad essa.</p>
+        <p>Questa activity è definita nella classe NoteList.</p>
+    </div>
+
+    <div class="Page" id="note_list_menu_page">
+        <h3>Note List (Menu)</h3>
+        <div class="ImageContainer">
+            <img width="586" height="1162" alt="Note List (Menu)" src="pages/note_list_menu.png" usemap="#map_note_list_menu" />
+        </div>
+        <map name="map_note_list_menu" id="map_note_list_menu">
+            <area shape="rect" coords="53,940,172,996" href="#note_list_page" title="Go to page 'Note List'" alt="Go to page 'Note List'" />
+            <area shape="rect" coords="174,940,293,996" href="#note_list_page" title="Go to page 'Note List'" alt="Go to page 'Note List'" />
+            <area shape="rect" coords="55,835,294,933" href="#compose_note_page" title="Go to page 'Compose Note'" alt="Go to page 'Compose Note'" />
+            <area shape="rect" coords="295,835,533,933" href="#search_page" title="Go to page 'Search'" alt="Go to page 'Search'" />
+        </map>
+        <p>Dalla schermata principale, tramite il pulsante menù di android, è possibile: creare una nota, vedere le note ordinate per ultima modifica (visualizzazione di default), eseguire una ricerca per tag.</p>
+    </div>
+
+    <div class="Page" id="view_note_page">
+        <h3>View Note</h3>
+        <div class="ImageContainer">
+            <img width="586" height="1162" alt="View Note" src="pages/view_note.png" usemap="#map_view_note" />
+        </div>
+        <map name="map_view_note" id="map_view_note">
+            <area shape="rect" coords="53,940,172,996" href="#note_list_page" title="Go to page 'Note List'" alt="Go to page 'Note List'" />
+            <area shape="rect" coords="174,940,293,996" href="#view_note_menu_page" title="Go to page 'View Note (Menu)'" alt="Go to page 'View Note (Menu)'" />
+        </map>
+        <p>Selezionando, con un click, una nota dall'elenco della schermata principale, si apre un'altra schermata che mostra il testo esteso della nota, i tag e gli allegati associati ad essa, compresi eventuali URL (cliccabili).</p>
+        <p>Questa activity è definita nella classe NoteView</p>
+    </div>
+
+    <div class="Page" id="view_note_menu_page">
+        <h3>View Note (Menu)</h3>
+        <div class="ImageContainer">
+            <img width="586" height="1162" alt="View Note (Menu)" src="pages/view_note_menu.png" usemap="#map_view_note_menu" />
+        </div>
+        <map name="map_view_note_menu" id="map_view_note_menu">
+            <area shape="rect" coords="53,940,172,996" href="#view_note_page" title="Go to page 'View Note'" alt="Go to page 'View Note'" />
+            <area shape="rect" coords="174,940,293,996" href="#view_note_page" title="Go to page 'View Note'" alt="Go to page 'View Note'" />
+            <area shape="rect" coords="55,835,215,933" href="#compose_note_page" title="Go to page 'Compose Note'" alt="Go to page 'Compose Note'" />
+            <area shape="rect" coords="216,835,373,933" href="#view_note_delete_page" title="Go to page 'View Note (Delete)'" alt="Go to page 'View Note (Delete)'" />
+            <area shape="rect" coords="374,835,533,933" href="javascript:alert('This button will open the default email application');" title="Email application" alt="Email application" />
+        </map>
+        <p>Attraverso il menu di Android di questa pagina è possibile accedere alla modalità di modifica della nota, cancellare la stessa o inviarla tramite e-mail</p>
+        <p>La nota può essere spedita tramite mail allegando il file che contiene al suo interno tutta la nota codificata in json.  L'invio avviene tramite il programma predefinito nel dispositivo per l'invio di messaggi di posta elettronica.</p>
+        <p>Un utente può ricevere una nota e importarla aprendola con l'applicazione, scaricandola ad esempio come allegato da una mail.</p>
+    </div>
+    <div class="Page" id="compose_note_page">
+        <h3>Compose Note</h3>
+        <div class="ImageContainer">
+            <img width="586" height="1162" alt="Compose Note" src="pages/compose_note.png" usemap="#map_compose_note" />
+        </div>
+        <map name="map_compose_note" id="map_compose_note">
+            <area shape="rect" coords="53,940,172,996" href="#note_list_page" title="Go to page 'Note List'" alt="Go to page 'Note List'" />
+            <area shape="rect" coords="174,940,293,996" href="#compose_note_menu_page" title="Go to page 'Compose Note (Menu)'" alt="Go to page 'Compose Note (Menu)'" />
+            <area shape="rect" coords="458,295,523,433" href="javascript:alert('These buttons will remove the associated URL or attachment from the note');" title="Delete" alt="Delete" />
+        </map>
+        <p>In questa schermata è possibile inserire del testo semplice, scegliere un nome per la nota o associare dei tag ad essa.</p>
+        <p>Quseta activity è definita nella classe NoteEdit.</p>
+    </div>
+
+    <div class="Page" id="compose_note_menu_page">
+        <h3>Compose Note (Menu)</h3>
+        <div class="ImageContainer">
+            <img width="586" height="1162" alt="Compose Note (Menu)" src="pages/compose_note_menu.png" usemap="#map_compose_note_menu" />
+        </div>
+        <map name="map_compose_note_menu" id="map_compose_note_menu">
+            <area shape="rect" coords="53,940,172,996" href="#compose_note_page" title="Go to page 'Compose Note'" alt="Go to page 'Compose Note'" />
+            <area shape="rect" coords="174,940,293,996" href="#compose_note_page" title="Go to page 'Compose Note'" alt="Go to page 'Compose Note'" />
+            <area shape="rect" coords="55,835,294,933" href="#compose_note_attach_page" title="Go to page 'Compose Note (Attach)'" alt="Go to page 'Compose Note (Attach)'" />
+            <area shape="rect" coords="295,835,533,933" href="#compose_note_url_page" title="Go to page 'Compose Note (URL)'" alt="Go to page 'Compose Note (URL)'" />
+        </map>
+        <p>Attraverso il menu della pagina è inoltre possibile:</p>
+        <ul>
+            <li>inserire un link (cliccabile) ad una pagina web (un solo indirizzo per nota)</li>
+            <li>Allegare foto/audio/video importati da file o creati dal dispositivo (con il limite di un allegato per ogni nota)</li>
+        </ul>
+    </div>
+
+    <div class="Page" id="compose_note_url_page">
+        <h3>Compose Note (URL)</h3>
+        <div class="ImageContainer">
+            <img width="586" height="1162" alt="Compose Note (URL)" src="pages/compose_note_url.png" usemap="#map_compose_note_url" />
+        </div>
+        <map name="map_compose_note_url" id="map_compose_note_url">
+            <area shape="rect" coords="296,633,497,705" href="#compose_note_page" title="Go to page 'Compose Note'" alt="Go to page 'Compose Note'" />
+            <area shape="rect" coords="91,633,285,705" href="#compose_note_page" title="Go to page 'Compose Note'" alt="Go to page 'Compose Note'" />
+            <area shape="rect" coords="53,940,172,996" href="#compose_note_page" title="Go to page 'Compose Note'" alt="Go to page 'Compose Note'" />
+        </map>
+        <p>L'inserimento di URL avviene tramite un'apposita finestra di dialogo.</p>
+    </div>
+
+    <div class="Page" id="compose_note_attach_page">
+        <h3>Compose Note (Attach)</h3>
+        <div class="ImageContainer">
+            <img width="586" height="1162" alt="Compose Note (Attach)" src="pages/compose_note_attach.png" usemap="#map_compose_note_attach" />
+         </div>
+         <map name="map_compose_note_attach" id="map_compose_note_attach">
+            <area shape="rect" coords="53,940,172,996" href="#compose_note_page" title="Go to page 'Compose Note'" alt="Go to page 'Compose Note'" />
+            <area shape="rect" coords="104,380,482,882" href="javascript:alert('These menu entries will start the proper application for the chosen action');" title="Attach" alt="Attach" />
+         </map>
+         <p>La scelta del tipo di file da allegare avviene tramite un menu, seguito dall'avvio dell'applicazione Android associata all'azione scelta oppure la finestra di ricerca di file nella galleria, dove opportuno.</p>
+    </div>
+
+    <div class="Page" id="view_note_delete_page">
+        <h3>View Note (Delete)</h3>
+        <div class="ImageContainer">
+            <img width="586" height="1162" alt="View Note (Delete)" src="pages/view_note_delete.png" usemap="#map_view_note_delete" />
+        </div>
+        <map name="map_view_note_delete" id="map_view_note_delete">
+            <area shape="rect" coords="85,647,287,700" href="#note_list_page" title="Go to page 'Note List'" alt="Go to page 'Note List'" />
+            <area shape="rect" coords="299,647,501,700" href="#view_note_page" title="Go to page 'View Note'" alt="Go to page 'View Note'" />
+            <area shape="rect" coords="53,940,172,996" href="#view_note_page" title="Go to page 'View Note'" alt="Go to page 'View Note'" />
+        </map>
+        <p>Le operazioni di eliminazione di una nota avverranno previa richiesta di conferma da parte dell'utente, tramite un'apposita finestra di dialogo.</p>
+    </div>
+ 
+    <div class="Page" id="search_page">
+         <h3>Search</h3>
+        <div class="ImageContainer">
+            <img width="586" height="1162" alt="Search" src="pages/search.png" usemap="#map_search" />
+        </div>
+        <map name="map_search" id="map_search">
+            <area shape="rect" coords="54,357,534,939" href="#view_note_page" title="Go to page 'View Note'" alt="Go to page 'View Note'" />
+            <area shape="rect" coords="53,940,172,996" href="#note_list_page" title="Go to page 'Note List'" alt="Go to page 'Note List'" />
+            <area shape="rect" coords="174,940,293,996" href="javascript:alert('This page has no menu');" title="No Menu'" alt="No Menu'" />
+        </map>
+        <p>L'utente può associare una o più etichette o tag ad ogni nota.</p>
+        <p>Questi tag permettono la ricerca delle note tramite parola chiave. La ricerca avviene inserendo in una casella di testo un determinato tag oppure selezionandone uno da una lista di tag esistenti. Tale lista filtra in automatico i tag durante la digitazione.</p>
+        <p>Questa activity è definita nella classe NoteSearch.</p>
+    </div>
+    
+    <h2>Analisi dei requisiti:</h2>
+    <p>Per il funzionamento dell'applicazione sono necessari i seguenti requisiti:</p>
+    <ul>
+        <li>fotocamera abilitata per l'acquisizione di foto/video</li>
+        <li>microfono abilitato per l'acquisizione dell'audio</li>
+        <li>gestione del formato JSON che conterrà i dati della nota</li>
+        <li>memorizzazione delle note nel database di android sqlite</li>
+    </ul>
+
+    <h2>Definizione di un'architettura logica:</h2>
+    <p>Le classi eNotes, editNotes, searchNotes e composeNotes corrispondono ciascuna ad una delle activity presenti nell'applicazione. La classe Note modella la singola nota mentre la classe dbNotes agisce da backend per il database.</p>
+    <ul>
+        <li><em>NoteList</em>: Definisce l'activity principale dell'applicazione, e viene mostrata quando l'applicazione viene avviata. In questa activity viene mostrata l'interfaccia principale dell'applicazione (l'elenco delle note) e vengono creati e gestiti i vari menù per le diverse funzionalità offerte come: creare, cercare, visualizzare una nota per data di ultima modifica. Tramite questa interfaccia l'utente potrà scorrere le note e selezionarle.</li>
+        <li><em>NoteView</em>: activity chiamata da quella principale, che consente la visualizzazione di una nota per esteso mostrandone il testo contenuto. Il menu incluso permette di modificare, cancellare o inviare una nota tramite e-mail.</li>
+        <li><em>NoteSearch</em>: activity chiamata da quella principale che consente la ricerca di una nota tra quelle memorizzate nel database. Permette, inoltre, di filtrare i tag esistenti durante la digitazione da parte dell'utente nel campo di ricerca.</li>
+        <li><em>NoteEdit</em>: activity chiamata da NoteView (modalità di modifica) o da NoteList (modalità di creazione), gestisce la composizione di una nota e l'aggiunta dei tag per la sua ricerca. Permette, inoltre, la possibilità di inserire (attach) in una nota, un contenuto multimediale (immagine, video, audio) ottenuto tramite operazione di import/capture.  Quando invocata in modalità di modifica, i campi sono pre-compilati con i contenuti della nota esistenta, altrimenti sono vuoti.</li>
+        <li><em>Note</em>: rappresenta la singola nota e ne contiene tutti i dati, gestendo anche la trasformazione da/a JSON. Per ogni nota visualizzata o modificata, verrà istanziato un oggetto di questo tipo.</li>
+        <li><em>NoteDB</em>: agisce da interfaccia con il database sqlite per la memorizzazione delle note. Gestisce quindi tutte le possibili operazioni consentite come il recupero, la modifica, la cancellazione e la ricerca di una nota.</li>
+    </ul>
+    <div class="ImageContainer">
+        <img width="502" height="327" alt="ActivityNavigation" src="pages/ActivityNavigation.png" />
+    <br>
+        <img width="783" height="559" alt="ClassList" src="pages/ClassList.png" />
+    </div>
+
+    <h2>Suddivisione dei compiti:</h2>
+    <ul>
+        <li><em>NoteList.java</em>: Emanuele Alimonda, Giovanni Serra</li>
+        <li><em>NoteView.java</em>: Emanuele Alimonda</li>
+        <li><em>NoteSearch.java</em>: Giovanni Serra</li>
+        <li><em>NoteEdit.java</em>: Emanuele Alimonda</li>
+        <li><em>Note.java</em>: Emanuele Alimonda, Giovanni Serra</li>
+        <li><em>NoteDB.java</em>: Giovanni Serra</li>
+    </ul>
+
+    <h2>Pianificazione del lavoro:</h2>
+    <h3>Per classe:</h3>
+    <ul>
+        <li><em>NoteList.java</em>: presente nel prototipo dell'applicazione entro il 15 gennaio in una versione abbastanza definitiva.</li>
+        <li><em>NoteView.java</em>: presente nel prototipo dell'applicazione entro il 15 gennaio ma in una versione con funzionalità limitate.</li>
+        <li><em>NoteSearch.java</em>: presente e completo solo per la consegna del progetto.</li>
+        <li><em>NoteEdit.java</em>: presente nel prototipo dell'applicazione entro il 15 gennaio ma in una versione con funzionalità limitate.</li>
+        <li><em>Note.java</em>: presente nel prototipo dell'applicazione entro il 15 gennaio ma in una versione abbastanza definitiva.</li>
+        <li><em>NoteDB.java</em>: presente nel prototipo dell'applicazione entro il 15 gennaio ma in una versione abbastanza definitiva.</li>
+    </ul>
+    <h3>Per data/deadline:</h3>
+    <ul>
+        <li><em>20 dicembre 2011</em>:
+            <ul>
+                <li>Studio preliminare di fattibilità</li>
+                <li>Analisi dei requisiti</li>
+                <li>Mockup (navigabili) dell'interfaccia utente</li>
+                <li>Definizione di un'architettura logica</li>
+                <li>Suddivisione dei compiti</li>
+                <li>Pianificazione del lavoro</li>
+            </ul>
+        </li>
+        <li><em>(5 gennaio 2012)</em>:
+            <ul>
+                <li>Singola nota (Note), funzionale e completa, comprese funzioni di conversione da/a JSON</li>
+                <li>Backend per il database sqlite (NoteDB), funzionale e pressoché completo</li>
+                <li>Prototipo della pagina di visualizzazione dell'elenco delle note (NoteList), a meno della visualizzazione di data e tag</li>
+                <li>Prototipo della pagina di visualizzazione di una nota, senza alcuna funzionalità di visualizzazione di tag, URL o allegati</li>
+            </ul>
+        </li>
+        <li><em>15 gennaio 2012</em>:
+            <ul>
+                <li>Visualizzazione dell'elenco delle note (NoteList), funzionale e completa, compreso l'ordinamento automatico per data di modifica</li>
+                <li>Visualizzazione della singola nota (NoteView), senza funzionalità di invio tramite e-mail</li>
+                <li>Prototipo della pagina di modifica di una nota (NoteEdit), senza le funzionalità di gestione degli allegati</li>
+            </ul>
+        </li>
+        <li><em>(25 gennaio 2012)</em>:
+            <ul>
+                <li>Aggiunta delle funzionalità di invio tramite e-mail nella pagina di visualizzazione della singola nota (NoteView)</li>
+                <li>Progresso nella pagina di modifica di una nota (NoteEdit), con le funzionalità di gestione dei tag e degli URL</li>
+                <li>Prototipo della pagina di ricerca per tag di una nota (NoteSearch), a meno delle funzionalità di ricerca automatica. Solo la ricerca tramite click su un tag esistente sarà funzionale</li>
+            </ul>
+        </li>
+        <li><em>(5 febbraio 2012)</em>:
+            <ul>
+                <li>Completamento della pagina di modifica di una nota (NoteEdit), con le funzionalità di gestione degli allegati</li>
+                <li>Completamento delle funzionalità di ricerca per tag di una nota (NoteSearch), con ricerca automatica durante la digitazione</li>
+            </ul>
+        </li>
+        <li><em>15 febbraio 2012</em>:
+            <ul>
+                <li>Completamento dei lavori, compreso il testing su dispositivo reale e la correzione di eventuali bug</li>
+            </ul>
+        </li>
+    </ul>
+</body>
+</html>
