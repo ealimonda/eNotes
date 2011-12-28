@@ -1,7 +1,7 @@
 # Auto-generated files
-gen/
+Project/gen/*
 # Binary output files
-bin/
+Project/bin/*
 
 # Backup files from various programs
 .*.swp
