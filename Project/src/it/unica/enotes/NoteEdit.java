@@ -1,7 +1,7 @@
 /* *************************************************************************************************
  *                                         eNotes                                                  *
  * *************************************************************************************************
- * File:        NoteList.java                                                                      *
+ * File:        NoteEdit.java                                                                      *
  * Copyright:   (c) 2011-2012 Emanuele Alimonda, Giovanni Serra                                    *
  *              eNotes is free software: you can redistribute it and/or modify it under the terms  *
  *              of the GNU General Public License as published by the Free Software Foundation,    *
@@ -19,9 +19,9 @@ import android.app.Activity;
 import android.os.Bundle;
 
 /**
- * Activity to list all existing notes
+ * Activity to edit an existing note or compose a new one
  */
-public class NoteList extends Activity {
+public class NoteEdit extends Activity {
    /** Called when the activity is first created. */
    @Override
    public void onCreate(Bundle savedInstanceState) {

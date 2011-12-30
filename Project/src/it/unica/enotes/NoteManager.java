@@ -1,7 +1,7 @@
 /* *************************************************************************************************
  *                                         eNotes                                                  *
  * *************************************************************************************************
- * File:        NoteList.java                                                                      *
+ * File:        NoteManager.java                                                                   *
  * Copyright:   (c) 2011-2012 Emanuele Alimonda, Giovanni Serra                                    *
  *              eNotes is free software: you can redistribute it and/or modify it under the terms  *
  *              of the GNU General Public License as published by the Free Software Foundation,    *
@@ -15,18 +15,11 @@
 
 package it.unica.enotes;
 
-import android.app.Activity;
-import android.os.Bundle;
-
 /**
- * Activity to list all existing notes
+ * Manages a collection of notes, calling the appropriate classes and methods to load, save, search
+ * them.
  */
-public class NoteList extends Activity {
-   /** Called when the activity is first created. */
-   @Override
-   public void onCreate(Bundle savedInstanceState) {
-      super.onCreate(savedInstanceState);
-      setContentView(R.layout.main);
-   }
+public class NoteManager {
+
 }
 /* vim: set ts=3 sw=3 smarttab expandtab cc=101 : */
