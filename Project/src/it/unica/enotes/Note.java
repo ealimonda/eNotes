@@ -17,6 +17,8 @@ package it.unica.enotes;
 
 /**
  * Represents each note entry and offers conversion methods from and to the JSON format.
+ * @author Emanuele Alimonda
+ * @author Giovanni Serra
  */
 public class Note {
 
@@ -30,28 +32,112 @@ public class Note {
    /** Note URL */
    private string _URL;
    /** Note tags */
-   private Array _tags;
+   private String[] _tags;
 
-   /** Constructor */
+   /** Default constructor */
    public Note() {
       this._title = new String();
       this._text = new String();
 //      this._attachment = null;
       this._URL = null;
-      this._tags = new Array();
+      this._tags = {};
    }
-   public Note(String title, String text, String URL, Array tags) {
+   /**
+    * Constructor
+    * @param title   The title of the note
+    * @param text    Content (text) of the note
+    * @param URL     Attached URL to the note
+    * @param tags    Array of tags of the note
+    */
+   public Note(String title, String text, String URL, String[] tags) {
+      // FIXME: Missing attachment
+      this._title = title;
+      this._text = text;
+      this._URL = URL;
+      this._tags = tags;
    }
 
-   public NoteFromJSON(String json) {
+   /**
+    * Import note from JSON data
+    * @param json    A json object representing the note
+    */
+   public void NoteFromJSON(String json) {
+      // TODO
+      // possibly FIXME:  Use a JSONObject (org.json.JSONObject)?
    }
 
+   /**
+    * Export note to JSON data
+    * @return  A json object representing the note
+    * */
    public String getJSON() {
+      // TODO
+      // possibly FIXME:  Use a JSONObject (org.json.JSONObject)?
    }
 
    // Accessors
+   /**
+    * Get the note's title
+    * @return  The note's title
+    */
    public String getTitle() {
-      // TODO
+      return this._title;
    }
+   /**
+    * Set the note's title
+    * @param title   A new title to set
+    */
+   public void setTitle(String newTitle) {
+      this._title = newTitle;
+   }
+
+   /**
+    * Get the note's contents
+    * @return  The note's contents (text)
+    */
+   public String getText() {
+      return this._text;
+   }
+   /**
+    * Set the note's contents
+    * @param text    New text contents for the note
+    */
+   public void setText(String text) {
+      this._text = text;
+   }
+
+   /**
+    * Get the note's attached URL
+    * @return  The note's attached URL
+    */
+   public String getURL() {
+      return this._URL;
+   }
+   /**
+    * Set the note's attached URL
+    * @param URL     A new URL to attach (replacing the previous one)
+    */
+   public void setURL(String URL) {
+      this._URL = URL;
+   }
+
+   // TODO: Handle attachments
+
+   /**
+    * Get the note's tags
+    * @return  The note's tags as an Array.  In no tags are set, return an empty array.
+    */
+   public String[] getTags() {
+      return this._tags;
+   }
+   /**
+    * Set the note's tags
+    * @param tags    An array containing the tags to set
+    */
+   public void setTags(String[] tags) {
+      this._tags = tags;
+   }
+
+   // TODO: Add or remove one tag at a time?
 }
 /* vim: set ts=3 sw=3 smarttab expandtab cc=101 : */
