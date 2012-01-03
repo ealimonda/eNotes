@@ -17,6 +17,10 @@ package it.unica.enotes;
 
 import java.util.ArrayList;
 
+import org.json.JSONArray;
+import org.json.JSONException;
+import org.json.JSONObject;
+
 /**
  * Represents each note entry and offers conversion methods from and to the JSON format.
  * @author Emanuele Alimonda
@@ -64,8 +68,29 @@ public class Note {
     * @param json    A json object representing the note
     */
    public void NoteFromJSON(String json) {
-      // TODO
-      // possibly FIXME:  Use a JSONObject (org.json.JSONObject)?
+      JSONObject jsObject;
+      try {
+         jsObject = new JSONObject(json);
+         if (jsObject.has("title")) {
+            this._title = jsObject.getString("title");
+         }
+         if (jsObject.has("text")) {
+            this._text = jsObject.getString("text");
+         }
+         if (jsObject.has("url")) {
+            this._URL = jsObject.getString("url");
+         }
+         if (jsObject.has("tags")) {
+            JSONArray tagsArray = jsObject.getJSONArray("tags");
+            this._tags.clear();
+            for (int i = 0; i < tagsArray.length(); i++) {
+                this._tags.add(tagsArray.getString(i));
+            }
+         }
+      } catch (JSONException e) {
+         return;
+      }
+      return;
    }
 
    /**
@@ -73,9 +98,17 @@ public class Note {
     * @return  A JSON object representing the note
     * */
    public String getJSON() {
-      // TODO
-      // possibly FIXME:  Use a JSONObject (org.json.JSONObject)?
-      return "";
+      JSONObject jsObject;
+      try {
+         jsObject = new JSONObject();
+         jsObject.put("title", this._title);
+         jsObject.put("text", this._text);
+         jsObject.put("url", this._URL);
+         jsObject.put("tags", new JSONArray(this._tags));
+      } catch (JSONException e) {
+         return "";
+      }
+      return jsObject.toString();
    }
 
    // Accessors

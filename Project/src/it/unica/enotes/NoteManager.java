@@ -45,9 +45,9 @@ public class NoteManager {
     */
    public boolean loadNotes() {
       // TODO
-	  String[] tags = {"tag", "anotherTag"};
+      String[] tags = {"tag", "anotherTag"};
       this._notes.add(new Note("Test note", "Foo", "http://example.org",
-    		  new ArrayList<String>(Arrays.asList(tags))));
+               new ArrayList<String>(Arrays.asList(tags))));
       return true;
    }
 
