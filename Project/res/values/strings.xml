@@ -1,7 +1,18 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
 
-    <string name="hello">Hello World, NoteList!</string>
+    <string name="hello">eNotes</string>
     <string name="app_name">eNotes</string>
-
+    
+    <!-- Main menu -->    
+    <string name="addDialogTitle">New Note</string>
+    <string name="addItem">Add Note</string>
+    <string name="cancelItem">Cancel</string>
+    <string name="searchItem">Search Note</string>    
+    
+    
+    <string name="new_note">New Note</string>
+    <string name="new_note_shortcut">n</string>
+    <string name="search">Search</string>
+    <string name="search_shortcut">s</string>
 </resources>

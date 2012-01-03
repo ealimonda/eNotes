@@ -15,10 +15,35 @@
 
 package it.unica.enotes;
 
+import android.content.Context;
+import android.database.sqlite.SQLiteDatabase;
+import android.database.sqlite.SQLiteOpenHelper;
+import android.provider.BaseColumns;
+
 /**
  * Loads and stores notes to the database and performs searches
  */
-public class NoteDB {
+public class NoteDB extends SQLiteOpenHelper {
 
+	public NoteDB(Context context) {
+		super(context, "eNotes", null, 1);
+	}
+
+	// create tables in the database
+	@Override
+	public void onCreate(SQLiteDatabase db) {
+		db.execSQL("CREATE TABLE IF NOT EXISTS notes ("
+				+ BaseColumns._ID
+				+ " INTEGER PRIMARY KEY AUTOINCREMENT, title VARCHAR, content VARCHAR)");
+		db.execSQL("INSERT INTO notes (title, content) VALUES ('Nota 1', 'Testo contenuto nella nota')");
+		db.execSQL("INSERT INTO notes (title, content) VALUES ('Nota 2', 'Testo contenuto nella nota')");
+	}
+
+	@Override
+	public void onUpgrade(SQLiteDatabase db, int oldVersion, int newVersion) {
+		// TODO Auto-generated method stub
+		
+	}
 }
+
 /* vim: set ts=3 sw=3 smarttab expandtab cc=101 : */
