@@ -15,11 +15,78 @@
 
 package it.unica.enotes;
 
+import it.unica.enotes.Note;
+import it.unica.enotes.NoteDB;
+
 /**
  * Manages a collection of notes, calling the appropriate classes and methods to load, save, search
  * them.
+ * @author Emanuele Alimonda
  */
 public class NoteManager {
+   // Members
+   /** Notes */
+   private Note[] _notes;
+   /** Database backend */
+   private NoteDB _dbBackend;
 
+   /** Default constructor */
+   public NoteManager() {
+      this._notes = {};
+      this._notes = new NoteDB();
+   }
+
+   /**
+    * Load notes
+    * @return  true in case of success, false otherwise
+    */
+   public boolean loadNotes() {
+      // TODO
+      this._notes.append(new Note("Test note", "Foo", "http://example.org", {"tag", "anotherTag"}));
+      return true;
+   }
+
+   /**
+    * Save notes
+    * @return  true in case of success, false otherwise
+    */
+   public boolean saveNotes() {
+      return true;
+   }
+
+   // Accessors
+   /**
+    * Get the notes list
+    * @return  The notes list
+    */
+   public Note[] getNotes() {
+      return this._notes;
+   }
+   /**
+    * Get the notes count
+    * @return  The amount of existing notes
+    */
+   public int getNotesCount() {
+      return this._notes.count();
+   }
+   /**
+    * Get a specific note by index
+    * @param index   The index of the searched note
+    * @return        The requested note
+    */
+   public Note getNoteAtIndex(int index) {
+      if (index >= this._notes.count() || index < 0)
+         return null;
+      return this._notes[index];
+   }
+   /**
+    * Append a note to the list
+    * @param note    The note to append
+    */
+   public void appendNote(Note note) {
+      if (note != null)
+         this._notes.append(note);
+   }
+   // TODO: add a method to remove a note
 }
 /* vim: set ts=3 sw=3 smarttab expandtab cc=101 : */
