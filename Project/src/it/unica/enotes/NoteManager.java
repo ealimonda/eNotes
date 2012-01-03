@@ -15,6 +15,9 @@
 
 package it.unica.enotes;
 
+import java.util.ArrayList;
+import java.util.Arrays;
+
 import it.unica.enotes.Note;
 import it.unica.enotes.NoteDB;
 
@@ -26,14 +29,14 @@ import it.unica.enotes.NoteDB;
 public class NoteManager {
    // Members
    /** Notes */
-   private Note[] _notes;
+   private ArrayList<Note> _notes;
    /** Database backend */
    private NoteDB _dbBackend;
 
    /** Default constructor */
    public NoteManager() {
-      this._notes = {};
-      this._notes = new NoteDB();
+      this._notes = new ArrayList<Note>();
+      this._dbBackend = new NoteDB();
    }
 
    /**
@@ -42,7 +45,9 @@ public class NoteManager {
     */
    public boolean loadNotes() {
       // TODO
-      this._notes.append(new Note("Test note", "Foo", "http://example.org", {"tag", "anotherTag"}));
+	  String[] tags = {"tag", "anotherTag"};
+      this._notes.add(new Note("Test note", "Foo", "http://example.org",
+    		  new ArrayList<String>(Arrays.asList(tags))));
       return true;
    }
 
@@ -59,7 +64,7 @@ public class NoteManager {
     * Get the notes list
     * @return  The notes list
     */
-   public Note[] getNotes() {
+   public ArrayList<Note> getNotes() {
       return this._notes;
    }
    /**
@@ -67,7 +72,7 @@ public class NoteManager {
     * @return  The amount of existing notes
     */
    public int getNotesCount() {
-      return this._notes.count();
+      return this._notes.size();
    }
    /**
     * Get a specific note by index
@@ -75,9 +80,9 @@ public class NoteManager {
     * @return        The requested note
     */
    public Note getNoteAtIndex(int index) {
-      if (index >= this._notes.count() || index < 0)
+      if (index >= this._notes.size() || index < 0)
          return null;
-      return this._notes[index];
+      return this._notes.get(index);
    }
    /**
     * Append a note to the list
@@ -85,7 +90,7 @@ public class NoteManager {
     */
    public void appendNote(Note note) {
       if (note != null)
-         this._notes.append(note);
+         this._notes.add(note);
    }
    // TODO: add a method to remove a note
 }

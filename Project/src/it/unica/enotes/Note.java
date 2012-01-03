@@ -15,6 +15,8 @@
 
 package it.unica.enotes;
 
+import java.util.ArrayList;
+
 /**
  * Represents each note entry and offers conversion methods from and to the JSON format.
  * @author Emanuele Alimonda
@@ -30,9 +32,9 @@ public class Note {
    /** Note attachment */
    // TODO
    /** Note URL */
-   private string _URL;
+   private String _URL;
    /** Note tags */
-   private String[] _tags;
+   private ArrayList<String> _tags;
 
    /** Default constructor */
    public Note() {
@@ -40,16 +42,16 @@ public class Note {
       this._text = new String();
 //      this._attachment = null;
       this._URL = null;
-      this._tags = {};
+      this._tags = new ArrayList<String>(0);
    }
    /**
     * Constructor
     * @param title   The title of the note
     * @param text    Content (text) of the note
     * @param URL     Attached URL to the note
-    * @param tags    Array of tags of the note
+    * @param tags    ArrayList of tags of the note
     */
-   public Note(String title, String text, String URL, String[] tags) {
+   public Note(String title, String text, String URL, ArrayList<String> tags) {
       // FIXME: Missing attachment
       this._title = title;
       this._text = text;
@@ -68,11 +70,12 @@ public class Note {
 
    /**
     * Export note to JSON data
-    * @return  A json object representing the note
+    * @return  A JSON object representing the note
     * */
    public String getJSON() {
       // TODO
       // possibly FIXME:  Use a JSONObject (org.json.JSONObject)?
+      return "";
    }
 
    // Accessors
@@ -125,16 +128,16 @@ public class Note {
 
    /**
     * Get the note's tags
-    * @return  The note's tags as an Array.  In no tags are set, return an empty array.
+    * @return  The note's tags as an ArrayList.  In no tags are set, return an empty array.
     */
-   public String[] getTags() {
+   public ArrayList<String> getTags() {
       return this._tags;
    }
    /**
     * Set the note's tags
-    * @param tags    An array containing the tags to set
+    * @param tags    An ArrayList containing the tags to set
     */
-   public void setTags(String[] tags) {
+   public void setTags(ArrayList<String> tags) {
       this._tags = tags;
    }
 
