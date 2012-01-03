@@ -16,8 +16,6 @@
 package it.unica.enotes;
 
 import java.util.ArrayList;
-import java.util.Arrays;
-
 import it.unica.enotes.Note;
 import it.unica.enotes.NoteDB;
 
@@ -36,28 +34,41 @@ public class NoteManager {
    /** Default constructor */
    public NoteManager() {
       this._notes = new ArrayList<Note>();
-      this._dbBackend = new NoteDB();
+      //this._dbBackend = new NoteDB(); // FIXME: it needs a Context argument, where do I get it?
    }
 
    /**
-    * Load notes
+    * Load notes titles and GUIDs
     * @return  true in case of success, false otherwise
     */
    public boolean loadNotes() {
       // TODO
-      String[] tags = {"tag", "anotherTag"};
-      this._notes.add(new Note("Test note", "Foo", "http://example.org",
-               new ArrayList<String>(Arrays.asList(tags))));
+      this._notes.add(new Note(null, "Test note"));
       return true;
    }
 
    /**
-    * Save notes
+    * Load a note's details
+    * @param id   GUID of the note
+    * @return     true in case of success, false otherwise
+    */
+   public boolean loadNoteDetails(String id) {
+      // TODO: Search the note by ID.  We'll need some HashList or something
+      //       then call the appropriate NoteDB function and finally setLoaded(true)
+      return true;
+   }
+
+   /**
+    * Save all unsaved notes
     * @return  true in case of success, false otherwise
     */
    public boolean saveNotes() {
+      // TODO: Iterate over all notes and save the ones where isDirty()==true
+      //       then setDirty(false)
       return true;
    }
+
+   // TODO: Method to edit a note
 
    // Accessors
    /**

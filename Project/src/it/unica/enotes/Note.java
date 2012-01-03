@@ -16,6 +16,7 @@
 package it.unica.enotes;
 
 import java.util.ArrayList;
+import java.util.UUID;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -29,6 +30,12 @@ import org.json.JSONObject;
 public class Note {
 
    // Members
+   /** Have the note details been loaded? */
+   private boolean _loaded;
+   /** Have the note details been changed since the last save? */
+   private boolean _dirty;
+   /** Global Unique IDentifier of the note */
+   private String _GUID;
    /** Note title */
    private String _title;
    /** Note contents (plain text) */
@@ -42,25 +49,51 @@ public class Note {
 
    /** Default constructor */
    public Note() {
-      this._title = new String();
-      this._text = new String();
-//      this._attachment = null;
-      this._URL = null;
-      this._tags = new ArrayList<String>(0);
+      this(null, null, null, null, null);
    }
    /**
     * Constructor
+    * @param GUID    The GUID of the note
+    * @param title   The title of the note
+    */
+   public Note(String GUID, String title) {
+      this(GUID, title, null, null, null);
+   }
+   /**
+    * Constructor
+    * @param GUID    The GUID of the note
     * @param title   The title of the note
     * @param text    Content (text) of the note
     * @param URL     Attached URL to the note
     * @param tags    ArrayList of tags of the note
     */
-   public Note(String title, String text, String URL, ArrayList<String> tags) {
-      // FIXME: Missing attachment
-      this._title = title;
-      this._text = text;
-      this._URL = URL;
-      this._tags = tags;
+   public Note(String GUID, String title, String text, String URL, ArrayList<String> tags) {
+      if (GUID == null) {
+         this._GUID = UUID.randomUUID().toString();
+      } else {
+         this._GUID = GUID;
+      }
+      if (title != null) {
+         this._title = title;
+      } else {
+         this._title = "";
+      }
+      if (text != null) {
+         this._text = text;
+         this._URL = URL;
+         if (this._tags != null) {
+            this._tags = tags;
+         } else {
+            this._tags = new ArrayList<String>(0);
+         }
+         this._loaded = true;
+      } else {
+         this._text = null;
+         this._URL = null;
+         this._tags = null;
+         this._loaded = false;
+      }
+      this._dirty = false;
    }
 
    /**
@@ -71,9 +104,6 @@ public class Note {
       JSONObject jsObject;
       try {
          jsObject = new JSONObject(json);
-         if (jsObject.has("title")) {
-            this._title = jsObject.getString("title");
-         }
          if (jsObject.has("text")) {
             this._text = jsObject.getString("text");
          }
@@ -101,7 +131,6 @@ public class Note {
       JSONObject jsObject;
       try {
          jsObject = new JSONObject();
-         jsObject.put("title", this._title);
          jsObject.put("text", this._text);
          jsObject.put("url", this._URL);
          jsObject.put("tags", new JSONArray(this._tags));
@@ -112,6 +141,54 @@ public class Note {
    }
 
    // Accessors
+   /**
+    * Get the note's GUID
+    * @return  The note's GUID
+    */
+   public String getGUID() {
+      return this._GUID;
+   }
+   /**
+    * Set the note's GUID
+    * @param GUID    A new GUID to set
+    */
+   public void setGUID(String GUID) {
+      this._GUID = GUID;
+      this.setDirty(true);
+   }
+
+   /**
+    * Return the note details loaded state
+    * @return  true if details have been loaded, false otherwise
+    */
+   public boolean isLoaded() {
+      return this._loaded;
+   }
+   /**
+    * Set the note details' loaded state
+    * @param state   State to set
+    */
+   public void setLoaded(boolean state) {
+      this._loaded = state;
+      this.setDirty(false);
+   }
+
+   /**
+    * Return the note's dirty state
+    * @return  true is the note was edited after last save, false otherwise
+    */
+   public boolean isDirty() {
+      return this._dirty;
+   }
+
+   /**
+    * Set the dirty state for a note
+    * @param state   Whether the note was edited after last save
+    */
+   public void setDirty(boolean state) {
+      this._dirty = state;
+   }
+
    /**
     * Get the note's title
     * @return  The note's title
@@ -125,6 +202,7 @@ public class Note {
     */
    public void setTitle(String newTitle) {
       this._title = newTitle;
+      this.setDirty(true);
    }
 
    /**
@@ -140,6 +218,7 @@ public class Note {
     */
    public void setText(String text) {
       this._text = text;
+      this.setDirty(true);
    }
 
    /**
@@ -155,9 +234,8 @@ public class Note {
     */
    public void setURL(String URL) {
       this._URL = URL;
+      this.setDirty(true);
    }
-
-   // TODO: Handle attachments
 
    /**
     * Get the note's tags
@@ -172,6 +250,7 @@ public class Note {
     */
    public void setTags(ArrayList<String> tags) {
       this._tags = tags;
+      this.setDirty(true);
    }
 
    // TODO: Add or remove one tag at a time?

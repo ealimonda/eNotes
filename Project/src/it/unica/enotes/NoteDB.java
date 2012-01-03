@@ -15,6 +15,9 @@
 
 package it.unica.enotes;
 
+import java.util.ArrayList;
+import java.util.HashMap;
+
 import android.content.Context;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
@@ -44,6 +47,70 @@ public class NoteDB extends SQLiteOpenHelper {
 		// TODO Auto-generated method stub
 		
 	}
+
+   /**
+    * Get all notes'IDs from the database
+    * @return  an HashMap containing all the notes' IDs and Titles
+    */
+   public HashMap<String, String> getNotes() {
+      // TODO: Query db and return 
+      return new HashMap<String, String>();
+   }
+
+   /**
+    * Get the count of notes in the database
+    * @return  Amount of notes found
+    */
+   public int getNotesCount() {
+      // TODO
+      return 0;
+   }
+
+   /**
+    * Get the details for the note with the given ID
+    * @param id   ID to search for
+    * @return     Raw JSON data for the searched note
+    */
+   public String getNoteDetails(String id) {
+      // TODO
+      return "";
+   }
+
+   // TODO: Add a method to only get the title for a note with the given ID? Do we need it?
+
+   /**
+    * Add the given note to the database
+    * @param id      The ID of the note to store
+    * @param title   Title for the note to store
+    * @param note    Raw JSON data for the note to store
+    * @return        Success status
+    */
+   public boolean addNote(String id, String title, String note) {
+      // TODO: INSERT or REPLACE and return success status
+      return true;
+   }
+
+   // TODO: Add a method to check if an ID already exists ?
+
+   /**
+    * Delete the given note from the database
+    * @param id   ID of the note to delete
+    * @return     Success status
+    */
+   public boolean deleteNote(String id) {
+      // TODO
+      return true;
+   }
+
+   /**
+    * Get all notes with the given tag
+    * @param tag  Tag to search for
+    * @return     IDs of the wanted notes, as an ArrayList
+    */
+   public ArrayList<String> searchNotesByTag(String tag) {
+      // TODO
+      return new ArrayList<String>();
+   }
 }
 
 /* vim: set ts=3 sw=3 smarttab expandtab cc=101 : */
