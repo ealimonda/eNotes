@@ -18,9 +18,11 @@ package it.unica.enotes;
 import java.util.ArrayList;
 import java.util.UUID;
 
-import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
+
+import android.net.Uri;
+import android.text.format.Time;
 
 /**
  * Represents each note entry and offers conversion methods from and to the JSON format.
@@ -28,6 +30,22 @@ import org.json.JSONObject;
  * @author Giovanni Serra
  */
 public class Note {
+   // Static references to fields (used in Bundles, JSON, Database, etc.)
+   public static final String kID         = "id";
+   public static final String kGUID       = "guid";
+   public static final String kTitle      = "title";
+   public static final String kTimestamp  = "modified_date";
+   public static final String kURL        = "url";
+   public static final String kTags       = "tags";
+   public static final String kText       = "text";
+   public static final String kContent    = "content";
+
+   public static final String	kAuthority  = "org.enotes.notes";
+   
+   public static final String	kContentType      = "vnd.android.cursor.dir/vnd.enotes.note";
+   public static final String	kContentItemType  = "vnd.android.cursor.item/vnd.enotes.note";
+
+	public static final Uri kContentURI = Uri.parse("content://" + kAuthority + "/notes");
 
    // Members
    /** Have the note details been loaded? */
@@ -38,6 +56,8 @@ public class Note {
    private String _GUID;
    /** Note title */
    private String _title;
+   /** Last modification timestamp */
+   private Time _timestamp;
    /** Note contents (plain text) */
    private String _text;
    /** Note attachment */
@@ -49,7 +69,7 @@ public class Note {
 
    /** Default constructor */
    public Note() {
-      this(null, null, null, null, null);
+      this(null, null, null, null, null, null);
    }
    /**
     * Constructor
@@ -57,17 +77,25 @@ public class Note {
     * @param title   The title of the note
     */
    public Note(String GUID, String title) {
-      this(GUID, title, null, null, null);
+      this(GUID, title, null, null, null, null);
    }
    /**
     * Constructor
-    * @param GUID    The GUID of the note
-    * @param title   The title of the note
-    * @param text    Content (text) of the note
-    * @param URL     Attached URL to the note
-    * @param tags    ArrayList of tags of the note
+    * @param GUID       The GUID of the note
+    * @param title      The title of the note
+    * @param timestamp  Last modification timestamp
+    * @param text       Content (text) of the note
+    * @param URL        Attached URL to the note
+    * @param tags       ArrayList of tags of the note
     */
-   public Note(String GUID, String title, String text, String URL, ArrayList<String> tags) {
+   public Note(
+         String GUID,
+         String title,
+         Time timestamp,
+         String text,
+         String URL,
+         ArrayList<String> tags
+         ) {
       if (GUID == null) {
          this._GUID = UUID.randomUUID().toString();
       } else {
@@ -77,6 +105,13 @@ public class Note {
          this._title = title;
       } else {
          this._title = "";
+      }
+      if (timestamp != null) {
+         this._timestamp = timestamp;
+      } else {
+         Time ts = new Time();
+         ts.setToNow();
+         this._timestamp = ts;
       }
       if (text != null) {
          this._text = text;
@@ -104,18 +139,11 @@ public class Note {
       JSONObject jsObject;
       try {
          jsObject = new JSONObject(json);
-         if (jsObject.has("text")) {
-            this._text = jsObject.getString("text");
+         if (jsObject.has(kText)) {
+            this._text = jsObject.getString(kText);
          }
-         if (jsObject.has("url")) {
-            this._URL = jsObject.getString("url");
-         }
-         if (jsObject.has("tags")) {
-            JSONArray tagsArray = jsObject.getJSONArray("tags");
-            this._tags.clear();
-            for (int i = 0; i < tagsArray.length(); i++) {
-                this._tags.add(tagsArray.getString(i));
-            }
+         if (jsObject.has(kURL)) {
+            this._URL = jsObject.getString(kURL);
          }
       } catch (JSONException e) {
          return;
@@ -131,9 +159,8 @@ public class Note {
       JSONObject jsObject;
       try {
          jsObject = new JSONObject();
-         jsObject.put("text", this._text);
-         jsObject.put("url", this._URL);
-         jsObject.put("tags", new JSONArray(this._tags));
+         jsObject.put(kText, this._text);
+         jsObject.put(kURL, this._URL);
       } catch (JSONException e) {
          return "";
       }
@@ -203,6 +230,26 @@ public class Note {
    public void setTitle(String newTitle) {
       this._title = newTitle;
       this.setDirty(true);
+   }
+
+   /**
+    * Get the note's last modification timestamp
+    * @return  The last modification timestamp
+    */
+   public Time getTimestamp() {
+      return this._timestamp;
+   }
+
+   /**
+    * Set the nore's last modification timestamp
+    * @param timestamp  The timestamp to set.  It'll be set to now if it's null
+    */
+   public void setTimestamp(Time timestamp) {
+      if (timestamp == null) {
+         this._timestamp.setToNow();
+      } else {
+         this._timestamp = timestamp;
+      }
    }
 
    /**

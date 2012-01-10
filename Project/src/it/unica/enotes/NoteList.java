@@ -50,19 +50,19 @@ public class NoteList extends ListActivity {
    public void onCreate(Bundle savedInstanceState) {
       super.onCreate(savedInstanceState);
       NoteDB helper = new NoteDB(this);
-		database = helper.getWritableDatabase();
-		Cursor data = database.query("notes", fields, null, null, null, null, null);
+	   database = helper.getWritableDatabase();
+      Cursor data = database.query("notes", fields, null, null, null, null, null);
 
-		dataSource = new SimpleCursorAdapter(this, R.layout.row, data, fields,
-				new int[] { R.id.title, R.id.content });
+      dataSource = new SimpleCursorAdapter(this, R.layout.row, data, fields,
+            new int[] { R.id.title, R.id.content });
 
-		ListView view = getListView();
-		view.setHeaderDividersEnabled(true);
-		view.addHeaderView(getLayoutInflater().inflate(R.layout.row, null));
+      ListView view = getListView();
+      view.setHeaderDividersEnabled(true);
+      view.addHeaderView(getLayoutInflater().inflate(R.layout.row, null));
 
-		setListAdapter(dataSource);
-		//setContentView(R.layout.main);
-	}
+      setListAdapter(dataSource);
+      //setContentView(R.layout.main);
+   }
       
    /*@Override
    public boolean onCreateOptionsMenu(Menu menu) {
@@ -71,50 +71,50 @@ public class NoteList extends ListActivity {
        return true;
    }*/
    
-	@Override
-	public boolean onCreateOptionsMenu(Menu menu) {
-		menu.add(0, DIALOG_ID, 1, R.string.addItem).setIcon(getResources().getDrawable(R.drawable.ic_new_note));
-		menu.add(0, 0, 2, R.string.searchItem).setIcon(getResources().getDrawable(R.drawable.ic_search));	
-		return true;
-	}
+   @Override
+   public boolean onCreateOptionsMenu(Menu menu) {
+      menu.add(0, DIALOG_ID, 1, R.string.addItem).setIcon(getResources().getDrawable(R.drawable.ic_new_note));
+      menu.add(0, 0, 2, R.string.searchItem).setIcon(getResources().getDrawable(R.drawable.ic_search));
+      return true;
+   }
    
-	@Override
-	public boolean onMenuItemSelected(int featureId, MenuItem item) {
-		if (item.getItemId() == DIALOG_ID) {
-			showDialog(DIALOG_ID);
-		}
-		return true;
-	}
+   @Override
+   public boolean onMenuItemSelected(int featureId, MenuItem item) {
+      if (item.getItemId() == DIALOG_ID) {
+         showDialog(DIALOG_ID);
+      }
+      return true;
+   }
 
-	@Override
-	protected Dialog onCreateDialog(int id) {
-		AlertDialog.Builder builder = new AlertDialog.Builder(this);
-		entryView = getLayoutInflater().inflate(R.layout.entry, null);
-		builder.setView(entryView);
-		titleEditor = (EditText) entryView.findViewById(R.id.title);
-		contentEditor = (EditText) entryView.findViewById(R.id.content);
-		builder.setTitle(R.string.addDialogTitle);
-		builder.setPositiveButton(R.string.addItem,	new DialogInterface.OnClickListener() {
+   @Override
+   protected Dialog onCreateDialog(int id) {
+      AlertDialog.Builder builder = new AlertDialog.Builder(this);
+      entryView = getLayoutInflater().inflate(R.layout.entry, null);
+      builder.setView(entryView);
+      titleEditor = (EditText) entryView.findViewById(R.id.title);
+      contentEditor = (EditText) entryView.findViewById(R.id.content);
+      builder.setTitle(R.string.addDialogTitle);
+      builder.setPositiveButton(R.string.addItem, new DialogInterface.OnClickListener() {
 
-					//@Override
-					public void onClick(DialogInterface dialog, int which) {
-						dialog.dismiss();
-						ContentValues values = new ContentValues();
-						values.put("title", titleEditor.getText().toString());
-						values.put("content", contentEditor.getText().toString());
-						database.insert("notes", null, values);
-						dataSource.getCursor().requery();
-					}
-				});
-
-		builder.setNegativeButton(R.string.cancelItem, new DialogInterface.OnClickListener() {
-
-					//@Override
-					public void onClick(DialogInterface dialog, int which) {
-						dialog.cancel();
-					}
-				});
-		return builder.create();
-	}
+         //@Override
+         public void onClick(DialogInterface dialog, int which) {
+            dialog.dismiss();
+            ContentValues values = new ContentValues();
+            values.put("title", titleEditor.getText().toString());
+            values.put("content", contentEditor.getText().toString());
+            database.insert("notes", null, values);
+            dataSource.getCursor().requery();
+         }
+      });
+      
+      builder.setNegativeButton(R.string.cancelItem, new DialogInterface.OnClickListener() {
+         
+         //@Override
+         public void onClick(DialogInterface dialog, int which) {
+            dialog.cancel();
+         }
+      });
+      return builder.create();
+   }
 }
 /* vim: set ts=3 sw=3 smarttab expandtab cc=101 : */
