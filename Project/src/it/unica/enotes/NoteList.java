@@ -42,7 +42,7 @@ public class NoteList extends ListActivity {
    private View entryView;
    private EditText titleEditor;
    private EditText contentEditor;
-   private static final String fields[] = { "title", "content", BaseColumns._ID };
+   private static final String fields[] = { Note.kTitle, Note.kTimestamp, Note.kID };
    
    /** Called when the activity is first created. */
    

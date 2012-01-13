@@ -31,7 +31,7 @@ import android.text.format.Time;
  */
 public class Note {
    // Static references to fields (used in Bundles, JSON, Database, etc.)
-   public static final String kID         = "id";
+   public static final String kID         = "_id";
    public static final String kGUID       = "guid";
    public static final String kTitle      = "title";
    public static final String kTimestamp  = "modified_date";
@@ -40,7 +40,7 @@ public class Note {
    public static final String kText       = "text";
    public static final String kContent    = "content";
 
-   public static final String	kAuthority  = "org.enotes.notes";
+   public static final String	kAuthority  = "it.unica.enotes.notes";
    
    public static final String	kContentType      = "vnd.android.cursor.dir/vnd.enotes.note";
    public static final String	kContentItemType  = "vnd.android.cursor.item/vnd.enotes.note";

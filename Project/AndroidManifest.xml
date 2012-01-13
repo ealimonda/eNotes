@@ -18,6 +18,6 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
+       <provider android:authorities="it.unica.enotes.notes" android:name=".NoteDB" />
     </application>
-
 </manifest>

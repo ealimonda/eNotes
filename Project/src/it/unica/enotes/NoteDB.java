@@ -48,14 +48,13 @@ public class NoteDB extends ContentProvider {
    private static final int kUriNotesByTag = 3;
 
    public static final String[] kNotesFullProjection = {
-      Note.kID,
       Note.kGUID,
       Note.kTitle,
       Note.kTimestamp,
       Note.kContent
    };
    public static final String[] kNotesHeadersProjection = {
-      Note.kID,
+	   Note.kID,
       Note.kGUID,
       Note.kTitle,
       Note.kTimestamp
