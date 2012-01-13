@@ -312,18 +312,6 @@ public class NoteDB extends ContentProvider {
    }
 */
    /**
-    * Get the details for the note with the given ID
-    * @param id   ID to search for
-    * @return     Raw JSON data for the searched note
-    */
-/*   public String getNoteDetails(String id) {
-      // TODO
-      return "";
-   }
-*/
-   // TODO: Add a method to only get the title for a note with the given ID? Do we need it?
-
-   /**
     * Add the given note to the database
     * @param id      The ID of the note to store
     * @param title   Title for the note to store
@@ -362,7 +350,7 @@ public class NoteDB extends ContentProvider {
     * Get all notes' headers from the database
     * @return  a cursor pointing to all the notes' GUIDs, titles and timestamps
     */
-   public static Cursor getAllNotesHeaders(Activity activity) {
+   public Cursor getAllNotesHeaders(Activity activity) {
       // get a cursor representing all notes
       Uri notes = Note.kContentURI;
       String where = null;
@@ -372,7 +360,7 @@ public class NoteDB extends ContentProvider {
 	}
    
    // gets a note from the content provider
-   public static Note getNote(Activity activity, Uri uri) {
+   public Note getNote(Activity activity, Uri uri) {
       Note note = null;
 
       // can we find a matching note?
