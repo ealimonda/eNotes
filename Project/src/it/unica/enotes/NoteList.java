@@ -20,10 +20,11 @@ import android.app.Dialog;
 import android.app.ListActivity;
 import android.content.ContentValues;
 import android.content.DialogInterface;
+import android.content.Intent;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.os.Bundle;
-import android.provider.BaseColumns;
+import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
@@ -37,25 +38,28 @@ import android.widget.SimpleCursorAdapter;
  */
 public class NoteList extends ListActivity {
    private static final int DIALOG_ID = 100;
-   private SQLiteDatabase database;
+   //private SQLiteDatabase database;
    private CursorAdapter dataSource;
    private View entryView;
    private EditText titleEditor;
    private EditText contentEditor;
    private static final String fields[] = { Note.kTitle, Note.kTimestamp, Note.kID };
+   private static final String TAG = "INFO";
    
    /** Called when the activity is first created. */
    
    @Override
    public void onCreate(Bundle savedInstanceState) {
       super.onCreate(savedInstanceState);
-      NoteDB helper = new NoteDB(this);
-	   database = helper.getWritableDatabase();
-      Cursor data = database.query("notes", fields, null, null, null, null, null);
-
-      dataSource = new SimpleCursorAdapter(this, R.layout.row, data, fields,
-            new int[] { R.id.title, R.id.content });
-
+      
+	  //database = helper.getWritableDatabase();
+      //Cursor data = database.query("notes", fields, null, null, null, null, null);
+      NoteDB helper = new NoteDB();
+	   Cursor data = helper.getAllNotesHeaders(this);
+      dataSource = new SimpleCursorAdapter(this, R.layout.row, data, fields, new int[] { R.id.title, R.id.tags });
+            
+      //Log.e(TAG, prova);
+      
       ListView view = getListView();
       view.setHeaderDividersEnabled(true);
       view.addHeaderView(getLayoutInflater().inflate(R.layout.row, null));
@@ -70,6 +74,18 @@ public class NoteList extends ListActivity {
        inflater.inflate(R.menu.main_menu, menu);
        return true;
    }*/
+   
+   @Override
+   protected void onListItemClick(ListView l, View v, int position, long id) {
+	   //String item = (String) getListAdapter().getItem(position);
+	   
+	   Intent i = new Intent(this, NoteView.class);
+	   //i.putExtra("Value1", note.getTitle());
+	   //i.putExtra("Value2", note.getGUID());
+	   //i.putExtra("Value2", noteManager.getNotesCount());
+	   // Set the request code to any code you like, you can identify the callback via this code
+	   startActivityForResult(i, 0);
+	   }
    
    @Override
    public boolean onCreateOptionsMenu(Menu menu) {
@@ -92,22 +108,25 @@ public class NoteList extends ListActivity {
       entryView = getLayoutInflater().inflate(R.layout.entry, null);
       builder.setView(entryView);
       titleEditor = (EditText) entryView.findViewById(R.id.title);
-      contentEditor = (EditText) entryView.findViewById(R.id.content);
+      contentEditor = (EditText) entryView.findViewById(R.id.tags);
       builder.setTitle(R.string.addDialogTitle);
       builder.setPositiveButton(R.string.addItem, new DialogInterface.OnClickListener() {
 
          //@Override
          public void onClick(DialogInterface dialog, int which) {
             dialog.dismiss();
-            ContentValues values = new ContentValues();
-            values.put("title", titleEditor.getText().toString());
-            values.put("content", contentEditor.getText().toString());
-            database.insert("notes", null, values);
-            dataSource.getCursor().requery();
+            //ContentValues values = new ContentValues();
+            //values.put("title", titleEditor.getText().toString());
+            //values.put("title", Editor.getText().toString());
+            //values.put("content", contentEditor.getText().toString());
+            //database.insert("notes", null, values);
+            //dataSource.getCursor().requery();
+            NoteDB helper = new NoteDB();
+            helper.addNote("899f8117-98f5-4a13-931e-d3d0789d9975", "nota aggiunta", "testo nota aggiunta");
          }
       });
       
-      builder.setNegativeButton(R.string.cancelItem, new DialogInterface.OnClickListener() {
+      builder.setNegativeButton(R.string.deleteItem, new DialogInterface.OnClickListener() {
          
          //@Override
          public void onClick(DialogInterface dialog, int which) {

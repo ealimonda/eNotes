@@ -30,6 +30,7 @@ import android.database.sqlite.SQLiteQueryBuilder;
 import android.net.Uri;
 import android.text.TextUtils;
 import android.text.format.Time;
+import android.util.Log;
 
 /**
  * Loads and stores notes to the database and performs searches
@@ -68,8 +69,12 @@ public class NoteDB extends ContentProvider {
 //      public NoteDB(Context context) {
 //         super(context, "eNotes", null, 1);
 //      }
+   
+   private static final String TAG = "INFO";
+   public static final int  OPEN_READWRITE = 1;
+   //private CursorAdapter dataSource;
 
-   private static class NoteDBHelper extends SQLiteOpenHelper {
+   public static class NoteDBHelper extends SQLiteOpenHelper {
 
       NoteDBHelper(Context context) {
          super(context, kDatabaseName, null, kDatabaseVersion);
@@ -105,6 +110,7 @@ public class NoteDB extends ContentProvider {
             values.put(Note.kContent, testNotes[i].getJSON());
             db.insert(kDatabaseTableNotes, null, values);
          }
+         //db.close();
       }
 
       @Override
@@ -317,11 +323,27 @@ public class NoteDB extends ContentProvider {
     * @param note    Raw JSON data for the note to store
     * @return        Success status
     */
-/*   public boolean addNote(String id, String title, String note) {
+   public boolean addNote(String id, String title, String note) {
       // TODO: INSERT or REPLACE and return success status
+	   Log.e(TAG, id);
+	   Log.e(TAG, title);
+	   Log.e(TAG, note);
+	   
+	   SQLiteDatabase.openDatabase("enotes", null, OPEN_READWRITE);
+	   
+	   SQLiteDatabase db = dbHelper.getWritableDatabase();
+	   
+	   //for (int i = 0; i < testNotes.length; ++i) {
+	   
+           ContentValues values = new ContentValues();
+           values.put(Note.kGUID, id);
+           values.put(Note.kTitle, title);
+           values.put(Note.kTimestamp, "1326492950000");
+           values.put(Note.kContent, note);           
+           db.insert(kDatabaseTableNotes, null, values);
       return true;
    }
-*/
+
    // TODO: Add a method to check if an ID already exists ?
 
    /**
