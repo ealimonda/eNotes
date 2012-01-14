@@ -16,12 +16,15 @@
 package it.unica.enotes;
 
 import java.util.HashMap;
+import java.util.UUID;
 
 import android.app.Activity;
 import android.content.ContentProvider;
+import android.content.ContentUris;
 import android.content.ContentValues;
 import android.content.Context;
 import android.content.UriMatcher;
+import android.content.res.Resources;
 import android.database.Cursor;
 import android.database.SQLException;
 import android.database.sqlite.SQLiteDatabase;
@@ -83,8 +86,9 @@ public class NoteDB extends ContentProvider {
       // create tables in the database
       @Override
       public void onCreate(SQLiteDatabase db) {
+    	  Log.v("notedb", "NoteDB Helper create");
          // FIXME: TEMP Testing stuff
-         db.execSQL("DROP TABLE IF EXISTS " +kDatabaseTableNotes +";");
+         db.execSQL("DROP TABLE IF EXISTS "+ kDatabaseTableNotes +";");
          db.execSQL("CREATE TABLE IF NOT EXISTS " + kDatabaseTableNotes + " ("
                + Note.kID +         " INTEGER PRIMARY KEY AUTOINCREMENT,"
                + Note.kGUID +       " STRING UNIQUE,"
@@ -193,9 +197,8 @@ public class NoteDB extends ContentProvider {
    // TODO the following method is probably never called and probably wouldn't work
    @Override
    public Uri insert(Uri uri, ContentValues initialValues) {
-/*
       // Validate the requested uri
-      if (uriMatcher.match(uri) != NOTES) {
+      if (uriMatcher.match(uri) != kUriNotes) {
          throw new IllegalArgumentException("Unknown URI " + uri);
       }
       
@@ -205,42 +208,38 @@ public class NoteDB extends ContentProvider {
       } else {
          values = new ContentValues();
       }
-      
-      // TODO either be identical to Tomboy's time format (if sortable) else make sure that this is documented
-      Long now = Long.valueOf(System.currentTimeMillis());
-      
+
+      Time now = new Time();
+      now.setToNow();
+
       // Make sure that the fields are all set
-      if (values.containsKey(Note.MODIFIED_DATE) == false) {
-         values.put(Note.MODIFIED_DATE, now);
+      if (values.containsKey(Note.kTimestamp) == false) {
+         values.put(Note.kTimestamp, now.toMillis(false));
       }
 
       // The guid is the unique identifier for a note so it has to be set.
-      if (values.containsKey(Note.GUID) == false) {
-         values.put(Note.GUID, UUID.randomUUID().toString());
+      if (values.containsKey(Note.kGUID) == false) {
+         values.put(Note.kGUID, UUID.randomUUID().toString());
       }
 
       // TODO does this make sense?
-      if (values.containsKey(Note.TITLE) == false) {
+      if (values.containsKey(Note.kTitle) == false) {
          Resources r = Resources.getSystem();
-         values.put(Note.TITLE, r.getString(android.R.string.untitled));
+         values.put(Note.kTitle, r.getString(android.R.string.untitled));
       }
 
-      if (values.containsKey(Note.FILE) == false) {
-         values.put(Note.FILE, "");
-      }
-
-      if (values.containsKey(Note.NOTE_CONTENT) == false) {
-         values.put(Note.NOTE_CONTENT, "");
+      if (values.containsKey(Note.kContent) == false) {
+         values.put(Note.kContent, "");
       }
 
       SQLiteDatabase db = dbHelper.getWritableDatabase();
-      long rowId = db.insert(DB_TABLE_NOTES, Note.FILE, values); // not so sure I did the right thing here
+      long rowId = db.insert(kDatabaseTableNotes, null, values);
       if (rowId > 0) {
-         Uri noteUri = ContentUris.withAppendedId(Tomdroid.CONTENT_URI, rowId);
+         Uri noteUri = ContentUris.withAppendedId(Note.kContentURI, rowId);
          getContext().getContentResolver().notifyChange(noteUri, null);
          return noteUri;
-      }*/
-      
+      }
+
       throw new SQLException("Failed to insert row into " + uri);
     }
 

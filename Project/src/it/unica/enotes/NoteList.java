@@ -22,9 +22,7 @@ import android.content.ContentValues;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.database.Cursor;
-import android.database.sqlite.SQLiteDatabase;
 import android.os.Bundle;
-import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
@@ -38,7 +36,7 @@ import android.widget.SimpleCursorAdapter;
  */
 public class NoteList extends ListActivity {
    private static final int DIALOG_ID = 100;
-   //private SQLiteDatabase database;
+   private NoteDB dbHelper;
    private CursorAdapter dataSource;
    private View entryView;
    private EditText titleEditor;
@@ -51,15 +49,13 @@ public class NoteList extends ListActivity {
    @Override
    public void onCreate(Bundle savedInstanceState) {
       super.onCreate(savedInstanceState);
-      
-	  //database = helper.getWritableDatabase();
-      //Cursor data = database.query("notes", fields, null, null, null, null, null);
-      NoteDB helper = new NoteDB();
-	   Cursor data = helper.getAllNotesHeaders(this);
-      dataSource = new SimpleCursorAdapter(this, R.layout.row, data, fields, new int[] { R.id.title, R.id.tags });
-            
-      //Log.e(TAG, prova);
-      
+
+      dbHelper = new NoteDB();
+      Cursor data = dbHelper.getAllNotesHeaders(this);
+
+      dataSource = new SimpleCursorAdapter(this, R.layout.row, data, fields,
+            new int[] { R.id.title, R.id.content });
+
       ListView view = getListView();
       view.setHeaderDividersEnabled(true);
       view.addHeaderView(getLayoutInflater().inflate(R.layout.row, null));
@@ -115,14 +111,15 @@ public class NoteList extends ListActivity {
          //@Override
          public void onClick(DialogInterface dialog, int which) {
             dialog.dismiss();
-            //ContentValues values = new ContentValues();
-            //values.put("title", titleEditor.getText().toString());
-            //values.put("title", Editor.getText().toString());
-            //values.put("content", contentEditor.getText().toString());
-            //database.insert("notes", null, values);
-            //dataSource.getCursor().requery();
-            NoteDB helper = new NoteDB();
-            helper.addNote("899f8117-98f5-4a13-931e-d3d0789d9975", "nota aggiunta", "testo nota aggiunta");
+            // TODO: Enable this later
+            //dbHelper.addNote(null, "nota aggiunta", null);
+
+            // FIXME: TESTING, some stuff will go away once NoteDB is fully functional
+            ContentValues values = new ContentValues();
+            values.put(Note.kTitle, titleEditor.getText().toString());
+            values.put(Note.kContent, contentEditor.getText().toString());
+            dbHelper.insert(Note.kContentURI, values);
+            dataSource.getCursor().requery();
          }
       });
       
