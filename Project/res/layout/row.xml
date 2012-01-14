@@ -1,24 +1,43 @@
 <?xml version="1.0" encoding="utf-8"?>
 
-<RelativeLayout
+<LinearLayout
     xmlns:android="http://schemas.android.com/apk/res/android"
 	android:layout_height="wrap_content"
-	android:id="@+id/rowLayout"
+	android:id="@+id/colLayout"
 	android:orientation="horizontal"
 	android:layout_width="fill_parent">
 
-	<TextView
-	    android:layout_width="wrap_content"
-	    android:layout_alignParentLeft="true"
-		android:layout_height="wrap_content"
-		android:id="@+id/title"
-		android:text="Note title" />
+	<LinearLayout
+	    xmlns:android="http://schemas.android.com/apk/res/android"
+	    android:id="@+id/rowLayout"
+	    android:layout_width="250dp"
+	    android:layout_height="wrap_content"
+	    android:orientation="vertical" >
 	
-	<TextView
-	    android:layout_width="wrap_content"
-	    android:layout_alignParentRight="true"
-		android:layout_height="wrap_content"
-		android:id="@+id/content"
-		android:text="Note content"
-		android:gravity="right"/>
-</RelativeLayout>
+		<TextView
+		    android:id="@+id/title"
+		    android:layout_width="250dp"
+		    android:layout_height="fill_parent"
+		    android:layout_alignParentLeft="true"
+		    android:text="Note title"
+		    android:textSize="18px" />
+			
+		<TextView
+		    android:id="@+id/tags"
+		    android:layout_width="250dp"
+		    android:layout_height="wrap_content"
+		    android:layout_alignParentRight="true"
+		    android:text="Note tags"
+		    android:textSize="15px" />
+
+	</LinearLayout>
+
+    <TextView
+	    android:layout_width="fill_parent"	    
+		android:layout_height="fill_parent"
+		android:layout_alignParentRight="true"
+		android:textSize="10px"
+		android:id="@+id/timestamp"
+		android:text="Timestamp"
+		android:layout_gravity="right" />
+</LinearLayout>

@@ -4,15 +4,13 @@
     <string name="hello">eNotes</string>
     <string name="app_name">eNotes</string>
     
-    <!-- Main menu -->    
+    <!-- main menu NoteList -->
     <string name="addDialogTitle">New Note</string>
-    <string name="addItem">Add Note</string>
-    <string name="cancelItem">Cancel</string>
-    <string name="searchItem">Search Note</string>    
+    <string name="addItem">Add Note</string>   
+    <string name="searchItem">Search Note</string>
     
-    
-    <string name="new_note">New Note</string>
-    <string name="new_note_shortcut">n</string>
-    <string name="search">Search</string>
-    <string name="search_shortcut">s</string>
+    <!-- main menu NoteView -->
+    <string name="editItem">Edit</string>
+    <string name="deleteItem">Delete</string>
+     <string name="sendItem">Send</string> 
 </resources>
