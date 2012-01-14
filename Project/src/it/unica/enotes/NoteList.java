@@ -18,14 +18,11 @@ package it.unica.enotes;
 import android.app.AlertDialog;
 import android.app.Dialog;
 import android.app.ListActivity;
-import android.content.ContentResolver;
 import android.content.ContentValues;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.database.Cursor;
-import android.net.Uri;
 import android.os.Bundle;
-import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
@@ -38,7 +35,8 @@ import android.widget.SimpleCursorAdapter;
  * Activity to list all existing notes
  */
 public class NoteList extends ListActivity {
-   private static final int DIALOG_ID = 100;
+   private static final int kMenuItemAdd = 100;
+   private static final int kMenuItemSearch = 101;
    private NoteDB database;
    private CursorAdapter dataSource;
    private View entryView;
@@ -88,22 +86,16 @@ public class NoteList extends ListActivity {
    
    @Override
    public boolean onCreateOptionsMenu(Menu menu) {
-      menu.add(0, DIALOG_ID, 1, R.string.addItem).setIcon(getResources().getDrawable(R.drawable.ic_new_note));
-      menu.add(0, 0, 2, R.string.searchItem).setIcon(getResources().getDrawable(R.drawable.ic_search));
+      menu.add(0, kMenuItemAdd, 1, R.string.addItem).setIcon(getResources().getDrawable(R.drawable.ic_new_note));
+      menu.add(0, kMenuItemSearch, 2, R.string.searchItem).setIcon(getResources().getDrawable(R.drawable.ic_search));
       return true;
    }
    
    @Override
    public boolean onMenuItemSelected(int featureId, MenuItem item) {
-      if (item.getItemId() == DIALOG_ID) {
-    	  database.addNote(this, null, "SAMPLENOTETITLE", null);
-//         showDialog(DIALOG_ID);
-//          ContentValues values = new ContentValues();
-//          values.put(Note.kTitle, "SAMPLETITLE");
-//          values.put(Note.kContent, null);
-//          ContentResolver cr = this.getContentResolver();
+      if (item.getItemId() == kMenuItemAdd) {
+    	  database.addNote(this, null, null, null);
 //          Uri uri = cr.insert(Note.kContentURI, values);
-//          database.insert(Note.kContentURI, values);
           dataSource.getCursor().requery(); // FIXME
       }
       return true;
@@ -111,37 +103,7 @@ public class NoteList extends ListActivity {
 
    @Override
    protected Dialog onCreateDialog(int id) {
-      AlertDialog.Builder builder = new AlertDialog.Builder(this);
-      entryView = getLayoutInflater().inflate(R.layout.entry, null);
-      builder.setView(entryView);
-      titleEditor = (EditText) entryView.findViewById(R.id.title);
-      contentEditor = (EditText) entryView.findViewById(R.id.tags);
-      builder.setTitle(R.string.addDialogTitle);
-      builder.setPositiveButton(R.string.addItem, new DialogInterface.OnClickListener() {
-
-         //@Override
-         public void onClick(DialogInterface dialog, int which) {
-            dialog.dismiss();
-            // TODO: Enable this later
-            //dbHelper.addNote(null, "nota aggiunta", null);
-
-            // FIXME: TESTING, some stuff will go away once NoteDB is fully functional
-            ContentValues values = new ContentValues();
-            values.put(Note.kTitle, "SAMPLETITLE");
-//            values.put(Note.kContent, null);
-            database.insert(Note.kContentURI, values);
-            dataSource.getCursor().requery();
-         }
-      });
-      
-      builder.setNegativeButton(R.string.deleteItem, new DialogInterface.OnClickListener() {
-         
-         //@Override
-         public void onClick(DialogInterface dialog, int which) {
-            dialog.cancel();
-         }
-      });
-      return builder.create();
+	return null;
    }
 }
 /* vim: set ts=3 sw=3 smarttab expandtab cc=101 : */

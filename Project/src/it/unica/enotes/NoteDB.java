@@ -21,7 +21,6 @@ import java.util.UUID;
 import android.app.Activity;
 import android.content.ContentProvider;
 import android.content.ContentResolver;
-import android.content.ContentUris;
 import android.content.ContentValues;
 import android.content.Context;
 import android.content.UriMatcher;
@@ -129,6 +128,7 @@ public class NoteDB extends ContentProvider {
    @Override
    public boolean onCreate() {
       dbHelper = new NoteDBHelper(getContext());
+	  Log.v("notedb", "NoteDB create");
       return true;
    }
 
@@ -198,6 +198,7 @@ public class NoteDB extends ContentProvider {
    // TODO the following method is probably never called and probably wouldn't work
    @Override
    public Uri insert(Uri uri, ContentValues initialValues) {
+	   Log.v(TAG, "insert() was called");
       // Validate the requested uri
       if (uriMatcher.match(uri) != kUriNotes) {
          throw new IllegalArgumentException("Unknown URI " + uri);
@@ -252,16 +253,16 @@ public class NoteDB extends ContentProvider {
    @Override
    public int delete(Uri uri, String where, String[] whereArgs) {
       // TODO
-/*      SQLiteDatabase db = dbHelper.getWritableDatabase();
-      int count;
-      switch (uriMatcher.match(uri)) {
-         case NOTES:
-            count = db.delete(DB_TABLE_NOTES, where, whereArgs);
+	   SQLiteDatabase db = dbHelper.getWritableDatabase();
+	   int count;
+	   switch (uriMatcher.match(uri)) {
+	   	case kUriNotes:
+	   		count = db.delete(kDatabaseTableNotes, where, whereArgs);
             break;
             
-         case NOTE_ID:
-            String noteId = uri.getPathSegments().get(1);
-            count = db.delete(DB_TABLE_NOTES, Note.ID + "=" + noteId
+         case kUriNoteByID:
+            String noteId = uri.getPathSegments().get(2);
+            count = db.delete(kDatabaseTableNotes, Note.kGUID + "=" + noteId
                   + (!TextUtils.isEmpty(where) ? " AND (" + where + ')' : ""), whereArgs);
             break;
             
@@ -271,8 +272,6 @@ public class NoteDB extends ContentProvider {
       
       getContext().getContentResolver().notifyChange(uri, null);
       return count;
-      */
-      return 0;
    }
 
    @Override
@@ -323,47 +322,38 @@ public class NoteDB extends ContentProvider {
 */
    /**
     * Add the given note to the database
-    * @param id      The ID of the note to store
-    * @param title   Title for the note to store
-    * @param note    Raw JSON data for the note to store
-    * @return        Success status
+    * @param activity	The activity this is called from
+    * @param id      	The ID of the note to store
+    * @param title   	Title for the note to store
+    * @param note    	Raw JSON data for the note to store
+    * @return        	Success status
     */
    public boolean addNote(Activity activity, String id, String title, String note) {
-      // TODO: INSERT or REPLACE and return success status
-//	   Log.e(TAG, id);
-//	   Log.e(TAG, title);
-//	   Log.e(TAG, note);
-	   
-//	   SQLiteDatabase.openDatabase("enotes", null, OPEN_READWRITE);
-	   
      ContentResolver cr = activity.getContentResolver();
-//	   SQLiteDatabase db = dbHelper.getWritableDatabase();
-	   
-	   //for (int i = 0; i < testNotes.length; ++i) {
-	   
-           ContentValues values = new ContentValues();
-           values.put(Note.kGUID, id);
-           values.put(Note.kTitle, title);
-//           values.put(Note.kTimestamp, "1326492950000");
-           values.put(Note.kContent, note);           
-//           db.insert(kDatabaseTableNotes, null, values);
-         Uri uri = cr.insert(Note.kContentURI, values);
-         Log.v(TAG, uri.toString());
-      return true;
+     ContentValues values = new ContentValues();
+     values.put(Note.kGUID, id);
+     values.put(Note.kTitle, title);
+     values.put(Note.kContent, note);           
+     Uri uri = cr.insert(Note.kContentURI, values);
+     Log.v(TAG, "Inserted note: "+ uri.toString());
+     return true;
    }
 
    // TODO: Add a method to check if an ID already exists ?
 
    /**
     * Delete the given note from the database
-    * @param id   ID of the note to delete
-    * @return     Success status
+    * @param activity	The activity this is called from
+    * @param id   		ID of the note to delete
+    * @return     		Success status
     */
-/*   public boolean deleteNote(String id) {
-      // TODO
+   public boolean deleteNote(Activity activity, String id) {
+	     ContentResolver cr = activity.getContentResolver();
+	     int quantity = cr.delete(Uri.withAppendedPath(Note.kContentURI, "id/"+id), null, null);
+	     Log.v(TAG, "Deleted "+ quantity +" note(s)");
       return true;
    }
-*/
+
    /**
     * Get all notes with the given tag
     * @param tag  Tag to search for
