@@ -20,6 +20,7 @@ import java.util.UUID;
 
 import android.app.Activity;
 import android.content.ContentProvider;
+import android.content.ContentResolver;
 import android.content.ContentUris;
 import android.content.ContentValues;
 import android.content.Context;
@@ -218,8 +219,9 @@ public class NoteDB extends ContentProvider {
       }
 
       // The guid is the unique identifier for a note so it has to be set.
+      String GUID = UUID.randomUUID().toString();
       if (values.containsKey(Note.kGUID) == false) {
-         values.put(Note.kGUID, UUID.randomUUID().toString());
+         values.put(Note.kGUID, GUID);
       }
 
       // TODO does this make sense?
@@ -235,11 +237,15 @@ public class NoteDB extends ContentProvider {
       SQLiteDatabase db = dbHelper.getWritableDatabase();
       long rowId = db.insert(kDatabaseTableNotes, null, values);
       if (rowId > 0) {
-         Uri noteUri = ContentUris.withAppendedId(Note.kContentURI, rowId);
+    	  Uri noteUri = Uri.withAppendedPath(Note.kContentURI, "id/"+GUID);
+//         Uri noteUri = ContentUris.withAppendedId(Note.kContentURI, rowId);
+
          getContext().getContentResolver().notifyChange(noteUri, null);
+         dbHelper.close();
          return noteUri;
       }
 
+      dbHelper.close();
       throw new SQLException("Failed to insert row into " + uri);
     }
 
@@ -322,24 +328,27 @@ public class NoteDB extends ContentProvider {
     * @param note    Raw JSON data for the note to store
     * @return        Success status
     */
-   public boolean addNote(String id, String title, String note) {
+   public boolean addNote(Activity activity, String id, String title, String note) {
       // TODO: INSERT or REPLACE and return success status
-	   Log.e(TAG, id);
-	   Log.e(TAG, title);
-	   Log.e(TAG, note);
+//	   Log.e(TAG, id);
+//	   Log.e(TAG, title);
+//	   Log.e(TAG, note);
 	   
-	   SQLiteDatabase.openDatabase("enotes", null, OPEN_READWRITE);
+//	   SQLiteDatabase.openDatabase("enotes", null, OPEN_READWRITE);
 	   
-	   SQLiteDatabase db = dbHelper.getWritableDatabase();
+     ContentResolver cr = activity.getContentResolver();
+//	   SQLiteDatabase db = dbHelper.getWritableDatabase();
 	   
 	   //for (int i = 0; i < testNotes.length; ++i) {
 	   
            ContentValues values = new ContentValues();
            values.put(Note.kGUID, id);
            values.put(Note.kTitle, title);
-           values.put(Note.kTimestamp, "1326492950000");
+//           values.put(Note.kTimestamp, "1326492950000");
            values.put(Note.kContent, note);           
-           db.insert(kDatabaseTableNotes, null, values);
+//           db.insert(kDatabaseTableNotes, null, values);
+         Uri uri = cr.insert(Note.kContentURI, values);
+         Log.v(TAG, uri.toString());
       return true;
    }
 

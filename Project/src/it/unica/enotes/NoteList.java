@@ -18,11 +18,14 @@ package it.unica.enotes;
 import android.app.AlertDialog;
 import android.app.Dialog;
 import android.app.ListActivity;
+import android.content.ContentResolver;
 import android.content.ContentValues;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.database.Cursor;
+import android.net.Uri;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
@@ -36,7 +39,7 @@ import android.widget.SimpleCursorAdapter;
  */
 public class NoteList extends ListActivity {
    private static final int DIALOG_ID = 100;
-   private NoteDB dbHelper;
+   private NoteDB database;
    private CursorAdapter dataSource;
    private View entryView;
    private EditText titleEditor;
@@ -50,8 +53,8 @@ public class NoteList extends ListActivity {
    public void onCreate(Bundle savedInstanceState) {
       super.onCreate(savedInstanceState);
 
-      dbHelper = new NoteDB();
-      Cursor data = dbHelper.getAllNotesHeaders(this);
+      database = new NoteDB();
+      Cursor data = database.getAllNotesHeaders(this);
 
       dataSource = new SimpleCursorAdapter(this, R.layout.row, data, fields,
             new int[] { R.id.title, R.id.content });
@@ -93,7 +96,15 @@ public class NoteList extends ListActivity {
    @Override
    public boolean onMenuItemSelected(int featureId, MenuItem item) {
       if (item.getItemId() == DIALOG_ID) {
-         showDialog(DIALOG_ID);
+    	  database.addNote(this, null, "SAMPLENOTETITLE", null);
+//         showDialog(DIALOG_ID);
+//          ContentValues values = new ContentValues();
+//          values.put(Note.kTitle, "SAMPLETITLE");
+//          values.put(Note.kContent, null);
+//          ContentResolver cr = this.getContentResolver();
+//          Uri uri = cr.insert(Note.kContentURI, values);
+//          database.insert(Note.kContentURI, values);
+          dataSource.getCursor().requery(); // FIXME
       }
       return true;
    }
@@ -116,9 +127,9 @@ public class NoteList extends ListActivity {
 
             // FIXME: TESTING, some stuff will go away once NoteDB is fully functional
             ContentValues values = new ContentValues();
-            values.put(Note.kTitle, titleEditor.getText().toString());
-            values.put(Note.kContent, contentEditor.getText().toString());
-            dbHelper.insert(Note.kContentURI, values);
+            values.put(Note.kTitle, "SAMPLETITLE");
+//            values.put(Note.kContent, null);
+            database.insert(Note.kContentURI, values);
             dataSource.getCursor().requery();
          }
       });
