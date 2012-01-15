@@ -411,6 +411,11 @@ public class NoteDB extends ContentProvider {
 		return note;
 	}
    
+   // Gets note by ID
+   public Note getNoteById(Activity activity, long id) {
+	   return getNote(activity, Uri.withAppendedPath(Note.kContentURI, "id/"+id));
+   }
+   
 }
 
 /* vim: set ts=3 sw=3 smarttab expandtab cc=101 : */
