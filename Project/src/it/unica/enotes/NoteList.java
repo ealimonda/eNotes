@@ -35,7 +35,6 @@ public class NoteList extends ListActivity {
    private static final int kMenuItemAdd = 100;
    private static final int kMenuItemSearch = 101;
    private NoteDB database;
-   private SimpleCursorAdapter dataSource;
    private static final String fields[] = { Note.kTitle, Note.kTimestamp, Note.kID };
    private static final String TAG = "INFO";
    
@@ -44,38 +43,41 @@ public class NoteList extends ListActivity {
    @Override
    public void onCreate(Bundle savedInstanceState) {
       super.onCreate(savedInstanceState);
-
-      database = new NoteDB();
-      Cursor data = database.getAllNotesHeaders(this);
-
-      dataSource = new SimpleCursorAdapter(this, R.layout.row, data, fields,
-            new int[] { R.id.title, R.id.timestamp, -1 });
       
-      dataSource.setViewBinder(new SimpleCursorAdapter.ViewBinder() {
-
-    	    public boolean setViewValue(View aView, Cursor aCursor, int aColumnIndex) {
-
-    	        if (aView.getId() == R.id.timestamp) {
-    	                TextView textView = (TextView) aView;
-    	                Time timestamp = new Time();
-    	                timestamp.set(aCursor.getLong(aColumnIndex));
-    	                textView.setText("Create date: " + timestamp.format("%c"));
-    	                return true;
-    	         }
-
-    	         return false;
-    	    }
-    	});
-
+      database = new NoteDB();
 
       ListView view = getListView();
       view.setHeaderDividersEnabled(true);
       view.addHeaderView(getLayoutInflater().inflate(R.layout.row, null));
 
-      setListAdapter(dataSource);
+      refreshList();
       //setContentView(R.layout.main);
    }
       
+   protected void refreshList() {
+      Cursor data = database.getAllNotesHeaders(this);
+
+	      SimpleCursorAdapter dataSource = new SimpleCursorAdapter(this, R.layout.row, data, fields,
+	            new int[] { R.id.title, R.id.timestamp, -1 });
+	      
+	      dataSource.setViewBinder(new SimpleCursorAdapter.ViewBinder() {
+
+	    	    public boolean setViewValue(View aView, Cursor aCursor, int aColumnIndex) {
+	    	        if (aView.getId() == R.id.timestamp) {
+	    	                TextView textView = (TextView) aView;
+	    	                Time timestamp = new Time();
+	    	                timestamp.set(aCursor.getLong(aColumnIndex));
+	    	                textView.setText(timestamp.format("%c"));
+	    	                return true;
+	    	         }
+
+	    	         return false;
+	    	    }
+	    	});
+
+	      setListAdapter(dataSource);
+   }
+
    /*@Override
    public boolean onCreateOptionsMenu(Menu menu) {
        MenuInflater inflater = getMenuInflater();
@@ -105,7 +107,8 @@ public class NoteList extends ListActivity {
       if (item.getItemId() == kMenuItemAdd) {
     	  database.addNote(this, null, null, null);
 //          Uri uri = cr.insert(Note.kContentURI, values);
-          dataSource.getCursor().requery(); // FIXME
+//          dataSource.getCursor().requery(); // FIXME
+    	  refreshList();
       }
       return true;
    }
@@ -114,5 +117,6 @@ public class NoteList extends ListActivity {
    protected Dialog onCreateDialog(int id) {
 	return null;
    }
+   
 }
 /* vim: set ts=3 sw=3 smarttab expandtab cc=101 : */
