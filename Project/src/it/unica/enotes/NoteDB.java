@@ -51,7 +51,7 @@ public class NoteDB extends ContentProvider {
 
    /** Default sort order, where not specified otherwise */
    private static final String kDefaultSortOrder = Note.kTimestamp + " DESC";
-   
+
    /** URI identifiers */
    private static final int kUriNotes = 1;
    private static final int kUriNoteByID = 2;
@@ -71,7 +71,7 @@ public class NoteDB extends ContentProvider {
       Note.kTitle,
       Note.kTimestamp
    };
-   
+
    /** Support variables */
    private static final UriMatcher uriMatcher;
    private static HashMap<String, String> notesProjectionMap;
@@ -152,32 +152,32 @@ public class NoteDB extends ContentProvider {
    public Cursor query(Uri uri, String[] projection, String selection, String[] selectionArgs,
          String sortOrder) {
       SQLiteQueryBuilder qb = new SQLiteQueryBuilder();
-      
+
       switch (uriMatcher.match(uri)) {
          case kUriNotes:
             qb.setTables(kDatabaseTableNotes);
             qb.setProjectionMap(notesProjectionMap);
             break;
-            
+
          case kUriNoteByID:
              qb.setTables(kDatabaseTableNotes);
              qb.setProjectionMap(notesProjectionMap);
              qb.appendWhere(Note.kID + "=" + uri.getPathSegments().get(2));
              break;
-  
+
          case kUriNoteByGUID:
             qb.setTables(kDatabaseTableNotes);
             qb.setProjectionMap(notesProjectionMap);
             qb.appendWhere(Note.kGUID + "=" + uri.getPathSegments().get(2));
             break;
- 
+
          case kUriNotesByTag:
             // TODO
 //            qb.setTables(kDatabaseTableNotes);
 //            qb.setProjectionMap(notesProjectionMap);
 //            qb.appendWhere(Note.kTitle + " LIKE '" + uri.getLastPathSegment()+"'");
 //            break;
-  
+
          default:
             throw new IllegalArgumentException("Unknown URI " + uri);
       }
@@ -193,7 +193,7 @@ public class NoteDB extends ContentProvider {
       // Get the database and run the query
       SQLiteDatabase db = dbHelper.getReadableDatabase();
       Cursor c = qb.query(db, projection, selection, selectionArgs, null, null, orderBy);
-      
+
       // Tell the cursor what uri to watch, so it knows when its source data changes
       c.setNotificationUri(getContext().getContentResolver(), uri);
       return c;
@@ -204,11 +204,11 @@ public class NoteDB extends ContentProvider {
       switch (uriMatcher.match(uri)) {
          case kUriNotes:
             return Note.kContentType;
- 
+
          case kUriNoteByID:
          case kUriNoteByGUID:
             return Note.kContentItemType;
-     
+
          case kUriNotesByTag:
             // TODO
 //            return Note.kContentType;
@@ -224,7 +224,7 @@ public class NoteDB extends ContentProvider {
       if (uriMatcher.match(uri) != kUriNotes) {
          throw new IllegalArgumentException("Unknown URI " + uri);
       }
-      
+
       ContentValues values;
       if (initialValues != null) {
          values = new ContentValues(initialValues);
@@ -277,23 +277,23 @@ public class NoteDB extends ContentProvider {
          case kUriNotes:
             count = db.delete(kDatabaseTableNotes, where, whereArgs);
             break;
- 
+
          case kUriNoteByID:
             String noteId = uri.getPathSegments().get(2);
             count = db.delete(kDatabaseTableNotes, Note.kID + "=" + noteId
                   + (!TextUtils.isEmpty(where) ? " AND (" + where + ')' : ""), whereArgs);
             break;
- 
+
          case kUriNoteByGUID:
             String noteGuid = uri.getPathSegments().get(2);
             count = db.delete(kDatabaseTableNotes, Note.kGUID + "=" + noteGuid
                   + (!TextUtils.isEmpty(where) ? " AND (" + where + ')' : ""), whereArgs);
             break;
- 
+
          default:
             throw new IllegalArgumentException("Unknown URI " + uri);
       }
-      
+
       getContext().getContentResolver().notifyChange(uri, null);
       return count;
    }
@@ -306,23 +306,23 @@ public class NoteDB extends ContentProvider {
          case kUriNotes:
             count = db.update(kDatabaseTableNotes, values, where, whereArgs);
             break;
-            
+
          case kUriNoteByID:
             String noteId = uri.getPathSegments().get(2);
             count = db.update(kDatabaseTableNotes, values, Note.kID + "=" + noteId
                   + (!TextUtils.isEmpty(where) ? " AND (" + where + ')' : ""), whereArgs);
             break;
-            
+
          case kUriNoteByGUID:
              String noteGuid = uri.getPathSegments().get(2);
              count = db.update(kDatabaseTableNotes, values, Note.kGUID + "=" + noteGuid
                    + (!TextUtils.isEmpty(where) ? " AND (" + where + ')' : ""), whereArgs);
              break;
-             
+
          default:
             throw new IllegalArgumentException("Unknown URI " + uri);
       }
-      
+
       getContext().getContentResolver().notifyChange(uri, null);
       return count;
    }
@@ -357,7 +357,7 @@ public class NoteDB extends ContentProvider {
      ContentValues values = new ContentValues();
      values.put(Note.kGUID, id);
      values.put(Note.kTitle, title);
-     values.put(Note.kContent, note);           
+     values.put(Note.kContent, note);
      Uri uri = cr.insert(Note.kContentURI, values);
      Log.v(kTag, "Inserted note: "+ uri.toString());
      return true;
@@ -415,10 +415,10 @@ public class NoteDB extends ContentProvider {
          note.setTimestamp(noteTimestamp);
          note.NoteFromJSON(noteContent);
       }
-      
+
       return note;
    }
-   
+
    /**
     * Get a note from the content provider
     * @param activity   The activity this is called from
@@ -428,7 +428,7 @@ public class NoteDB extends ContentProvider {
    public Note getNoteById(Activity activity, long id) {
       return getNote(activity, Uri.withAppendedPath(Note.kContentURI, "id/"+id));
    }
-   
+
 }
 
 /* vim: set ts=3 sw=3 smarttab expandtab cc=101 : */

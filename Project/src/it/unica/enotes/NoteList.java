@@ -43,11 +43,11 @@ public class NoteList extends ListActivity {
    private static final String fields[] = { Note.kTitle, Note.kTimestamp, Note.kID };
    /** Logging tag */
    private static final String kTag = "NoteList";
-   
+
    @Override
    public void onCreate(Bundle savedInstanceState) {
       super.onCreate(savedInstanceState);
-      
+
       database = new NoteDB();
 
       ListView view = getListView();
@@ -57,7 +57,7 @@ public class NoteList extends ListActivity {
       refreshList();
       //setContentView(R.layout.main);
    }
-      
+
    /**
     * Refresh the list, re-querying the database as needed
     */
@@ -92,7 +92,7 @@ public class NoteList extends ListActivity {
        inflater.inflate(R.menu.main_menu, menu);
        return true;
    }*/
-   
+
    @Override
    protected void onListItemClick(ListView l, View v, int position, long id) {
       //String item = (String) getListAdapter().getItem(position);
@@ -102,14 +102,14 @@ public class NoteList extends ListActivity {
       // Set the request code to any code you like, you can identify the callback via this code
       startActivityForResult(i, 0);
    }
-   
+
    @Override
    public boolean onCreateOptionsMenu(Menu menu) {
       menu.add(0, kMenuItemAdd, 1, R.string.addItem).setIcon(getResources().getDrawable(R.drawable.ic_new_note));
       menu.add(0, kMenuItemSearch, 2, R.string.searchItem).setIcon(getResources().getDrawable(R.drawable.ic_search));
       return true;
    }
-   
+
    @Override
    public boolean onMenuItemSelected(int featureId, MenuItem item) {
       if (item.getItemId() == kMenuItemAdd) {
@@ -124,6 +124,6 @@ public class NoteList extends ListActivity {
    protected Dialog onCreateDialog(int id) {
       return null;
    }
-   
+
 }
 /* vim: set ts=3 sw=3 smarttab expandtab cc=101 : */

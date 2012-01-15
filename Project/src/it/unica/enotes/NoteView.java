@@ -17,16 +17,45 @@ package it.unica.enotes;
 
 import android.app.Activity;
 import android.os.Bundle;
+import android.view.Menu;
+import android.widget.TextView;
 
 /**
  * Activity to display the contents of a single note
+ * @author Emanuele Alimonda
+ * @author Giovanni Serra
  */
 public class NoteView extends Activity {
+   private static final String kTag = "NoteView";
+   private NoteDB database;
+
    /** Called when the activity is first created. */
    @Override
    public void onCreate(Bundle savedInstanceState) {
       super.onCreate(savedInstanceState);
-      setContentView(R.layout.main);
+      setContentView(R.layout.view);
+      //Bundle extras = getIntentactivity().getExtras();
+      Bundle extras = getIntent().getExtras();
+      if (extras == null) {
+         return;
+      }
+
+      // shows selected note's details
+      database = new NoteDB();
+      Note note = database.getNoteById(this, extras.getLong(Note.kID));
+      TextView text1 = (TextView) findViewById(R.id.title);
+      text1.setText(note.getTitle());
+      TextView text2 = (TextView) findViewById(R.id.contents);
+      text2.setText(note.getText());
+   }
+
+   @Override
+   public boolean onCreateOptionsMenu(Menu menu) {
+      menu.add(0, 0, 1, R.string.editItem).setIcon(getResources().getDrawable(R.drawable.ic_menu_edit));
+      menu.add(0, 0, 2, R.string.deleteItem).setIcon(getResources().getDrawable(R.drawable.ic_menu_delete));
+      menu.add(0, 0, 3, R.string.sendItem).setIcon(getResources().getDrawable(R.drawable.ic_menu_send));
+      return true;
    }
 }
+
 /* vim: set ts=3 sw=3 smarttab expandtab cc=101 : */

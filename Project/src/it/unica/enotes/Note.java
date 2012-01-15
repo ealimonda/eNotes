@@ -152,7 +152,7 @@ public class Note {
          if (jsObject.has(kURL)) {
             this._URL = jsObject.getString(kURL);
          }
-         
+
          // TODO: Attachments
       } catch (JSONException e) {
          return;
