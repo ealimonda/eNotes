@@ -30,15 +30,19 @@ import android.widget.TextView;
 
 /**
  * Activity to list all existing notes
+ * @author Emanuele Alimonda
+ * @author Giovanni Serra
  */
 public class NoteList extends ListActivity {
+   /** Menu IDs */
    private static final int kMenuItemAdd = 100;
    private static final int kMenuItemSearch = 101;
+   /** Database helper / content provider */
    private NoteDB database;
+   /** Fields to query */
    private static final String fields[] = { Note.kTitle, Note.kTimestamp, Note.kID };
-   private static final String TAG = "INFO";
-   
-   /** Called when the activity is first created. */
+   /** Logging tag */
+   private static final String kTag = "NoteList";
    
    @Override
    public void onCreate(Bundle savedInstanceState) {
@@ -54,28 +58,32 @@ public class NoteList extends ListActivity {
       //setContentView(R.layout.main);
    }
       
+   /**
+    * Refresh the list, re-querying the database as needed
+    */
    protected void refreshList() {
       Cursor data = database.getAllNotesHeaders(this);
 
-	      SimpleCursorAdapter dataSource = new SimpleCursorAdapter(this, R.layout.row, data, fields,
-	            new int[] { R.id.title, R.id.timestamp, -1 });
-	      
-	      dataSource.setViewBinder(new SimpleCursorAdapter.ViewBinder() {
+      SimpleCursorAdapter dataSource = new SimpleCursorAdapter(this, R.layout.row, data, fields,
+            new int[] { R.id.title, R.id.timestamp, -1 });
 
-	    	    public boolean setViewValue(View aView, Cursor aCursor, int aColumnIndex) {
-	    	        if (aView.getId() == R.id.timestamp) {
-	    	                TextView textView = (TextView) aView;
-	    	                Time timestamp = new Time();
-	    	                timestamp.set(aCursor.getLong(aColumnIndex));
-	    	                textView.setText(timestamp.format("%c"));
-	    	                return true;
-	    	         }
+      dataSource.setViewBinder(new SimpleCursorAdapter.ViewBinder() {
 
-	    	         return false;
-	    	    }
-	    	});
+         @Override
+         public boolean setViewValue(View aView, Cursor aCursor, int aColumnIndex) {
+            if (aView.getId() == R.id.timestamp) {
+               TextView textView = (TextView) aView;
+               Time timestamp = new Time();
+               timestamp.set(aCursor.getLong(aColumnIndex));
+               textView.setText(timestamp.format("%c"));
+               return true;
+            }
 
-	      setListAdapter(dataSource);
+            return false;
+         }
+      });
+
+      setListAdapter(dataSource);
    }
 
    /*@Override
@@ -87,13 +95,13 @@ public class NoteList extends ListActivity {
    
    @Override
    protected void onListItemClick(ListView l, View v, int position, long id) {
-	   //String item = (String) getListAdapter().getItem(position);
-	   
-	   Intent i = new Intent(this, NoteView.class);
-	   i.putExtra(Note.kID, id);
-	   // Set the request code to any code you like, you can identify the callback via this code
-	   startActivityForResult(i, 0);
-	}
+      //String item = (String) getListAdapter().getItem(position);
+
+      Intent i = new Intent(this, NoteView.class);
+      i.putExtra(Note.kID, id);
+      // Set the request code to any code you like, you can identify the callback via this code
+      startActivityForResult(i, 0);
+   }
    
    @Override
    public boolean onCreateOptionsMenu(Menu menu) {
@@ -105,17 +113,16 @@ public class NoteList extends ListActivity {
    @Override
    public boolean onMenuItemSelected(int featureId, MenuItem item) {
       if (item.getItemId() == kMenuItemAdd) {
-    	  database.addNote(this, null, null, null);
+         database.addNote(this, null, null, null);
 //          Uri uri = cr.insert(Note.kContentURI, values);
-//          dataSource.getCursor().requery(); // FIXME
-    	  refreshList();
+         refreshList();
       }
       return true;
    }
 
    @Override
    protected Dialog onCreateDialog(int id) {
-	return null;
+      return null;
    }
    
 }

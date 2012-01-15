@@ -17,10 +17,8 @@ package it.unica.enotes;
 
 import java.util.ArrayList;
 import java.util.UUID;
-
 import org.json.JSONException;
 import org.json.JSONObject;
-
 import android.net.Uri;
 import android.text.format.Time;
 
@@ -30,7 +28,7 @@ import android.text.format.Time;
  * @author Giovanni Serra
  */
 public class Note {
-   // Static references to fields (used in Bundles, JSON, Database, etc.)
+   /** Static references to fields (used in Bundles, JSON, Database, etc.) */
    public static final String kID         = "_id";
    public static final String kGUID       = "guid";
    public static final String kTitle      = "title";
@@ -40,12 +38,15 @@ public class Note {
    public static final String kText       = "text";
    public static final String kContent    = "content";
 
-   public static final String	kAuthority  = "it.unica.enotes.notes";
-   
-   public static final String	kContentType      = "vnd.android.cursor.dir/vnd.enotes.note";
-   public static final String	kContentItemType  = "vnd.android.cursor.item/vnd.enotes.note";
+   /** Content provider authority */
+   public static final String kAuthority  = "it.unica.enotes.notes";
 
-	public static final Uri kContentURI = Uri.parse("content://" + kAuthority + "/notes");
+   /** Content types used by the notes */
+   public static final String kContentType      = "vnd.android.cursor.dir/vnd.enotes.note";
+   public static final String kContentItemType  = "vnd.android.cursor.item/vnd.enotes.note";
+
+   /** Note base URI */
+   public static final Uri kContentURI = Uri.parse("content://" + kAuthority + "/notes");
 
    // Members
    /** Have the note details been loaded? */
@@ -67,12 +68,12 @@ public class Note {
    /** Note tags */
    private ArrayList<String> _tags;
 
-   /** Default constructor */
+   /** Default constructor.  Creates an empty note with an auto-generated GUID */
    public Note() {
       this(null, null, null, null, null, null);
    }
    /**
-    * Constructor
+    * Constructor.  Creates an empty note with a given title and GUID
     * @param GUID    The GUID of the note
     * @param title   The title of the note
     */
@@ -101,11 +102,13 @@ public class Note {
       } else {
          this._GUID = GUID;
       }
+
       if (title != null) {
          this._title = title;
       } else {
          this._title = "";
       }
+
       if (timestamp != null) {
          this._timestamp = timestamp;
       } else {
@@ -113,6 +116,7 @@ public class Note {
          ts.setToNow();
          this._timestamp = ts;
       }
+
       if (text != null) {
          this._text = text;
          this._URL = URL;
@@ -128,23 +132,28 @@ public class Note {
          this._tags = null;
          this._loaded = false;
       }
+
       this._dirty = false;
    }
 
    /**
     * Import note from JSON data
-    * @param json    A json object representing the note
+    * @param json    A JSON object representing the note
     */
    public void NoteFromJSON(String json) {
       JSONObject jsObject;
       try {
          jsObject = new JSONObject(json);
+
          if (jsObject.has(kText)) {
             this._text = jsObject.getString(kText);
          }
+
          if (jsObject.has(kURL)) {
             this._URL = jsObject.getString(kURL);
          }
+         
+         // TODO: Attachments
       } catch (JSONException e) {
          return;
       }
@@ -161,6 +170,7 @@ public class Note {
          jsObject = new JSONObject();
          jsObject.put(kText, this._text);
          jsObject.put(kURL, this._URL);
+         // TODO: Attachments
       } catch (JSONException e) {
          return "";
       }
@@ -207,7 +217,6 @@ public class Note {
    public boolean isDirty() {
       return this._dirty;
    }
-
    /**
     * Set the dirty state for a note
     * @param state   Whether the note was edited after last save
@@ -239,7 +248,6 @@ public class Note {
    public Time getTimestamp() {
       return this._timestamp;
    }
-
    /**
     * Set the nore's last modification timestamp
     * @param timestamp  The timestamp to set.  It'll be set to now if it's null

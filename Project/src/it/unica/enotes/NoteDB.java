@@ -17,7 +17,6 @@ package it.unica.enotes;
 
 import java.util.HashMap;
 import java.util.UUID;
-
 import android.app.Activity;
 import android.content.ContentProvider;
 import android.content.ContentResolver;
@@ -36,22 +35,30 @@ import android.text.format.Time;
 import android.util.Log;
 
 /**
- * Loads and stores notes to the database and performs searches
+ * Represents each note entry and offers conversion methods from and to the JSON format.
+ * @author Emanuele Alimonda
+ * @author Giovanni Serra
  */
 public class NoteDB extends ContentProvider {
 
    // ContentProvider constants
+   /** Name of the used database */
    private static final String kDatabaseName = "eNotes.db";
+   /** Name of the database table */
    private static final String kDatabaseTableNotes = "notes";
+   /** Current version of the database structure */
    private static final int kDatabaseVersion = 1;
 
+   /** Default sort order, where not specified otherwise */
    private static final String kDefaultSortOrder = Note.kTimestamp + " DESC";
    
+   /** URI identifiers */
    private static final int kUriNotes = 1;
    private static final int kUriNoteByID = 2;
    private static final int kUriNoteByGUID = 3;
    private static final int kUriNotesByTag = 4;
 
+   /** Projections */
    public static final String[] kNotesFullProjection = {
       Note.kGUID,
       Note.kTitle,
@@ -59,36 +66,37 @@ public class NoteDB extends ContentProvider {
       Note.kContent
    };
    public static final String[] kNotesHeadersProjection = {
-	   Note.kID,
+      Note.kID,
       Note.kGUID,
       Note.kTitle,
       Note.kTimestamp
    };
    
+   /** Support variables */
    private static final UriMatcher uriMatcher;
-
    private static HashMap<String, String> notesProjectionMap;
-      
-//      public NoteDB(Context context) {
-//         super(context, "eNotes", null, 1);
-//      }
-   
-   private static final String TAG = "INFO";
-   public static final int  OPEN_READWRITE = 1;
-   //private CursorAdapter dataSource;
 
+   /** Logging tag */
+   private static final String kTag = "NoteDB";
+
+   /**
+    * Helper class to handle the low-level database operations
+    * @author Emanuele Alimonda
+    * @Author Giovanni Serra
+    */
    public static class NoteDBHelper extends SQLiteOpenHelper {
 
+      /**
+       * Constructor
+       * @param context The context we're currently in
+       */
       NoteDBHelper(Context context) {
          super(context, kDatabaseName, null, kDatabaseVersion);
       }
 
-      // create tables in the database
       @Override
       public void onCreate(SQLiteDatabase db) {
-    	  Log.v("notedb", "NoteDB Helper create");
-         // FIXME: TEMP Testing stuff
-         db.execSQL("DROP TABLE IF EXISTS "+ kDatabaseTableNotes +";");
+         Log.v(kTag, "Database creation");
          db.execSQL("CREATE TABLE IF NOT EXISTS " + kDatabaseTableNotes + " ("
                + Note.kID +         " INTEGER PRIMARY KEY AUTOINCREMENT,"
                + Note.kGUID +       " STRING UNIQUE,"
@@ -97,6 +105,7 @@ public class NoteDB extends ContentProvider {
                + Note.kContent +    " TEXT"
             // TODO: Tags
                + ");");
+
          // FIXME: TEMP testing stuff
          Time testTime = new Time();
          testTime.set(0, 10, 11, 5, 1, 2012);
@@ -119,16 +128,23 @@ public class NoteDB extends ContentProvider {
 
       @Override
       public void onUpgrade(SQLiteDatabase db, int oldVersion, int newVersion) {
-         // TODO Auto-generated method stub
+         Log.v(kTag, "Upgrading database from v."+ oldVersion +" to v."+ newVersion);
+         // FIXME: We're deleting everything and recreating.   Who cares :D
+          db.execSQL("DROP TABLE IF EXISTS "+ kDatabaseTableNotes +";");
+          onCreate(db);
       }
    }
 
+   /** Database helper */
    private NoteDBHelper dbHelper;
 
    @Override
    public boolean onCreate() {
       dbHelper = new NoteDBHelper(getContext());
-	  Log.v("notedb", "NoteDB create");
+      Log.v(kTag, "NoteDB create");
+      if (dbHelper == null) {
+         return false;
+      }
       return true;
    }
 
@@ -202,10 +218,8 @@ public class NoteDB extends ContentProvider {
       }
    }
 
-   // TODO the following method is probably never called and probably wouldn't work
    @Override
    public Uri insert(Uri uri, ContentValues initialValues) {
-	   Log.v(TAG, "insert() was called");
       // Validate the requested uri
       if (uriMatcher.match(uri) != kUriNotes) {
          throw new IllegalArgumentException("Unknown URI " + uri);
@@ -244,7 +258,7 @@ public class NoteDB extends ContentProvider {
       SQLiteDatabase db = dbHelper.getWritableDatabase();
       long rowId = db.insert(kDatabaseTableNotes, null, values);
       if (rowId > 0) {
-    	  Uri noteUri = Uri.withAppendedPath(Note.kContentURI, "id/"+rowId);
+         Uri noteUri = Uri.withAppendedPath(Note.kContentURI, "id/"+rowId);
 
          getContext().getContentResolver().notifyChange(noteUri, null);
          dbHelper.close();
@@ -257,26 +271,25 @@ public class NoteDB extends ContentProvider {
 
    @Override
    public int delete(Uri uri, String where, String[] whereArgs) {
-      // TODO
-	   SQLiteDatabase db = dbHelper.getWritableDatabase();
-	   int count;
-	   switch (uriMatcher.match(uri)) {
-	   	case kUriNotes:
-	   		count = db.delete(kDatabaseTableNotes, where, whereArgs);
+      SQLiteDatabase db = dbHelper.getWritableDatabase();
+      int count;
+      switch (uriMatcher.match(uri)) {
+         case kUriNotes:
+            count = db.delete(kDatabaseTableNotes, where, whereArgs);
             break;
-            
+ 
          case kUriNoteByID:
             String noteId = uri.getPathSegments().get(2);
             count = db.delete(kDatabaseTableNotes, Note.kID + "=" + noteId
                   + (!TextUtils.isEmpty(where) ? " AND (" + where + ')' : ""), whereArgs);
             break;
-            
+ 
          case kUriNoteByGUID:
-             String noteGuid = uri.getPathSegments().get(2);
-             count = db.delete(kDatabaseTableNotes, Note.kGUID + "=" + noteGuid
-                   + (!TextUtils.isEmpty(where) ? " AND (" + where + ')' : ""), whereArgs);
-             break;
-             
+            String noteGuid = uri.getPathSegments().get(2);
+            count = db.delete(kDatabaseTableNotes, Note.kGUID + "=" + noteGuid
+                  + (!TextUtils.isEmpty(where) ? " AND (" + where + ')' : ""), whereArgs);
+            break;
+ 
          default:
             throw new IllegalArgumentException("Unknown URI " + uri);
       }
@@ -315,12 +328,14 @@ public class NoteDB extends ContentProvider {
    }
 
    static {
+      /** Query URIs */
       uriMatcher = new UriMatcher(UriMatcher.NO_MATCH);
       uriMatcher.addURI(Note.kAuthority, "notes", kUriNotes);
       uriMatcher.addURI(Note.kAuthority, "notes/id/#", kUriNoteByID);
       uriMatcher.addURI(Note.kAuthority, "notes/guid/*", kUriNoteByGUID);
       uriMatcher.addURI(Note.kAuthority, "notes/tag/*", kUriNotesByTag);
 
+      /** Projection map */
       notesProjectionMap = new HashMap<String, String>();
       notesProjectionMap.put(Note.kID, Note.kID);
       notesProjectionMap.put(Note.kGUID, Note.kGUID);
@@ -331,11 +346,11 @@ public class NoteDB extends ContentProvider {
 
    /**
     * Add the given note to the database
-    * @param activity	The activity this is called from
-    * @param id      	The ID of the note to store
-    * @param title   	Title for the note to store
-    * @param note    	Raw JSON data for the note to store
-    * @return        	Success status
+    * @param activity   The activity this is called from
+    * @param id         The ID of the note to store
+    * @param title      Title for the note to store
+    * @param note       Raw JSON data for the note to store
+    * @return           Success status
     */
    public boolean addNote(Activity activity, String id, String title, String note) {
      ContentResolver cr = activity.getContentResolver();
@@ -344,39 +359,27 @@ public class NoteDB extends ContentProvider {
      values.put(Note.kTitle, title);
      values.put(Note.kContent, note);           
      Uri uri = cr.insert(Note.kContentURI, values);
-     Log.v(TAG, "Inserted note: "+ uri.toString());
+     Log.v(kTag, "Inserted note: "+ uri.toString());
      return true;
    }
 
-   // TODO: Add a method to check if an ID already exists ?
-
    /**
     * Delete the given note from the database
-    * @param activity	The activity this is called from
-    * @param id   		ID of the note to delete
-    * @return     		Success status
+    * @param activity   The activity this is called from
+    * @param id         ID of the note to delete
+    * @return           Success status
     */
    public boolean deleteNote(Activity activity, long id) {
-	     ContentResolver cr = activity.getContentResolver();
-	     int quantity = cr.delete(Uri.withAppendedPath(Note.kContentURI, "id/"+id), null, null);
-	     Log.v(TAG, "Deleted "+ quantity +" note(s)");
+      ContentResolver cr = activity.getContentResolver();
+      int quantity = cr.delete(Uri.withAppendedPath(Note.kContentURI, "id/"+id), null, null);
+      Log.v(kTag, "Deleted "+ quantity +" note(s)");
       return true;
    }
 
    /**
-    * Get all notes with the given tag
-    * @param tag  Tag to search for
-    * @return     IDs of the wanted notes, as an ArrayList
-    */
-/*   public ArrayList<String> searchNotesByTag(String tag) {
-      // TODO
-      return new ArrayList<String>();
-   }
-*/
-
-   /**
     * Get all notes' headers from the database
-    * @return  a cursor pointing to all the notes' GUIDs, titles and timestamps
+    * @param activity   The activity this is called from
+    * @return           A cursor pointing to all the notes' GUIDs, titles and timestamps
     */
    public Cursor getAllNotesHeaders(Activity activity) {
       // get a cursor representing all notes
@@ -384,10 +387,15 @@ public class NoteDB extends ContentProvider {
       String where = null;
       String orderBy;
       orderBy = Note.kTimestamp + " DESC";
-      return activity.managedQuery(notes, kNotesHeadersProjection, where, null, orderBy);		
-	}
-   
-   // gets a note from the content provider
+      return activity.managedQuery(notes, kNotesHeadersProjection, where, null, orderBy);
+   }
+
+   /**
+    * Get a note from the content provider
+    * @param activity   The activity this is called from
+    * @param uri        URI of the note to get
+    * @return           A Note object or null
+    */
    public Note getNote(Activity activity, Uri uri) {
       Note note = null;
 
@@ -402,18 +410,23 @@ public class NoteDB extends ContentProvider {
          String noteGUID = cursor.getString(cursor.getColumnIndexOrThrow(Note.kGUID));
          Time noteTimestamp = new Time();
          noteTimestamp.set(cursor.getLong(cursor.getColumnIndexOrThrow(Note.kTimestamp)));
-			
-			note = new Note(noteGUID, noteTitle);
-         note.setTimestamp(noteTimestamp);
-			note.NoteFromJSON(noteContent);
-		}
 
-		return note;
-	}
+         note = new Note(noteGUID, noteTitle);
+         note.setTimestamp(noteTimestamp);
+         note.NoteFromJSON(noteContent);
+      }
+      
+      return note;
+   }
    
-   // Gets note by ID
+   /**
+    * Get a note from the content provider
+    * @param activity   The activity this is called from
+    * @param id         ID of the note to get
+    * @return           A Note object or null
+    */
    public Note getNoteById(Activity activity, long id) {
-	   return getNote(activity, Uri.withAppendedPath(Note.kContentURI, "id/"+id));
+      return getNote(activity, Uri.withAppendedPath(Note.kContentURI, "id/"+id));
    }
    
 }
