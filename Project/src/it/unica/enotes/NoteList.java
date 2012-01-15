@@ -15,21 +15,18 @@
 
 package it.unica.enotes;
 
-import android.app.AlertDialog;
 import android.app.Dialog;
 import android.app.ListActivity;
-import android.content.ContentValues;
-import android.content.DialogInterface;
 import android.content.Intent;
 import android.database.Cursor;
 import android.os.Bundle;
+import android.text.format.Time;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
-import android.widget.CursorAdapter;
-import android.widget.EditText;
 import android.widget.ListView;
 import android.widget.SimpleCursorAdapter;
+import android.widget.TextView;
 
 /**
  * Activity to list all existing notes
@@ -38,10 +35,7 @@ public class NoteList extends ListActivity {
    private static final int kMenuItemAdd = 100;
    private static final int kMenuItemSearch = 101;
    private NoteDB database;
-   private CursorAdapter dataSource;
-   private View entryView;
-   private EditText titleEditor;
-   private EditText contentEditor;
+   private SimpleCursorAdapter dataSource;
    private static final String fields[] = { Note.kTitle, Note.kTimestamp, Note.kID };
    private static final String TAG = "INFO";
    
@@ -55,7 +49,24 @@ public class NoteList extends ListActivity {
       Cursor data = database.getAllNotesHeaders(this);
 
       dataSource = new SimpleCursorAdapter(this, R.layout.row, data, fields,
-            new int[] { R.id.title, R.id.content });
+            new int[] { R.id.title, R.id.timestamp, -1 });
+      
+      dataSource.setViewBinder(new SimpleCursorAdapter.ViewBinder() {
+
+    	    public boolean setViewValue(View aView, Cursor aCursor, int aColumnIndex) {
+
+    	        if (aView.getId() == R.id.timestamp) {
+    	                TextView textView = (TextView) aView;
+    	                Time timestamp = new Time();
+    	                timestamp.set(aCursor.getLong(aColumnIndex));
+    	                textView.setText("Create date: " + timestamp.format("%c"));
+    	                return true;
+    	         }
+
+    	         return false;
+    	    }
+    	});
+
 
       ListView view = getListView();
       view.setHeaderDividersEnabled(true);
@@ -77,12 +88,10 @@ public class NoteList extends ListActivity {
 	   //String item = (String) getListAdapter().getItem(position);
 	   
 	   Intent i = new Intent(this, NoteView.class);
-	   //i.putExtra("Value1", note.getTitle());
-	   //i.putExtra("Value2", note.getGUID());
-	   //i.putExtra("Value2", noteManager.getNotesCount());
+	   i.putExtra(Note.kID, id);
 	   // Set the request code to any code you like, you can identify the callback via this code
 	   startActivityForResult(i, 0);
-	   }
+	}
    
    @Override
    public boolean onCreateOptionsMenu(Menu menu) {

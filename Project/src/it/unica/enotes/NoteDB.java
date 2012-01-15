@@ -49,7 +49,8 @@ public class NoteDB extends ContentProvider {
    
    private static final int kUriNotes = 1;
    private static final int kUriNoteByID = 2;
-   private static final int kUriNotesByTag = 3;
+   private static final int kUriNoteByGUID = 3;
+   private static final int kUriNotesByTag = 4;
 
    public static final String[] kNotesFullProjection = {
       Note.kGUID,
@@ -64,7 +65,6 @@ public class NoteDB extends ContentProvider {
       Note.kTimestamp
    };
    
-
    private static final UriMatcher uriMatcher;
 
    private static HashMap<String, String> notesProjectionMap;
@@ -144,6 +144,12 @@ public class NoteDB extends ContentProvider {
             break;
             
          case kUriNoteByID:
+             qb.setTables(kDatabaseTableNotes);
+             qb.setProjectionMap(notesProjectionMap);
+             qb.appendWhere(Note.kID + "=" + uri.getPathSegments().get(2));
+             break;
+  
+         case kUriNoteByGUID:
             qb.setTables(kDatabaseTableNotes);
             qb.setProjectionMap(notesProjectionMap);
             qb.appendWhere(Note.kGUID + "=" + uri.getPathSegments().get(2));
@@ -184,6 +190,7 @@ public class NoteDB extends ContentProvider {
             return Note.kContentType;
  
          case kUriNoteByID:
+         case kUriNoteByGUID:
             return Note.kContentItemType;
      
          case kUriNotesByTag:
@@ -220,9 +227,8 @@ public class NoteDB extends ContentProvider {
       }
 
       // The guid is the unique identifier for a note so it has to be set.
-      String GUID = UUID.randomUUID().toString();
       if (values.containsKey(Note.kGUID) == false) {
-         values.put(Note.kGUID, GUID);
+         values.put(Note.kGUID, UUID.randomUUID().toString());
       }
 
       // TODO does this make sense?
@@ -238,8 +244,7 @@ public class NoteDB extends ContentProvider {
       SQLiteDatabase db = dbHelper.getWritableDatabase();
       long rowId = db.insert(kDatabaseTableNotes, null, values);
       if (rowId > 0) {
-    	  Uri noteUri = Uri.withAppendedPath(Note.kContentURI, "id/"+GUID);
-//         Uri noteUri = ContentUris.withAppendedId(Note.kContentURI, rowId);
+    	  Uri noteUri = Uri.withAppendedPath(Note.kContentURI, "id/"+rowId);
 
          getContext().getContentResolver().notifyChange(noteUri, null);
          dbHelper.close();
@@ -262,10 +267,16 @@ public class NoteDB extends ContentProvider {
             
          case kUriNoteByID:
             String noteId = uri.getPathSegments().get(2);
-            count = db.delete(kDatabaseTableNotes, Note.kGUID + "=" + noteId
+            count = db.delete(kDatabaseTableNotes, Note.kID + "=" + noteId
                   + (!TextUtils.isEmpty(where) ? " AND (" + where + ')' : ""), whereArgs);
             break;
             
+         case kUriNoteByGUID:
+             String noteGuid = uri.getPathSegments().get(2);
+             count = db.delete(kDatabaseTableNotes, Note.kGUID + "=" + noteGuid
+                   + (!TextUtils.isEmpty(where) ? " AND (" + where + ')' : ""), whereArgs);
+             break;
+             
          default:
             throw new IllegalArgumentException("Unknown URI " + uri);
       }
@@ -285,10 +296,16 @@ public class NoteDB extends ContentProvider {
             
          case kUriNoteByID:
             String noteId = uri.getPathSegments().get(2);
-            count = db.update(kDatabaseTableNotes, values, Note.kGUID + "=" + noteId
+            count = db.update(kDatabaseTableNotes, values, Note.kID + "=" + noteId
                   + (!TextUtils.isEmpty(where) ? " AND (" + where + ')' : ""), whereArgs);
             break;
             
+         case kUriNoteByGUID:
+             String noteGuid = uri.getPathSegments().get(2);
+             count = db.update(kDatabaseTableNotes, values, Note.kGUID + "=" + noteGuid
+                   + (!TextUtils.isEmpty(where) ? " AND (" + where + ')' : ""), whereArgs);
+             break;
+             
          default:
             throw new IllegalArgumentException("Unknown URI " + uri);
       }
@@ -300,7 +317,8 @@ public class NoteDB extends ContentProvider {
    static {
       uriMatcher = new UriMatcher(UriMatcher.NO_MATCH);
       uriMatcher.addURI(Note.kAuthority, "notes", kUriNotes);
-      uriMatcher.addURI(Note.kAuthority, "notes/id/*", kUriNoteByID);
+      uriMatcher.addURI(Note.kAuthority, "notes/id/#", kUriNoteByID);
+      uriMatcher.addURI(Note.kAuthority, "notes/guid/*", kUriNoteByGUID);
       uriMatcher.addURI(Note.kAuthority, "notes/tag/*", kUriNotesByTag);
 
       notesProjectionMap = new HashMap<String, String>();
@@ -311,15 +329,6 @@ public class NoteDB extends ContentProvider {
       notesProjectionMap.put(Note.kContent, Note.kContent);
    }
 
-   /**
-    * Get the count of notes in the database
-    * @return  Amount of notes found
-    */
-/*   public int getNotesCount() {
-      // TODO
-      return 0;
-   }
-*/
    /**
     * Add the given note to the database
     * @param activity	The activity this is called from
@@ -347,7 +356,7 @@ public class NoteDB extends ContentProvider {
     * @param id   		ID of the note to delete
     * @return     		Success status
     */
-   public boolean deleteNote(Activity activity, String id) {
+   public boolean deleteNote(Activity activity, long id) {
 	     ContentResolver cr = activity.getContentResolver();
 	     int quantity = cr.delete(Uri.withAppendedPath(Note.kContentURI, "id/"+id), null, null);
 	     Log.v(TAG, "Deleted "+ quantity +" note(s)");
