@@ -12,5 +12,9 @@
     <!-- main menu NoteView -->
     <string name="editItem">Edit</string>
     <string name="deleteItem">Delete</string>
-     <string name="sendItem">Send</string> 
+     <string name="sendItem">Send</string>
+     
+     <!-- main menu NoteEdit -->
+     <string name="addAttachment">Attach</string>
+     <string name="addUrl">Add URL</string>
 </resources>

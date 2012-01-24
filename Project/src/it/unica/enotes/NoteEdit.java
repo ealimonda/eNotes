@@ -17,16 +17,44 @@ package it.unica.enotes;
 
 import android.app.Activity;
 import android.os.Bundle;
+import android.view.Menu;
+import android.widget.EditText;
 
 /**
  * Activity to edit an existing note or compose a new one
  */
 public class NoteEdit extends Activity {
-   /** Called when the activity is first created. */
+	   /** Database helper / content provider */
+	   private NoteDB database;
+	   /** Logging tag */
+	   private static final String kTag = "NoteEdit";
+
+	   /** Called when the activity is first created. */
    @Override
    public void onCreate(Bundle savedInstanceState) {
       super.onCreate(savedInstanceState);
-      setContentView(R.layout.main);
+      setContentView(R.layout.edit);
+
+      Bundle extras = getIntent().getExtras();
+      if (extras == null) {
+         return;
+      }
+
+      database = new NoteDB();
+
+      // shows selected note's details
+      Note note = database.getNoteById(this, extras.getLong(Note.kID));
+      EditText titleField = (EditText)findViewById(R.id.EditTitle);
+      titleField.setText(note.getTitle());
+      EditText contentField = (EditText)findViewById(R.id.EditContent);
+      contentField.setText(note.getText());
+}
+
+   @Override
+   public boolean onCreateOptionsMenu(Menu menu) {
+      menu.add(0, 0, 1, R.string.addAttachment).setIcon(getResources().getDrawable(R.drawable.ic_menu_attachment));
+      menu.add(0, 0, 2, R.string.addUrl).setIcon(getResources().getDrawable(R.drawable.ic_input_get));
+      return true;
    }
 }
 /* vim: set ts=3 sw=3 smarttab expandtab cc=101 : */

@@ -113,9 +113,14 @@ public class NoteList extends ListActivity {
    @Override
    public boolean onMenuItemSelected(int featureId, MenuItem item) {
       if (item.getItemId() == kMenuItemAdd) {
-         database.addNote(this, null, null, null);
+         long newID = database.addNote(this, null, null, null);
 //          Uri uri = cr.insert(Note.kContentURI, values);
          refreshList();
+         if (newID >= 0) {
+        	 Intent i = new Intent(this, NoteEdit.class);
+        	 i.putExtra(Note.kID, newID);
+        	 startActivityForResult(i, 0);
+         }
       }
       return true;
    }

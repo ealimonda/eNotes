@@ -350,9 +350,9 @@ public class NoteDB extends ContentProvider {
     * @param id         The ID of the note to store
     * @param title      Title for the note to store
     * @param note       Raw JSON data for the note to store
-    * @return           Success status
+    * @return           ID of the newly created note, or -1 in case of failure
     */
-   public boolean addNote(Activity activity, String id, String title, String note) {
+   public long addNote(Activity activity, String id, String title, String note) {
      ContentResolver cr = activity.getContentResolver();
      ContentValues values = new ContentValues();
      values.put(Note.kGUID, id);
@@ -360,7 +360,10 @@ public class NoteDB extends ContentProvider {
      values.put(Note.kContent, note);
      Uri uri = cr.insert(Note.kContentURI, values);
      Log.v(kTag, "Inserted note: "+ uri.toString());
-     return true;
+     if (uriMatcher.match(uri) == kUriNoteByID) {
+    	 return Long.parseLong(uri.getPathSegments().get(2));
+     }
+     return -1;
    }
 
    /**
