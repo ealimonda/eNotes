@@ -60,7 +60,7 @@ public class NoteView extends Activity {
 
    @Override
    public boolean onCreateOptionsMenu(Menu menu) {
-      menu.add(0, 0, 1, R.string.editItem).setIcon(getResources().getDrawable(R.drawable.ic_menu_edit));
+      menu.add(0, kMenuItemEdit, 1, R.string.editItem).setIcon(getResources().getDrawable(R.drawable.ic_menu_edit));
       menu.add(0, kMenuItemDelete, 2, R.string.deleteItem).setIcon(getResources().getDrawable(R.drawable.ic_menu_delete));
       menu.add(0, 0, 3, R.string.sendItem).setIcon(getResources().getDrawable(R.drawable.ic_menu_send));
       return true;
@@ -68,7 +68,11 @@ public class NoteView extends Activity {
    
    @Override
    public boolean onMenuItemSelected(int featureId, MenuItem item) {
-      if (item.getItemId() == kMenuItemDelete) {
+      if (item.getItemId() == kMenuItemEdit) {
+     	 Intent i = new Intent(this, NoteEdit.class);
+     	 i.putExtra(Note.kID, this._noteID);
+     	 startActivityForResult(i, 0);
+      } else if (item.getItemId() == kMenuItemDelete) {
          if (database.deleteNote(this, this._noteID)) {
         	 this.finish();
          }
