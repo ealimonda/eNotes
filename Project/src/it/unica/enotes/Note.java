@@ -142,6 +142,9 @@ public class Note {
     */
    public void NoteFromJSON(String json) {
       JSONObject jsObject;
+      if (json == null) {
+    	  return;
+      }
       try {
          jsObject = new JSONObject(json);
 

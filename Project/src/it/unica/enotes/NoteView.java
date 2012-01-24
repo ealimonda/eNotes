@@ -16,8 +16,10 @@
 package it.unica.enotes;
 
 import android.app.Activity;
+import android.content.Intent;
 import android.os.Bundle;
 import android.view.Menu;
+import android.view.MenuItem;
 import android.widget.TextView;
 
 /**
@@ -26,6 +28,11 @@ import android.widget.TextView;
  * @author Giovanni Serra
  */
 public class NoteView extends Activity {
+   private static final int kMenuItemEdit = 100;
+   private static final int kMenuItemDelete = 101;
+   private static final int kMenuItemSend = 102;
+   long _noteID;
+
    private static final String kTag = "NoteView";
    private NoteDB database;
 
@@ -33,6 +40,7 @@ public class NoteView extends Activity {
    @Override
    public void onCreate(Bundle savedInstanceState) {
       super.onCreate(savedInstanceState);
+      this._noteID = -1;
       setContentView(R.layout.view);
       //Bundle extras = getIntentactivity().getExtras();
       Bundle extras = getIntent().getExtras();
@@ -41,8 +49,9 @@ public class NoteView extends Activity {
       }
 
       // shows selected note's details
+      this._noteID = extras.getLong(Note.kID);
       database = new NoteDB();
-      Note note = database.getNoteById(this, extras.getLong(Note.kID));
+      Note note = database.getNoteById(this, this._noteID);
       TextView text1 = (TextView) findViewById(R.id.title);
       text1.setText(note.getTitle());
       TextView text2 = (TextView) findViewById(R.id.contents);
@@ -52,10 +61,21 @@ public class NoteView extends Activity {
    @Override
    public boolean onCreateOptionsMenu(Menu menu) {
       menu.add(0, 0, 1, R.string.editItem).setIcon(getResources().getDrawable(R.drawable.ic_menu_edit));
-      menu.add(0, 0, 2, R.string.deleteItem).setIcon(getResources().getDrawable(R.drawable.ic_menu_delete));
+      menu.add(0, kMenuItemDelete, 2, R.string.deleteItem).setIcon(getResources().getDrawable(R.drawable.ic_menu_delete));
       menu.add(0, 0, 3, R.string.sendItem).setIcon(getResources().getDrawable(R.drawable.ic_menu_send));
       return true;
    }
+   
+   @Override
+   public boolean onMenuItemSelected(int featureId, MenuItem item) {
+      if (item.getItemId() == kMenuItemDelete) {
+         if (database.deleteNote(this, this._noteID)) {
+        	 this.finish();
+         }
+      }
+      return true;
+   }
+
 }
 
 /* vim: set ts=3 sw=3 smarttab expandtab cc=101 : */
