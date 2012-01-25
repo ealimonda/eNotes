@@ -51,6 +51,11 @@ public class NoteView extends Activity {
       // shows selected note's details
       this._noteID = extras.getLong(Note.kID);
       database = new NoteDB();
+   }
+   
+   @Override
+   public void onResume() {
+      super.onResume();
       Note note = database.getNoteById(this, this._noteID);
       TextView text1 = (TextView) findViewById(R.id.title);
       text1.setText(note.getTitle());

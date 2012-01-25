@@ -431,7 +431,23 @@ public class NoteDB extends ContentProvider {
    public Note getNoteById(Activity activity, long id) {
       return getNote(activity, Uri.withAppendedPath(Note.kContentURI, "id/"+id));
    }
-
+   /**
+    * Update the given note in the database
+    * @param activity   The activity this is called from
+    * @param id         The ID of the note to update
+    * @param note       Note object for the note to store
+    * @return           success status
+    */
+   public boolean saveNote(Activity activity, long id, Note note) {
+      ContentResolver cr = activity.getContentResolver();
+      ContentValues values = new ContentValues();
+      values.put(Note.kTitle, note.getTitle());
+      values.put(Note.kContent, note.getJSON());
+      if (cr.update(Uri.withAppendedPath(Note.kContentURI, "id/"+id), values, null, null) > 0) {
+    	  return true;
+      }
+      return false;
+   }
 }
 
 /* vim: set ts=3 sw=3 smarttab expandtab cc=101 : */

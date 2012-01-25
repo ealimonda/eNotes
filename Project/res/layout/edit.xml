@@ -100,7 +100,7 @@
             android:layout_width="213dp"
             android:layout_height="34dp"
             android:layout_weight="0.54"
-            android:text="aaa"
+            android:text=""
             android:textSize="10px" >
 
             <requestFocus />

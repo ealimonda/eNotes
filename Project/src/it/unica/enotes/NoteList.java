@@ -57,6 +57,12 @@ public class NoteList extends ListActivity {
       refreshList();
       //setContentView(R.layout.main);
    }
+   
+   @Override
+   public void onResume() {
+	   super.onResume();
+	   refreshList();
+   }
 
    /**
     * Refresh the list, re-querying the database as needed
@@ -114,7 +120,6 @@ public class NoteList extends ListActivity {
    public boolean onMenuItemSelected(int featureId, MenuItem item) {
       if (item.getItemId() == kMenuItemAdd) {
          long newID = database.addNote(this, null, null, null);
-//          Uri uri = cr.insert(Note.kContentURI, values);
          refreshList();
          if (newID >= 0) {
         	 Intent i = new Intent(this, NoteEdit.class);

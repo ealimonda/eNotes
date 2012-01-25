@@ -25,7 +25,11 @@ import android.widget.EditText;
  */
 public class NoteEdit extends Activity {
 	   /** Database helper / content provider */
-	   private NoteDB database;
+	   private NoteDB _database;
+	   /** ID of the current note */
+	   private long _noteID;
+	   /** Current note */
+	   private Note _note;
 	   /** Logging tag */
 	   private static final String kTag = "NoteEdit";
 
@@ -37,18 +41,37 @@ public class NoteEdit extends Activity {
 
       Bundle extras = getIntent().getExtras();
       if (extras == null) {
+    	  this._noteID = -1;
          return;
       }
+      this._noteID = extras.getLong(Note.kID);
+      
+      this._note = null;
 
-      database = new NoteDB();
-
+      this._database = new NoteDB();
+   }
+   
+   @Override
+   public void onResume() {
+      super.onResume();
       // shows selected note's details
-      Note note = database.getNoteById(this, extras.getLong(Note.kID));
+      this._note = this._database.getNoteById(this, this._noteID);
       EditText titleField = (EditText)findViewById(R.id.EditTitle);
-      titleField.setText(note.getTitle());
+      titleField.setText(this._note.getTitle());
       EditText contentField = (EditText)findViewById(R.id.EditContent);
-      contentField.setText(note.getText());
-}
+      contentField.setText(this._note.getText());
+   }
+   
+   @Override
+   public void onPause() {
+      super.onPause();
+      EditText titleField = (EditText)findViewById(R.id.EditTitle);
+      EditText contentField = (EditText)findViewById(R.id.EditContent);
+      this._note.setTitle(titleField.getText().toString());
+      this._note.setText(contentField.getText().toString());
+      this._note.setTimestamp(null);
+      this._database.saveNote(this, this._noteID, this._note);
+   }
 
    @Override
    public boolean onCreateOptionsMenu(Menu menu) {
