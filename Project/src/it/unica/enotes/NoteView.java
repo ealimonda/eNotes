@@ -84,7 +84,7 @@ public class NoteView extends Activity {
       }
         else if (item.getItemId() == kMenuItemSend) {
         	Intent emailIntent = new Intent(android.content.Intent.ACTION_SEND);
-        	//emailIntent.setType("plain/text");
+        	emailIntent.setType("plain/text");
         	startActivity(emailIntent);
       }
       return true;
