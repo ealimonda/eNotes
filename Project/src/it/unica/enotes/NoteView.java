@@ -67,7 +67,7 @@ public class NoteView extends Activity {
    public boolean onCreateOptionsMenu(Menu menu) {
       menu.add(0, kMenuItemEdit, 1, R.string.editItem).setIcon(getResources().getDrawable(R.drawable.ic_menu_edit));
       menu.add(0, kMenuItemDelete, 2, R.string.deleteItem).setIcon(getResources().getDrawable(R.drawable.ic_menu_delete));
-      menu.add(0, 0, 3, R.string.sendItem).setIcon(getResources().getDrawable(R.drawable.ic_menu_send));
+      menu.add(0, kMenuItemSend, 3, R.string.sendItem).setIcon(getResources().getDrawable(R.drawable.ic_menu_send));
       return true;
    }
    
@@ -81,6 +81,11 @@ public class NoteView extends Activity {
          if (database.deleteNote(this, this._noteID)) {
         	 this.finish();
          }
+      }
+        else if (item.getItemId() == kMenuItemSend) {
+        	Intent emailIntent = new Intent(android.content.Intent.ACTION_SEND);
+        	//emailIntent.setType("plain/text");
+        	startActivity(emailIntent);
       }
       return true;
    }
