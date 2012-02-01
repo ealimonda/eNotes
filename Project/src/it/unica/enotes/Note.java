@@ -16,6 +16,7 @@
 package it.unica.enotes;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.UUID;
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -87,7 +88,7 @@ public class Note {
     * @param timestamp  Last modification timestamp
     * @param text       Content (text) of the note
     * @param URL        Attached URL to the note
-    * @param tags       ArrayList of tags of the note
+    * @param tags       Tags of the note, as a space-delimited string
     */
    public Note(
          String GUID,
@@ -95,7 +96,7 @@ public class Note {
          Time timestamp,
          String text,
          String URL,
-         ArrayList<String> tags
+         String tags
          ) {
       if (GUID == null) {
          this._GUID = UUID.randomUUID().toString();
@@ -120,11 +121,7 @@ public class Note {
       if (text != null) {
          this._text = text;
          this._URL = URL;
-         if (this._tags != null) {
-            this._tags = tags;
-         } else {
-            this._tags = new ArrayList<String>(0);
-         }
+         this.setTagsFromString(tags);
          this._loaded = true;
       } else {
          this._text = null;
@@ -252,7 +249,7 @@ public class Note {
       return this._timestamp;
    }
    /**
-    * Set the nore's last modification timestamp
+    * Set the note's last modification timestamp
     * @param timestamp  The timestamp to set.  It'll be set to now if it's null
     */
    public void setTimestamp(Time timestamp) {
@@ -309,6 +306,33 @@ public class Note {
    public void setTags(ArrayList<String> tags) {
       this._tags = tags;
       this.setDirty(true);
+   }
+   /**
+    * Set the note's tags from a string
+    * @param tags	A String containing the tags to set, separated by spaces
+    */
+   public void setTagsFromString(String tags) {
+	   if (tags == null) {
+		   this.setTags(new ArrayList<String>());
+		   return;
+	   }
+	   tags = tags.replaceAll("\\s+", " ");
+	   tags = tags.trim();
+	   this.setTags(new ArrayList<String>(Arrays.asList(tags.split(" "))));
+   }
+   /**
+    * Get the note's tags as a string
+    * @return	The note's tags as a space-delimited String.
+    */
+   public String getTagsAsString() {
+	   if (this._tags == null || this._tags.size() <= 0) {
+		   return "";
+	   }
+	   String ret = " ";
+	   for (int i = 0; i < this._tags.size(); i++) {
+		   ret += this._tags.get(i) + " ";
+	   }
+	   return ret;
    }
 
    // TODO: Add or remove one tag at a time?

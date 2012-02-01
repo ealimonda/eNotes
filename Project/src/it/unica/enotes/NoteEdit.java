@@ -24,16 +24,16 @@ import android.widget.EditText;
  * Activity to edit an existing note or compose a new one
  */
 public class NoteEdit extends Activity {
-	   /** Database helper / content provider */
-	   private NoteDB _database;
-	   /** ID of the current note */
-	   private long _noteID;
-	   /** Current note */
-	   private Note _note;
-	   /** Logging tag */
-	   private static final String kTag = "NoteEdit";
+   /** Database helper / content provider */
+   private NoteDB _database;
+   /** ID of the current note */
+   private long _noteID;
+   /** Current note */
+   private Note _note;
+   /** Logging tag */
+   private static final String kTag = "NoteEdit";
 
-	   /** Called when the activity is first created. */
+   /** Called when the activity is first created. */
    @Override
    public void onCreate(Bundle savedInstanceState) {
       super.onCreate(savedInstanceState);
@@ -54,22 +54,31 @@ public class NoteEdit extends Activity {
    @Override
    public void onResume() {
       super.onResume();
-      // shows selected note's details
+      
       this._note = this._database.getNoteById(this, this._noteID);
+
       EditText titleField = (EditText)findViewById(R.id.EditTitle);
-      titleField.setText(this._note.getTitle());
       EditText contentField = (EditText)findViewById(R.id.EditContent);
+      EditText tagsField = (EditText)findViewById(R.id.EditTags);
+
+      titleField.setText(this._note.getTitle());
       contentField.setText(this._note.getText());
+      tagsField.setText(this._note.getTagsAsString());
    }
    
    @Override
    public void onPause() {
       super.onPause();
+
       EditText titleField = (EditText)findViewById(R.id.EditTitle);
       EditText contentField = (EditText)findViewById(R.id.EditContent);
+      EditText tagsField = (EditText)findViewById(R.id.EditTags);
+
       this._note.setTitle(titleField.getText().toString());
       this._note.setText(contentField.getText().toString());
+      this._note.setTagsFromString(tagsField.getText().toString());
       this._note.setTimestamp(null);
+
       this._database.saveNote(this, this._noteID, this._note);
    }
 

@@ -47,7 +47,7 @@ public class NoteDB extends ContentProvider {
    /** Name of the database table */
    private static final String kDatabaseTableNotes = "notes";
    /** Current version of the database structure */
-   private static final int kDatabaseVersion = 1;
+   private static final int kDatabaseVersion = 3;
 
    /** Default sort order, where not specified otherwise */
    private static final String kDefaultSortOrder = Note.kTimestamp + " DESC";
@@ -63,13 +63,15 @@ public class NoteDB extends ContentProvider {
       Note.kGUID,
       Note.kTitle,
       Note.kTimestamp,
-      Note.kContent
+      Note.kContent,
+      Note.kTags
    };
    public static final String[] kNotesHeadersProjection = {
       Note.kID,
       Note.kGUID,
       Note.kTitle,
-      Note.kTimestamp
+      Note.kTimestamp,
+      Note.kTags
    };
 
    /** Support variables */
@@ -102,17 +104,17 @@ public class NoteDB extends ContentProvider {
                + Note.kGUID +       " STRING UNIQUE,"
                + Note.kTitle +      " STRING,"
                + Note.kTimestamp +  " INTEGER,"
+               + Note.kTags +       " STRING KEY,"
                + Note.kContent +    " TEXT"
-            // TODO: Tags
                + ");");
 
          // FIXME: TEMP testing stuff
          Time testTime = new Time();
          testTime.set(0, 10, 11, 5, 1, 2012);
          Note[] testNotes = {
-            new Note(null, "First test note", null, "Text of the note\n\nBla bla", null, null),
+            new Note(null, "First test note", null, "Text of the note\n\nBla bla", null, "aTag anotherTag"),
             new Note(null, "Second test note", null, "Bla bla", null, null),
-            new Note(null, "Another test note", testTime, "Text of the note\n\nBla bla", null, null)
+            new Note(null, "Another test note", testTime, "Text of the note\n\nBla bla", null, "aTag")
          };
 
          for (int i = 0; i < testNotes.length; ++i) {
@@ -121,6 +123,7 @@ public class NoteDB extends ContentProvider {
             values.put(Note.kTitle, testNotes[i].getTitle());
             values.put(Note.kTimestamp, testNotes[i].getTimestamp().toMillis(false));
             values.put(Note.kContent, testNotes[i].getJSON());
+            values.put(Note.kTags, testNotes[i].getTagsAsString());
             db.insert(kDatabaseTableNotes, null, values);
          }
          //db.close();
@@ -172,11 +175,11 @@ public class NoteDB extends ContentProvider {
             break;
 
          case kUriNotesByTag:
-            // TODO
-//            qb.setTables(kDatabaseTableNotes);
-//            qb.setProjectionMap(notesProjectionMap);
-//            qb.appendWhere(Note.kTitle + " LIKE '" + uri.getLastPathSegment()+"'");
-//            break;
+            qb.setTables(kDatabaseTableNotes);
+            qb.setProjectionMap(notesProjectionMap);
+            qb.appendWhere(Note.kTags + " LIKE '% " + uri.getLastPathSegment() + " %'");
+            break;
+            // TODO: Sanitize queries?
 
          default:
             throw new IllegalArgumentException("Unknown URI " + uri);
@@ -203,15 +206,12 @@ public class NoteDB extends ContentProvider {
    public String getType(Uri uri) {
       switch (uriMatcher.match(uri)) {
          case kUriNotes:
+         case kUriNotesByTag:
             return Note.kContentType;
 
          case kUriNoteByID:
          case kUriNoteByGUID:
             return Note.kContentItemType;
-
-         case kUriNotesByTag:
-            // TODO
-//            return Note.kContentType;
 
          default:
             throw new IllegalArgumentException("Unknown URI " + uri);
@@ -342,6 +342,7 @@ public class NoteDB extends ContentProvider {
       notesProjectionMap.put(Note.kTitle, Note.kTitle);
       notesProjectionMap.put(Note.kTimestamp, Note.kTimestamp);
       notesProjectionMap.put(Note.kContent, Note.kContent);
+      notesProjectionMap.put(Note.kTags, Note.kTags);
    }
 
    /**
@@ -394,6 +395,21 @@ public class NoteDB extends ContentProvider {
    }
 
    /**
+    * Get all notes' headers from the database matching a tag
+    * @param activity   The activity this is called from
+    * @param tag		The tag to search for
+    * @return           A cursor pointing to all the notes' GUIDs, titles and timestamps
+    */
+   public Cursor getAllNotesHeadersByTag(Activity activity, String tag) {
+      // get a cursor representing all matched notes
+      Uri notes = Uri.withAppendedPath(Note.kContentURI, "tag/"+tag);
+      String where = null;
+      String orderBy;
+      orderBy = Note.kTimestamp + " DESC";
+      return activity.managedQuery(notes, kNotesHeadersProjection, where, null, orderBy);
+   }
+
+   /**
     * Get a note from the content provider
     * @param activity   The activity this is called from
     * @param uri        URI of the note to get
@@ -411,12 +427,14 @@ public class NoteDB extends ContentProvider {
          String noteContent = cursor.getString(cursor.getColumnIndexOrThrow(Note.kContent));
          String noteTitle = cursor.getString(cursor.getColumnIndexOrThrow(Note.kTitle));
          String noteGUID = cursor.getString(cursor.getColumnIndexOrThrow(Note.kGUID));
+         String noteTags = cursor.getString(cursor.getColumnIndexOrThrow(Note.kTags));
          Time noteTimestamp = new Time();
          noteTimestamp.set(cursor.getLong(cursor.getColumnIndexOrThrow(Note.kTimestamp)));
 
          note = new Note(noteGUID, noteTitle);
          note.setTimestamp(noteTimestamp);
          note.NoteFromJSON(noteContent);
+         note.setTagsFromString(noteTags);
       }
 
       return note;
@@ -443,6 +461,7 @@ public class NoteDB extends ContentProvider {
       ContentValues values = new ContentValues();
       values.put(Note.kTitle, note.getTitle());
       values.put(Note.kContent, note.getJSON());
+      values.put(Note.kTags, note.getTagsAsString());
       if (cr.update(Uri.withAppendedPath(Note.kContentURI, "id/"+id), values, null, null) > 0) {
     	  return true;
       }
