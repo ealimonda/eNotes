@@ -118,16 +118,30 @@ public class Note {
          this._timestamp = ts;
       }
 
+      this._text = null;
+      this._URL = null;
+      this._tags = null;
+      this._loaded = false;
+      
       if (text != null) {
          this._text = text;
-         this._URL = URL;
-         this.setTagsFromString(tags);
+         if (URL != null) {
+        	 this._URL = URL;
+         }
+         if (tags != null) {
+        	 this.setTagsFromString(tags);
+         }
          this._loaded = true;
-      } else {
-         this._text = null;
-         this._URL = null;
-         this._tags = null;
-         this._loaded = false;
+      }
+      
+      if (this._text == null) {
+         this._text = "";
+      }
+      if (this._URL == null) {
+         this._URL = "";
+      }
+      if (this._tags == null) {
+         this._tags = new ArrayList<String>();
       }
 
       this._dirty = false;
@@ -190,6 +204,9 @@ public class Note {
     * @param GUID    A new GUID to set
     */
    public void setGUID(String GUID) {
+      if (GUID == null) {
+    	  return;
+      }
       this._GUID = GUID;
       this.setDirty(true);
    }
@@ -237,7 +254,11 @@ public class Note {
     * @param title   A new title to set
     */
    public void setTitle(String newTitle) {
-      this._title = newTitle;
+      if (newTitle == null) {
+    	  this._title = "";
+      } else {
+    	  this._title = newTitle;
+      }
       this.setDirty(true);
    }
 
@@ -272,7 +293,11 @@ public class Note {
     * @param text    New text contents for the note
     */
    public void setText(String text) {
-      this._text = text;
+      if (text == null) {
+    	  this._text = "";
+      } else {
+          this._text = text;
+      }
       this.setDirty(true);
    }
 
@@ -288,7 +313,11 @@ public class Note {
     * @param URL     A new URL to attach (replacing the previous one)
     */
    public void setURL(String URL) {
-      this._URL = URL;
+      if (URL == null) {
+    	  this._URL = "";
+      } else {
+    	  this._URL = URL;
+      }
       this.setDirty(true);
    }
 
@@ -304,7 +333,11 @@ public class Note {
     * @param tags    An ArrayList containing the tags to set
     */
    public void setTags(ArrayList<String> tags) {
-      this._tags = tags;
+      if (tags == null) {
+    	  this._tags = new ArrayList<String>();
+      } else {
+    	  this._tags = tags;
+      }
       this.setDirty(true);
    }
    /**
@@ -313,7 +346,7 @@ public class Note {
     */
    public void setTagsFromString(String tags) {
 	   if (tags == null) {
-		   this.setTags(new ArrayList<String>());
+		   this.setTags(null);
 		   return;
 	   }
 	   tags = tags.replaceAll("\\s+", " ");
@@ -334,7 +367,5 @@ public class Note {
 	   }
 	   return ret;
    }
-
-   // TODO: Add or remove one tag at a time?
 }
 /* vim: set ts=3 sw=3 smarttab expandtab cc=101 : */

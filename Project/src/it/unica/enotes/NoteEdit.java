@@ -17,6 +17,7 @@ package it.unica.enotes;
 
 import android.app.Activity;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.Menu;
 import android.widget.EditText;
 
@@ -37,6 +38,7 @@ public class NoteEdit extends Activity {
    @Override
    public void onCreate(Bundle savedInstanceState) {
       super.onCreate(savedInstanceState);
+      Log.v(kTag, "created activity");
       setContentView(R.layout.edit);
 
       Bundle extras = getIntent().getExtras();

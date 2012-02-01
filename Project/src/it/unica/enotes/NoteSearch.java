@@ -26,6 +26,7 @@ public class NoteSearch extends Activity {
    @Override
    public void onCreate(Bundle savedInstanceState) {
       super.onCreate(savedInstanceState);
+//      Log.v(kTag, "created activity");
       setContentView(R.layout.main);
    }
 }

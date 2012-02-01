@@ -18,6 +18,7 @@ package it.unica.enotes;
 import android.app.Activity;
 import android.content.Intent;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.widget.TextView;
@@ -40,27 +41,35 @@ public class NoteView extends Activity {
    @Override
    public void onCreate(Bundle savedInstanceState) {
       super.onCreate(savedInstanceState);
+      Log.v(kTag, "created activity");
       this._noteID = -1;
       setContentView(R.layout.view);
       //Bundle extras = getIntentactivity().getExtras();
       Bundle extras = getIntent().getExtras();
       if (extras == null) {
+    	  Log.v(kTag, "Invalid or missing bundle");
          return;
       }
 
       // shows selected note's details
       this._noteID = extras.getLong(Note.kID);
+      Log.v(kTag, "Loading note: " + this._noteID);
       database = new NoteDB();
    }
    
    @Override
    public void onResume() {
       super.onResume();
+      
       Note note = database.getNoteById(this, this._noteID);
-      TextView text1 = (TextView) findViewById(R.id.title);
-      text1.setText(note.getTitle());
-      TextView text2 = (TextView) findViewById(R.id.contents);
-      text2.setText(note.getText());
+      
+      TextView titleField = (TextView) findViewById(R.id.ViewTitle);
+      TextView contentsField = (TextView) findViewById(R.id.ViewContents);
+      TextView tagsField = (TextView) findViewById(R.id.ViewTags);
+
+      titleField.setText(note.getTitle());
+      contentsField.setText(note.getText());
+      tagsField.setText(note.getTagsAsString());
    }
 
    @Override
