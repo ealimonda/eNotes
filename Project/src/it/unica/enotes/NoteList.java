@@ -41,7 +41,7 @@ public class NoteList extends ListActivity {
    /** Database helper / content provider */
    private NoteDB database;
    /** Fields to query */
-   private static final String fields[] = { Note.kTitle, Note.kTimestamp, Note.kID };
+   private static final String fields[] = { Note.kTitle, Note.kTimestamp, Note.kTags, Note.kID };
    /** Logging tag */
    private static final String kTag = "NoteList";
 
@@ -49,12 +49,13 @@ public class NoteList extends ListActivity {
    public void onCreate(Bundle savedInstanceState) {
       super.onCreate(savedInstanceState);
       Log.v(kTag, "created activity");
+      setContentView(R.layout.main);
 
       database = new NoteDB();
 
       ListView view = getListView();
       view.setHeaderDividersEnabled(true);
-      view.addHeaderView(getLayoutInflater().inflate(R.layout.row, null));
+//      view.addHeaderView(getLayoutInflater().inflate(R.layout.row, null));
 
       refreshList();
       //setContentView(R.layout.main);
@@ -73,13 +74,13 @@ public class NoteList extends ListActivity {
       Cursor data = database.getAllNotesHeaders(this);
 
       SimpleCursorAdapter dataSource = new SimpleCursorAdapter(this, R.layout.row, data, fields,
-            new int[] { R.id.title, R.id.timestamp, -1 });
+            new int[] { R.id.RowTitle, R.id.RowTimestamp, R.id.RowTags, -1 });
 
       dataSource.setViewBinder(new SimpleCursorAdapter.ViewBinder() {
 
          @Override
          public boolean setViewValue(View aView, Cursor aCursor, int aColumnIndex) {
-            if (aView.getId() == R.id.timestamp) {
+            if (aView.getId() == R.id.RowTimestamp) {
                TextView textView = (TextView) aView;
                Time timestamp = new Time();
                timestamp.set(aCursor.getLong(aColumnIndex));

@@ -1,43 +1,39 @@
 <?xml version="1.0" encoding="utf-8"?>
-
 <LinearLayout
-    xmlns:android="http://schemas.android.com/apk/res/android"
-	android:layout_height="wrap_content"
-	android:id="@+id/colLayout"
-	android:orientation="horizontal"
-	android:layout_width="fill_parent">
-
-	<LinearLayout
-	    xmlns:android="http://schemas.android.com/apk/res/android"
-	    android:id="@+id/rowLayout"
-	    android:layout_width="250dp"
-	    android:layout_height="wrap_content"
-	    android:orientation="vertical" >
-	
-		<TextView
-		    android:id="@+id/title"
-		    android:layout_width="250dp"
-		    android:layout_height="fill_parent"
-		    android:layout_alignParentLeft="true"
-		    android:text="Note title"
-		    android:textSize="18px" />
-			
-		<TextView
-		    android:id="@+id/tags"
-		    android:layout_width="250dp"
-		    android:layout_height="wrap_content"
-		    android:layout_alignParentRight="true"
-		    android:text="Note tags"
-		    android:textSize="15px" />
-
-	</LinearLayout>
-
-    <TextView
-	    android:layout_width="fill_parent"	    
-		android:layout_height="fill_parent"
-		android:layout_alignParentRight="true"
-		android:textSize="10px"
-		android:id="@+id/timestamp"
-		android:text="Timestamp"
-		android:layout_gravity="right" />
+   xmlns:android="http://schemas.android.com/apk/res/android"
+   android:layout_height="wrap_content"
+   android:orientation="horizontal"
+   android:layout_width="fill_parent"
+   android:background="#ffffffff"
+   >
+   <LinearLayout
+      android:layout_width="250dp"
+      android:layout_height="wrap_content"
+      android:orientation="vertical"
+      >
+      <TextView
+         android:id="@+id/RowTitle"
+         android:layout_width="250dp"
+         android:layout_height="fill_parent"
+         android:layout_alignParentLeft="true"
+         android:text="Title"
+         android:textSize="18px" />
+      <TextView
+         android:id="@+id/RowTags"
+         android:layout_width="250dp"
+         android:layout_height="wrap_content"
+         android:layout_alignParentRight="true"
+         android:text="(Tags)"
+         android:textSize="15px" />
+   </LinearLayout>
+   <TextView
+      android:layout_width="fill_parent"
+      android:layout_height="fill_parent"
+      android:layout_alignParentRight="true"
+      android:textSize="10px"
+      android:id="@+id/RowTimestamp"
+      android:text="Last Modified"
+      android:layout_gravity="right" />
 </LinearLayout>
+<!-- vim: set ts=3 sw=3 smarttab expandtab cc=101 : -->
+
