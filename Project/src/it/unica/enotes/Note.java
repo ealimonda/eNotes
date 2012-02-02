@@ -161,10 +161,14 @@ public class Note {
 
          if (jsObject.has(kText)) {
             this._text = jsObject.getString(kText);
+         } else {
+        	 this._text = "";
          }
 
          if (jsObject.has(kURL)) {
             this._URL = jsObject.getString(kURL);
+         } else {
+        	 this._URL = "";
          }
 
          // TODO: Attachments
