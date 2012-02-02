@@ -16,13 +16,10 @@
 package it.unica.enotes;
 
 import android.app.Activity;
-import android.app.AlertDialog;
-import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.Bundle;
 import android.text.method.DialerKeyListener;
 import android.util.Log;
-import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
@@ -44,9 +41,6 @@ public class NoteEdit extends Activity {
    private static final String kTag = "NoteEdit";
    /** Menu IDs */
    private static final int kMenuItemUrl = 102;
-   
-   EditText addUrl;
-   Button cancelUrl;
 
    /** Called when the activity is first created. */
    @Override
@@ -55,9 +49,9 @@ public class NoteEdit extends Activity {
       Log.v(kTag, "created activity");
       setContentView(R.layout.edit);
       
-      addUrl = (EditText) findViewById(R.id.EditUrlText);     
+      EditText addUrl = (EditText) findViewById(R.id.EditUrlText);     
+      Button cancelUrl = (Button) findViewById(R.id.EditUrlButton);     
       addUrl.setVisibility(View.GONE);
-      cancelUrl = (Button) findViewById(R.id.EditUrlButton);     
       cancelUrl.setVisibility(View.GONE);
       addUrl.setKeyListener(DialerKeyListener.getInstance());
 
@@ -83,11 +77,20 @@ public class NoteEdit extends Activity {
       EditText contentField = (EditText)findViewById(R.id.EditContent);
       EditText tagsField = (EditText)findViewById(R.id.EditTags);
       EditText urlField = (EditText)findViewById(R.id.EditUrlText);
+      Button cancelUrl = (Button) findViewById(R.id.EditUrlButton);     
 
       titleField.setText(this._note.getTitle());
       contentField.setText(this._note.getText());
-      tagsField.setText(this._note.getTagsAsString()); 
-      urlField.setText(this._note.getURL());
+      tagsField.setText(this._note.getTagsAsString());
+      String url = this._note.getURL();
+      if (url.length() > 0) {
+    	  urlField.setText(this._note.getURL());
+    	  urlField.setVisibility(View.VISIBLE);
+    	  cancelUrl.setVisibility(View.VISIBLE);
+      } else {
+    	  urlField.setVisibility(View.GONE);
+    	  cancelUrl.setVisibility(View.GONE);
+      }
    }
    
    @Override
@@ -102,8 +105,8 @@ public class NoteEdit extends Activity {
       this._note.setTitle(titleField.getText().toString());
       this._note.setText(contentField.getText().toString());
       this._note.setTagsFromString(tagsField.getText().toString());
-      this._note.setTimestamp(null);  
-      urlField.setText(this._note.getURL());
+      this._note.setTimestamp(null);
+      this._note.setURL(urlField.getText().toString());
 
       this._database.saveNote(this, this._noteID, this._note);
    }
@@ -122,6 +125,8 @@ public class NoteEdit extends Activity {
               return false;
       }
       if (item.getItemId() == kMenuItemUrl) {
+          EditText addUrl = (EditText) findViewById(R.id.EditUrlText);     
+          Button cancelUrl = (Button) findViewById(R.id.EditUrlButton);     
     	  addUrl.setVisibility(View.VISIBLE);
     	  cancelUrl.setVisibility(View.VISIBLE);
    		}             
