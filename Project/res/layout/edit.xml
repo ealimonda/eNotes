@@ -53,7 +53,7 @@
                android:layout_height="35dp"
                android:textSize="10px"
                android:layout_weight="0.23"
-               android:text="(no URLs)" />
+               android:text="http://" />
             <Button
                android:id="@+id/EditUrlButton"
                android:layout_width="wrap_content"

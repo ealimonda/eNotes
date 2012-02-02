@@ -20,12 +20,14 @@ import android.app.AlertDialog;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.Bundle;
+import android.text.method.DialerKeyListener;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Button;
 import android.widget.EditText;
 
 /**
@@ -42,6 +44,9 @@ public class NoteEdit extends Activity {
    private static final String kTag = "NoteEdit";
    /** Menu IDs */
    private static final int kMenuItemUrl = 102;
+   
+   EditText addUrl;
+   Button cancelUrl;
 
    /** Called when the activity is first created. */
    @Override
@@ -49,6 +54,12 @@ public class NoteEdit extends Activity {
       super.onCreate(savedInstanceState);
       Log.v(kTag, "created activity");
       setContentView(R.layout.edit);
+      
+      addUrl = (EditText) findViewById(R.id.EditUrlText);     
+      addUrl.setVisibility(View.GONE);
+      cancelUrl = (Button) findViewById(R.id.EditUrlButton);     
+      cancelUrl.setVisibility(View.GONE);
+      addUrl.setKeyListener(DialerKeyListener.getInstance());
 
       Bundle extras = getIntent().getExtras();
       if (extras == null) {
@@ -71,12 +82,12 @@ public class NoteEdit extends Activity {
       EditText titleField = (EditText)findViewById(R.id.EditTitle);
       EditText contentField = (EditText)findViewById(R.id.EditContent);
       EditText tagsField = (EditText)findViewById(R.id.EditTags);
-      //EditText urlField = (EditText)findViewById(R.id.EditUrl);
+      EditText urlField = (EditText)findViewById(R.id.EditUrlText);
 
       titleField.setText(this._note.getTitle());
       contentField.setText(this._note.getText());
-      tagsField.setText(this._note.getTagsAsString());     
-      //urlField.setText(this._note.getURL());
+      tagsField.setText(this._note.getTagsAsString()); 
+      urlField.setText(this._note.getURL());
    }
    
    @Override
@@ -86,14 +97,13 @@ public class NoteEdit extends Activity {
       EditText titleField = (EditText)findViewById(R.id.EditTitle);
       EditText contentField = (EditText)findViewById(R.id.EditContent);
       EditText tagsField = (EditText)findViewById(R.id.EditTags);
-      //EditText urlField = (EditText)findViewById(R.id.EditUrl);
+      EditText urlField = (EditText)findViewById(R.id.EditUrlText);
 
       this._note.setTitle(titleField.getText().toString());
       this._note.setText(contentField.getText().toString());
       this._note.setTagsFromString(tagsField.getText().toString());
-      this._note.setTimestamp(null);
+      this._note.setTimestamp(null);  
       urlField.setText(this._note.getURL());
-      //this._note.setURL(urlField.getText().toString());
 
       this._database.saveNote(this, this._noteID, this._note);
    }
@@ -112,24 +122,8 @@ public class NoteEdit extends Activity {
               return false;
       }
       if (item.getItemId() == kMenuItemUrl) {
-	   LayoutInflater inflater = getLayoutInflater();
-	   View dialoglayout = inflater.inflate(R.layout.url, (ViewGroup) findViewById(R.id.url));
-	   AlertDialog.Builder builder = new AlertDialog.Builder(this);
-	   builder.setView(dialoglayout);
-	   // Questo va bene solo se il dialog è modale!!che
-	   this._note.setURL(getResources().getString(R.id.EditUrl));
-	   new AlertDialog.Builder(this).setTitle("Add Url")
-	   .setView(dialoglayout)
-	   //.setMessage("Do you want add this URL?")
-	   .setPositiveButton("Yes", new DialogInterface.OnClickListener() {
-		   @Override
-		   public void onClick(DialogInterface dialogInterface, int i) {
-			   finish();
-		   }
-		})
-		.setNeutralButton("Cancel", null)
-		.create()
-		.show();
+    	  addUrl.setVisibility(View.VISIBLE);
+    	  cancelUrl.setVisibility(View.VISIBLE);
    		}             
       return true;
       }

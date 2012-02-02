@@ -59,7 +59,13 @@
             android:layout_height="wrap_content"
             android:textStyle="bold"
             android:textColor="#ff000000" />
-          
+         <TextView
+               android:id="@+id/ViewUrl"
+               android:layout_width="wrap_content"
+               android:layout_height="wrap_content"
+               android:layout_weight="0.54"               
+               android:padding="10dip"
+               android:textColor="#ff000000" />
          <!-- Separator -->
          <View
             android:layout_width="match_parent"

@@ -68,10 +68,12 @@ public class NoteView extends Activity {
       TextView titleField = (TextView) findViewById(R.id.ViewTitle);
       TextView contentsField = (TextView) findViewById(R.id.ViewContents);
       TextView tagsField = (TextView) findViewById(R.id.ViewTags);
+      TextView urlField = (TextView) findViewById(R.id.ViewUrl);
 
       titleField.setText(note.getTitle());
       contentsField.setText(note.getText());
       tagsField.setText(note.getTagsAsString());
+      urlField.setText(note.getURL());
    }
 
    @Override
