@@ -16,9 +16,16 @@
 package it.unica.enotes;
 
 import android.app.Activity;
+import android.app.AlertDialog;
+import android.content.DialogInterface;
+import android.content.Intent;
 import android.os.Bundle;
 import android.util.Log;
+import android.view.LayoutInflater;
 import android.view.Menu;
+import android.view.MenuItem;
+import android.view.View;
+import android.view.ViewGroup;
 import android.widget.EditText;
 
 /**
@@ -33,6 +40,8 @@ public class NoteEdit extends Activity {
    private Note _note;
    /** Logging tag */
    private static final String kTag = "NoteEdit";
+   /** Menu IDs */
+   private static final int kMenuItemUrl = 102;
 
    /** Called when the activity is first created. */
    @Override
@@ -62,10 +71,12 @@ public class NoteEdit extends Activity {
       EditText titleField = (EditText)findViewById(R.id.EditTitle);
       EditText contentField = (EditText)findViewById(R.id.EditContent);
       EditText tagsField = (EditText)findViewById(R.id.EditTags);
+      //EditText urlField = (EditText)findViewById(R.id.EditUrl);
 
       titleField.setText(this._note.getTitle());
       contentField.setText(this._note.getText());
-      tagsField.setText(this._note.getTagsAsString());
+      tagsField.setText(this._note.getTagsAsString());     
+      //urlField.setText(this._note.getURL());
    }
    
    @Override
@@ -75,11 +86,14 @@ public class NoteEdit extends Activity {
       EditText titleField = (EditText)findViewById(R.id.EditTitle);
       EditText contentField = (EditText)findViewById(R.id.EditContent);
       EditText tagsField = (EditText)findViewById(R.id.EditTags);
+      //EditText urlField = (EditText)findViewById(R.id.EditUrl);
 
       this._note.setTitle(titleField.getText().toString());
       this._note.setText(contentField.getText().toString());
       this._note.setTagsFromString(tagsField.getText().toString());
       this._note.setTimestamp(null);
+      urlField.setText(this._note.getURL());
+      //this._note.setURL(urlField.getText().toString());
 
       this._database.saveNote(this, this._noteID, this._note);
    }
@@ -87,8 +101,37 @@ public class NoteEdit extends Activity {
    @Override
    public boolean onCreateOptionsMenu(Menu menu) {
       menu.add(0, 0, 1, R.string.addAttachment).setIcon(getResources().getDrawable(R.drawable.ic_menu_attachment));
-      menu.add(0, 0, 2, R.string.addUrl).setIcon(getResources().getDrawable(R.drawable.ic_input_get));
+      menu.add(0, kMenuItemUrl, 2, R.string.addUrl).setIcon(getResources().getDrawable(R.drawable.ic_input_get));
       return true;
    }
+   
+   @Override
+   public boolean onMenuItemSelected(int featureId, MenuItem item) {
+      if (this._note == null) {
+              Log.v(kTag, "ERROR: note is NULL!!!");
+              return false;
+      }
+      if (item.getItemId() == kMenuItemUrl) {
+	   LayoutInflater inflater = getLayoutInflater();
+	   View dialoglayout = inflater.inflate(R.layout.url, (ViewGroup) findViewById(R.id.url));
+	   AlertDialog.Builder builder = new AlertDialog.Builder(this);
+	   builder.setView(dialoglayout);
+	   // Questo va bene solo se il dialog è modale!!che
+	   this._note.setURL(getResources().getString(R.id.EditUrl));
+	   new AlertDialog.Builder(this).setTitle("Add Url")
+	   .setView(dialoglayout)
+	   //.setMessage("Do you want add this URL?")
+	   .setPositiveButton("Yes", new DialogInterface.OnClickListener() {
+		   @Override
+		   public void onClick(DialogInterface dialogInterface, int i) {
+			   finish();
+		   }
+		})
+		.setNeutralButton("Cancel", null)
+		.create()
+		.show();
+   		}             
+      return true;
+      }
 }
 /* vim: set ts=3 sw=3 smarttab expandtab cc=101 : */

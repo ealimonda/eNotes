@@ -16,6 +16,8 @@
 package it.unica.enotes;
 
 import android.app.Activity;
+import android.app.AlertDialog;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.Bundle;
 import android.util.Log;
@@ -80,7 +82,7 @@ public class NoteView extends Activity {
       return true;
    }
    
-   @Override
+   /*@Override
    public boolean onMenuItemSelected(int featureId, MenuItem item) {
       if (item.getItemId() == kMenuItemEdit) {
      	 Intent i = new Intent(this, NoteEdit.class);
@@ -89,6 +91,35 @@ public class NoteView extends Activity {
       } else if (item.getItemId() == kMenuItemDelete) {
          if (database.deleteNote(this, this._noteID)) {
         	 this.finish();
+         }
+      }
+        else if (item.getItemId() == kMenuItemSend) {
+        	Intent emailIntent = new Intent(android.content.Intent.ACTION_SEND);
+        	emailIntent.setType("plain/text");
+        	startActivity(emailIntent);
+      }
+      return true;
+   }*/
+   
+   @Override
+   public boolean onMenuItemSelected(int featureId, MenuItem item) {
+      if (item.getItemId() == kMenuItemEdit) {
+     	 Intent i = new Intent(this, NoteEdit.class);
+     	 i.putExtra(Note.kID, this._noteID);
+     	 startActivityForResult(i, 0);
+      } else if (item.getItemId() == kMenuItemDelete) {
+         if (database.deleteNote(this, this._noteID)) {        	 
+        	 new AlertDialog.Builder(this).setTitle("Confirm Delete")
+             .setMessage("Do you want to delete this note?")
+             .setPositiveButton("Yes", new DialogInterface.OnClickListener() {
+                 @Override
+                 public void onClick(DialogInterface dialogInterface, int i) {                	 
+                		 finish();
+                	 	}                 
+             })
+             .setNeutralButton("Cancel", null) // don't need to do anything but dismiss here
+             .create()
+             .show();
          }
       }
         else if (item.getItemId() == kMenuItemSend) {
