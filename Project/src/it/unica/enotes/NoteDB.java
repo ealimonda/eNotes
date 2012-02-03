@@ -177,7 +177,7 @@ public class NoteDB extends ContentProvider {
          case kUriNotesByTag:
             qb.setTables(kDatabaseTableNotes);
             qb.setProjectionMap(notesProjectionMap);
-            qb.appendWhere(Note.kTags + " LIKE '% " + uri.getLastPathSegment() + " %'");
+            qb.appendWhere(Note.kTags + " LIKE '%" + uri.getLastPathSegment() + "%'");
             break;
             // TODO: Sanitize queries?
 
@@ -401,8 +401,11 @@ public class NoteDB extends ContentProvider {
     * @return           A cursor pointing to all the notes' GUIDs, titles and timestamps
     */
    public Cursor getAllNotesHeadersByTag(Activity activity, String tag) {
+      if (tag == null || tag.trim().length() <= 0) {
+    	  return getAllNotesHeaders(activity);
+      }
       // get a cursor representing all matched notes
-      Uri notes = Uri.withAppendedPath(Note.kContentURI, "tag/"+tag);
+      Uri notes = Uri.withAppendedPath(Note.kContentURI, "tag/"+Uri.encode(tag.trim()));
       String where = null;
       String orderBy;
       orderBy = Note.kTimestamp + " DESC";

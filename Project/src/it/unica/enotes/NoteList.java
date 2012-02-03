@@ -121,7 +121,8 @@ public class NoteList extends ListActivity {
 
    @Override
    public boolean onMenuItemSelected(int featureId, MenuItem item) {
-      if (item.getItemId() == kMenuItemAdd) {
+      switch (item.getItemId()) {
+      case kMenuItemAdd:
          long newID = database.addNote(this, null, null, null);
          refreshList();
          if (newID >= 0) {
@@ -129,7 +130,16 @@ public class NoteList extends ListActivity {
         	 i.putExtra(Note.kID, newID);
         	 startActivityForResult(i, 0);
          }
+         break;
+      case kMenuItemSearch:
+         Intent i = new Intent(this, NoteSearch.class);
+         startActivityForResult(i, 0);
+          break;
+          
+      default:
+    	  return false;
       }
+
       return true;
    }
 

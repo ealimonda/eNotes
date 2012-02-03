@@ -15,19 +15,107 @@
 
 package it.unica.enotes;
 
-import android.app.Activity;
+import android.content.Intent;
+import android.database.Cursor;
 import android.os.Bundle;
+import android.text.Editable;
+import android.text.TextWatcher;
+import android.text.format.Time;
+import android.util.Log;
+import android.view.View;
+import android.widget.EditText;
+import android.widget.ListView;
+import android.widget.SimpleCursorAdapter;
+import android.widget.TextView;
+import android.app.ListActivity;
 
 /**
  * Activity to search a note by tag
+ * @author Emanuele Alimonda
+ * @author Giovanni Serra
  */
-public class NoteSearch extends Activity {
+public class NoteSearch extends ListActivity {
+   /** Database helper / content provider */
+   private NoteDB database;
+   /** Fields to query */
+   private static final String fields[] = { Note.kTitle, Note.kTimestamp, Note.kTags, Note.kID };
+   /** Logging tag */
+   private static final String kTag = "NoteSearch";
+
    /** Called when the activity is first created. */
    @Override
    public void onCreate(Bundle savedInstanceState) {
       super.onCreate(savedInstanceState);
-//      Log.v(kTag, "created activity");
-      setContentView(R.layout.main);
+      Log.v(kTag, "created activity");
+      setContentView(R.layout.search);
+
+      database = new NoteDB();
+
+      ListView view = getListView();
+      view.setHeaderDividersEnabled(true);
+
+      EditText tagBox = (EditText) findViewById(R.id.SearchBox);
+      tagBox.addTextChangedListener(new TextWatcher() {
+    	  public void afterTextChanged(Editable s) {
+    		  refreshList();
+    	  }
+    	  public void beforeTextChanged(CharSequence s, int start, int count,
+    			  int after) {
+    	  }
+    	  public void onTextChanged(CharSequence s, int start, int count,
+    			  int after) {
+    	  }
+    });
+
+      refreshList();
    }
+
+   @Override
+   public void onResume() {
+	   super.onResume();
+	   refreshList();
+   }
+
+   /**
+    * Refresh the list, re-querying the database as needed
+    */
+   protected void refreshList() {
+      EditText tagBox = (EditText) findViewById(R.id.SearchBox);
+      String tag = tagBox.getText().toString();
+      
+      Cursor data = database.getAllNotesHeadersByTag(this, tag);
+
+      SimpleCursorAdapter dataSource = new SimpleCursorAdapter(this, R.layout.row, data, fields,
+            new int[] { R.id.RowTitle, R.id.RowTimestamp, R.id.RowTags, -1 });
+
+      dataSource.setViewBinder(new SimpleCursorAdapter.ViewBinder() {
+
+         @Override
+         public boolean setViewValue(View aView, Cursor aCursor, int aColumnIndex) {
+            if (aView.getId() == R.id.RowTimestamp) {
+               TextView textView = (TextView) aView;
+               Time timestamp = new Time();
+               timestamp.set(aCursor.getLong(aColumnIndex));
+               textView.setText(timestamp.format("%c"));
+               return true;
+            }
+
+            return false;
+         }
+      });
+
+      setListAdapter(dataSource);
+   }
+
+   @Override
+   protected void onListItemClick(ListView l, View v, int position, long id) {
+      //String item = (String) getListAdapter().getItem(position);
+
+      Intent i = new Intent(this, NoteView.class);
+      i.putExtra(Note.kID, id);
+      // Set the request code to any code you like, you can identify the callback via this code
+      startActivityForResult(i, 0);
+   }
+
 }
 /* vim: set ts=3 sw=3 smarttab expandtab cc=101 : */

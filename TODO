@@ -1,0 +1,13 @@
+Things to do:
+
+- Note deletion confirmation
+- Graphical tweaks all over the app
+- Testing
+- Ensure proper indentation (eclipse fails a lot)
+- Search by tag
+- Attachments
+- Fix URLs
+- Import emails
+- JavaDoc documentation
+- URL X button
+- Move text strings to a localizable file
