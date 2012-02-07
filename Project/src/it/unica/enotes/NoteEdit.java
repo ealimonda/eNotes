@@ -53,7 +53,7 @@ public class NoteEdit extends Activity {
       Button cancelUrl = (Button) findViewById(R.id.EditUrlButton);     
       addUrl.setVisibility(View.GONE);
       cancelUrl.setVisibility(View.GONE);
-      addUrl.setKeyListener(DialerKeyListener.getInstance());
+//      addUrl.setKeyListener(DialerKeyListener.getInstance());
 
       Bundle extras = getIntent().getExtras();
       if (extras == null) {

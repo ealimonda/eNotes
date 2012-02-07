@@ -15,10 +15,15 @@
 
 package it.unica.enotes;
 
+import java.io.File;
+import java.io.FileWriter;
+import java.io.IOException;
+
 import android.app.Activity;
 import android.app.AlertDialog;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.net.Uri;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.Menu;
@@ -125,9 +130,24 @@ public class NoteView extends Activity {
          }
       }
         else if (item.getItemId() == kMenuItemSend) {
-        	Intent emailIntent = new Intent(android.content.Intent.ACTION_SEND);
-        	emailIntent.setType("plain/text");
-        	startActivity(emailIntent);
+        	try {
+        		Note note = database.getNoteById(this, this._noteID);
+        		File attachmentFile = File.createTempFile("eNote.", ".eNote");
+        		FileWriter attachmentWriter = new FileWriter(attachmentFile);
+            	attachmentWriter.write(note.getJSON());
+            	attachmentWriter.close();
+
+            	Intent emailIntent = new Intent(Intent.ACTION_SEND);
+            	emailIntent.setType("plain/text");
+            	emailIntent.putExtra(Intent.EXTRA_SUBJECT, "[eNote] "+ note.getTitle());
+            	emailIntent.putExtra(Intent.EXTRA_STREAM, Uri.parse("file://"+ attachmentFile.getPath()));
+            	Log.v(kTag, "Sending: "+attachmentFile.toURI());
+            	startActivity(Intent.createChooser(emailIntent, "Email:"));
+            	//attachmentFile.delete(); // FIXME: Should we delete this file?
+        	} catch (IOException e) {
+        		Log.v(kTag, e.toString());
+        		return false;
+        	};
       }
       return true;
    }
