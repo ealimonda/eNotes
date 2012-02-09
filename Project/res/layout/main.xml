@@ -8,11 +8,13 @@
 	android:background="#ffffffff"
    >
    <include layout="@layout/row"/>
+   
    <ListView
       android:id="@android:id/list"
       android:background="#ffffffff"
       android:layout_width="fill_parent"
       android:layout_height="fill_parent"/>
 </LinearLayout>
+    
 <!-- vim: set ts=3 sw=3 smarttab expandtab cc=101 : -->
 
