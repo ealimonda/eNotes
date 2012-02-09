@@ -25,6 +25,7 @@ import android.content.DialogInterface;
 import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
+import android.text.format.Time;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -79,6 +80,29 @@ public class NoteView extends Activity {
       contentsField.setText(note.getText());
       tagsField.setText(note.getTagsAsString());
       urlField.setText(note.getURL());
+      
+      // Do some temp files cleanup (Why here?  See note below.)
+      String tmpDirPath = System.getProperty("java.io.tmpdir");
+      File tmpDir = new File(tmpDirPath, "eNotesTmp");
+      if (tmpDir.exists() && tmpDir.isDirectory()) {
+    	  File[] tmpFileList = tmpDir.listFiles();
+    	  Time thresholdTimestamp = new Time();
+    	  thresholdTimestamp.setToNow();
+    	  thresholdTimestamp.set(thresholdTimestamp.toMillis(true)-1000*3600*24); // 24 hours
+    	  for (int i = 0; i < tmpFileList.length; i++) {
+    		  if (!tmpFileList[i].exists() || !tmpFileList[i].isFile()) {
+    			  continue;
+    		  }
+    		  if (!tmpFileList[i].toString().endsWith(".eNote")) {
+    			  continue;
+    		  }
+    		  if (tmpFileList[i].lastModified() < thresholdTimestamp.toMillis(true)) {
+    			  tmpFileList[i].delete();
+    			  Log.v(kTag, "Deleted temp file " + tmpFileList.toString());
+    		  }
+    		  Log.v(kTag, "check done");
+    	  }
+      }
    }
 
    @Override
@@ -88,25 +112,6 @@ public class NoteView extends Activity {
       menu.add(0, kMenuItemSend, 3, R.string.sendItem).setIcon(getResources().getDrawable(R.drawable.ic_menu_send));
       return true;
    }
-   
-   /*@Override
-   public boolean onMenuItemSelected(int featureId, MenuItem item) {
-      if (item.getItemId() == kMenuItemEdit) {
-     	 Intent i = new Intent(this, NoteEdit.class);
-     	 i.putExtra(Note.kID, this._noteID);
-     	 startActivityForResult(i, 0);
-      } else if (item.getItemId() == kMenuItemDelete) {
-         if (database.deleteNote(this, this._noteID)) {
-        	 this.finish();
-         }
-      }
-        else if (item.getItemId() == kMenuItemSend) {
-        	Intent emailIntent = new Intent(android.content.Intent.ACTION_SEND);
-        	emailIntent.setType("plain/text");
-        	startActivity(emailIntent);
-      }
-      return true;
-   }*/
    
    @Override
    public boolean onMenuItemSelected(int featureId, MenuItem item) {
@@ -132,7 +137,15 @@ public class NoteView extends Activity {
         else if (item.getItemId() == kMenuItemSend) {
         	try {
         		Note note = database.getNoteById(this, this._noteID);
-        		File attachmentFile = File.createTempFile("eNote.", ".eNote");
+        		String tmpDirPath = System.getProperty("java.io.tmpdir");
+        		File tmpDir = new File(tmpDirPath, "eNotesTmp");
+        		if (tmpDir.exists() && !tmpDir.isDirectory()) {
+        			tmpDir.delete();
+        		}
+        		if (!tmpDir.exists() && !tmpDir.mkdirs()) {
+        			throw new IOException();
+        		}
+        		File attachmentFile = File.createTempFile("eNote.", ".eNote", tmpDir);
         		FileWriter attachmentWriter = new FileWriter(attachmentFile);
             	attachmentWriter.write(note.getJSON());
             	attachmentWriter.close();
@@ -142,8 +155,25 @@ public class NoteView extends Activity {
             	emailIntent.putExtra(Intent.EXTRA_SUBJECT, "[eNote] "+ note.getTitle());
             	emailIntent.putExtra(Intent.EXTRA_STREAM, Uri.parse("file://"+ attachmentFile.getPath()));
             	Log.v(kTag, "Sending: "+attachmentFile.toURI());
-            	startActivity(Intent.createChooser(emailIntent, "Email:"));
-            	//attachmentFile.delete(); // FIXME: Should we delete this file?
+            	startActivity(Intent.createChooser(emailIntent, "Send email:"));
+            	/* Note about temporary file deletion:
+            	 * - We can't delete the file right away, since we don't know
+            	 *   whether the email has been sent yet (and since the intent
+            	 *   returns right away, we're pretty much sure it *hasn't*.
+            	 *   Emails on a mobile device may be deferred to send when a 3g
+            	 *   or wifi connection is available anyways.
+            	 * - We can't have the JVM delete the file when it's no longer
+            	 *   needed, since on Android, deleteOnExit() isn't reliable
+            	 *   (cleanup done on VM termination, but VM termination isn't
+            	 *   part of the app's lifecycle.
+            	 * - We can say Android sucks when it comes to temporary files
+            	 *   and all I can do is to, in onResume, delete all files
+            	 *   matching my own wildcard filename structure that are older
+            	 *   than 24 hours, hoping the user ran into a 3g or wifi
+            	 *   network during the last day.  Oh well, if I delete
+            	 *   something you care about or leave cruft behind, you can
+            	 *   go complain to the Android engineers.  Or switch to Apple/MS.
+            	 */
         	} catch (IOException e) {
         		Log.v(kTag, e.toString());
         		return false;
