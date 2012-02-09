@@ -52,13 +52,16 @@ public class NoteList extends ListActivity {
       setContentView(R.layout.main);
 
       database = new NoteDB();
-
+      
       ListView view = getListView();
       view.setHeaderDividersEnabled(true);
 //      view.addHeaderView(getLayoutInflater().inflate(R.layout.row, null));
 
       refreshList();
       //setContentView(R.layout.main);
+
+      Intent intent = getIntent();
+      newIntent(intent);
    }
    
    @Override
@@ -67,6 +70,19 @@ public class NoteList extends ListActivity {
 	   refreshList();
    }
 
+   @Override
+   public void onNewIntent(Intent intent) {
+	   super.onNewIntent(intent);
+	   newIntent(intent);
+   }
+   
+   protected void newIntent(Intent intent) {
+	   setIntent(intent);
+	   Log.v(kTag, "Found intent: "+ intent.toString());
+	   // act=android.intent.action.VIEW dat=file:///mnt/sdcard/download/blabla.eNote
+
+   }
+   
    /**
     * Refresh the list, re-querying the database as needed
     */
