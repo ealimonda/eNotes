@@ -17,4 +17,12 @@
      <!-- main menu NoteEdit -->
      <string name="addAttachment">Attach</string>
      <string name="addUrl">Add URL</string>
+     
+     <!-- submenu NoteEdit -->
+     <string name="addPictures">Pictures</string>
+     <string name="addCapturePicture">Capture Picture</string>
+     <string name="addVideos">Videos</string>
+     <string name="addCaptureVideo">Capture Video</string>  
+     <string name="addAudio">Audio</string>
+     <string name="addRecordAudio">Record Audio</string>  
 </resources>

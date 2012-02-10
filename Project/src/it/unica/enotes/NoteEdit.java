@@ -15,15 +15,20 @@
 
 package it.unica.enotes;
 
+import java.io.File;
+import java.io.FileNotFoundException;
+
 import android.app.Activity;
 import android.content.Intent;
+import android.net.Uri;
 import android.os.Bundle;
-import android.text.method.DialerKeyListener;
+import android.os.Environment;
+import android.provider.MediaStore;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.view.SubMenu;
 import android.view.View;
-import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.EditText;
 
@@ -41,6 +46,19 @@ public class NoteEdit extends Activity {
    private static final String kTag = "NoteEdit";
    /** Menu IDs */
    private static final int kMenuItemUrl = 102;
+   private static final int kMenuItemAttach = 103;
+   private static final int kSubmenuPictures = 104;
+   private static final int kSubmenuCapturePicture = 105;
+   private static final int kSubmenuVideos = 106;
+   private static final int kSubmenuCaptureVideo = 107;  
+   private static final int kSubmenuAudio = 108;
+   private static final int kSubmenuRecordAudio = 109;
+   private static final int TAKE_PICTURE_WITH_GALLERY = 110;
+   private static final int TAKE_PICTURE_WITH_CAMERA = 111;
+   private static final int TAKE_VIDEO_WITH_GALLERY = 112;
+   private static final int TAKE_VIDEO_WITH_CAMERA = 113;
+   private static final int TAKE_SOUND_WITH_AUDIO = 114;
+   private static final int TAKE_SOUND_WITH_MIC = 115;
 
    /** Called when the activity is first created. */
    @Override
@@ -113,8 +131,16 @@ public class NoteEdit extends Activity {
 
    @Override
    public boolean onCreateOptionsMenu(Menu menu) {
-      menu.add(0, 0, 1, R.string.addAttachment).setIcon(getResources().getDrawable(R.drawable.ic_menu_attachment));
+      //menu.add(0, 0, 1, R.string.addAttachment).setIcon(getResources().getDrawable(R.drawable.ic_menu_attachment));
+	  //menu.add(0, kMenuItemAttach, 1, R.string.addAttachment).setIcon(getResources().getDrawable(R.drawable.ic_menu_attachment));
+	  SubMenu attachListMenu = menu.addSubMenu(0, kMenuItemAttach, 1, R.string.addAttachment).setIcon(getResources().getDrawable(R.drawable.ic_menu_attachment));
       menu.add(0, kMenuItemUrl, 2, R.string.addUrl).setIcon(getResources().getDrawable(R.drawable.ic_input_get));
+      attachListMenu.add(0, kSubmenuPictures, 3, R.string.addPictures).setIcon(getResources().getDrawable(R.drawable.ic_input_get));
+      attachListMenu.add(0, kSubmenuCapturePicture, 4, R.string.addCapturePicture).setIcon(getResources().getDrawable(R.drawable.ic_input_get));
+      attachListMenu.add(0, kSubmenuVideos, 5, R.string.addVideos).setIcon(getResources().getDrawable(R.drawable.ic_input_get));
+      attachListMenu.add(0, kSubmenuCaptureVideo, 6, R.string.addCaptureVideo).setIcon(getResources().getDrawable(R.drawable.ic_input_get));
+      attachListMenu.add(0, kSubmenuAudio, 7, R.string.addAudio).setIcon(getResources().getDrawable(R.drawable.ic_input_get));
+      attachListMenu.add(0, kSubmenuRecordAudio, 8, R.string.addRecordAudio).setIcon(getResources().getDrawable(R.drawable.ic_input_get));      
       return true;
    }
    
@@ -129,8 +155,67 @@ public class NoteEdit extends Activity {
           Button cancelUrl = (Button) findViewById(R.id.EditUrlButton);     
     	  addUrl.setVisibility(View.VISIBLE);
     	  cancelUrl.setVisibility(View.VISIBLE);
-   		}             
+   		}
+      if (item.getItemId() == kSubmenuPictures) {    	 
+    	  Intent takePictureFromGalleryIntent = new Intent(Intent.ACTION_PICK, android.provider.MediaStore.Images.Media.EXTERNAL_CONTENT_URI);
+    	  startActivityForResult(takePictureFromGalleryIntent, TAKE_PICTURE_WITH_GALLERY);
+      	}
+      if (item.getItemId() == kSubmenuCapturePicture) {
+    	  String SD_CARD_TEMP_DIR = Environment.getExternalStorageDirectory() + File.separator + "tmpPhoto.jpg";
+    	  Intent takePictureFromCameraIntent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
+    	  takePictureFromCameraIntent.putExtra(android.provider.MediaStore.EXTRA_OUTPUT, Uri.fromFile(new File(SD_CARD_TEMP_DIR)));
+    	  startActivityForResult(takePictureFromCameraIntent, TAKE_PICTURE_WITH_CAMERA);    	  
+      	} 
+      if (item.getItemId() == kSubmenuVideos) {    	  
+      }
+      if (item.getItemId() == kSubmenuCaptureVideo) {    	  
+      }
+      if (item.getItemId() == kSubmenuAudio) { 
+    	  Intent takeSoundFromAudio = new Intent(Intent.ACTION_PICK, android.provider.MediaStore.Audio.Media.EXTERNAL_CONTENT_URI);
+    	  startActivityForResult(takeSoundFromAudio, TAKE_SOUND_WITH_AUDIO);
+      }
+      if (item.getItemId() == kSubmenuRecordAudio) {    	  
+      }
       return true;
       }
+   
+   @Override
+   protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+    // TODO Auto-generated method stub
+    super.onActivityResult(requestCode, resultCode, data);
+    // Picture taken from gallery
+    if (requestCode == TAKE_PICTURE_WITH_CAMERA) {
+    	if (resultCode == RESULT_OK){
+    		// on activity return
+    		Uri targetUri = data.getData();
+	     //textTargetUri.setText(targetUri.toString());
+    		}
+    	}
+    // Picture taken from camera
+    if (requestCode == TAKE_PICTURE_WITH_CAMERA) {
+    	if (resultCode == Activity.RESULT_OK) {
+            // on activity return
+    		String SD_CARD_TEMP_DIR = "prova";
+            File f = new File(SD_CARD_TEMP_DIR);
+            try {
+            	Uri capturedImage =  Uri.parse(android.provider.MediaStore.Images.Media.insertImage(getContentResolver(), f.getAbsolutePath(), null, null));
+            	Log.i("camera", "Selected image: " + capturedImage.toString());
+            	f.delete();
+            	} catch (FileNotFoundException e) {
+            		// TODO Auto-generated catch block
+            		e.printStackTrace();
+            		}
+            }
+    	else {
+    		Log.i("Camera", "Result code was " + resultCode);
+    		}
+	// Audio taken from audio
+    if (requestCode == TAKE_SOUND_WITH_AUDIO) {
+    	if (resultCode == Activity.RESULT_OK) {
+            // on activity return
+    		}
+    	}
+    }
+   }
 }
 /* vim: set ts=3 sw=3 smarttab expandtab cc=101 : */
