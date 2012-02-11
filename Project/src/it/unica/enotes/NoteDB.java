@@ -112,9 +112,9 @@ public class NoteDB extends ContentProvider {
          Time testTime = new Time();
          testTime.set(0, 10, 11, 5, 1, 2012);
          Note[] testNotes = {
-            new Note(null, "First test note", null, "Text of the note\n\nBla bla", null, "aTag anotherTag"),
-            new Note(null, "Second test note", null, "Bla bla", null, null),
-            new Note(null, "Another test note", testTime, "Text of the note\n\nBla bla", null, "aTag")
+            new Note(null, "First test note", null, "Text of the note\n\nBla bla", null, null, "aTag anotherTag"),
+            new Note(null, "Second test note", null, "Bla bla", "http://www.google.com", null, null),
+            new Note(null, "Another test note", testTime, "Text of the note\n\nBla bla", null, null, "aTag")
          };
 
          for (int i = 0; i < testNotes.length; ++i) {

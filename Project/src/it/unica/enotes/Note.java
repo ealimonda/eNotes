@@ -37,6 +37,7 @@ public class Note {
    public static final String kURL        = "url";
    public static final String kTags       = "tags";
    public static final String kText       = "text";
+   public static final String kAttachment = "attachment";
    public static final String kContent    = "content";
 
    /** Content provider authority */
@@ -63,7 +64,7 @@ public class Note {
    /** Note contents (plain text) */
    private String _text;
    /** Note attachment */
-   // TODO
+   private NoteAttachment _attachment;
    /** Note URL */
    private String _URL;
    /** Note tags */
@@ -71,7 +72,7 @@ public class Note {
 
    /** Default constructor.  Creates an empty note with an auto-generated GUID */
    public Note() {
-      this(null, null, null, null, null, null);
+      this(null, null, null, null, null, null, null);
    }
    /**
     * Constructor.  Creates an empty note with a given title and GUID
@@ -79,7 +80,7 @@ public class Note {
     * @param title   The title of the note
     */
    public Note(String GUID, String title) {
-      this(GUID, title, null, null, null, null);
+      this(GUID, title, null, null, null, null, null);
    }
    /**
     * Constructor
@@ -88,6 +89,7 @@ public class Note {
     * @param timestamp  Last modification timestamp
     * @param text       Content (text) of the note
     * @param URL        Attached URL to the note
+    * @param attachment Attached file to the note
     * @param tags       Tags of the note, as a space-delimited string
     */
    public Note(
@@ -96,6 +98,7 @@ public class Note {
          Time timestamp,
          String text,
          String URL,
+         NoteAttachment attachment,
          String tags
          ) {
       if (GUID == null) {
@@ -121,6 +124,7 @@ public class Note {
       this._text = null;
       this._URL = null;
       this._tags = null;
+      this._attachment = null;
       this._loaded = false;
       
       if (text != null) {
@@ -131,6 +135,9 @@ public class Note {
          if (tags != null) {
         	 this.setTagsFromString(tags);
          }
+         if (attachment != null) {
+            this._attachment = attachment;
+         }
          this._loaded = true;
       }
       
@@ -139,6 +146,9 @@ public class Note {
       }
       if (this._URL == null) {
          this._URL = "";
+      }
+      if (this._attachment == null) {
+         this._attachment = new NoteAttachment();
       }
       if (this._tags == null) {
          this._tags = new ArrayList<String>();
@@ -171,7 +181,11 @@ public class Note {
         	 this._URL = "";
          }
 
-         // TODO: Attachments
+         if (jsObject.has(kAttachment)) {
+             this._attachment = new NoteAttachment(jsObject.getJSONObject(kAttachment));
+          } else {
+         	 this._attachment = new NoteAttachment();
+          }
       } catch (JSONException e) {
          return;
       }
@@ -188,7 +202,7 @@ public class Note {
          jsObject = new JSONObject();
          jsObject.put(kText, this._text);
          jsObject.put(kURL, this._URL);
-         // TODO: Attachments
+         jsObject.put(kAttachment, this._attachment.getJson());
       } catch (JSONException e) {
          return "";
       }
@@ -321,6 +335,25 @@ public class Note {
     	  this._URL = "";
       } else {
     	  this._URL = URL;
+      }
+      this.setDirty(true);
+   }
+   /**
+    * Get the note's attached file
+    * @return  The note's attached file
+    */
+   public NoteAttachment getAttachment() {
+      return this._attachment;
+   }
+   /**
+    * Set the note's attached file
+    * @param URL     A new file to attach (replacing the previous one)
+    */
+   public void setAttachment(NoteAttachment attachment) {
+      if (attachment == null) {
+    	  this._attachment = new NoteAttachment();
+      } else {
+    	  this._attachment = attachment;
       }
       this.setDirty(true);
    }
