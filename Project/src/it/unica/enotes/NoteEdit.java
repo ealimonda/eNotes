@@ -20,6 +20,9 @@ import java.io.FileNotFoundException;
 
 import android.app.Activity;
 import android.content.Intent;
+import android.database.Cursor;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.net.Uri;
 import android.os.Bundle;
 import android.os.Environment;
@@ -135,12 +138,12 @@ public class NoteEdit extends Activity {
 	  //menu.add(0, kMenuItemAttach, 1, R.string.addAttachment).setIcon(getResources().getDrawable(R.drawable.ic_menu_attachment));
 	  SubMenu attachListMenu = menu.addSubMenu(0, kMenuItemAttach, 1, R.string.addAttachment).setIcon(getResources().getDrawable(R.drawable.ic_menu_attachment));
       menu.add(0, kMenuItemUrl, 2, R.string.addUrl).setIcon(getResources().getDrawable(R.drawable.ic_input_get));
-      attachListMenu.add(0, kSubmenuPictures, 3, R.string.addPictures).setIcon(getResources().getDrawable(R.drawable.ic_input_get));
-      attachListMenu.add(0, kSubmenuCapturePicture, 4, R.string.addCapturePicture).setIcon(getResources().getDrawable(R.drawable.ic_input_get));
-      attachListMenu.add(0, kSubmenuVideos, 5, R.string.addVideos).setIcon(getResources().getDrawable(R.drawable.ic_input_get));
-      attachListMenu.add(0, kSubmenuCaptureVideo, 6, R.string.addCaptureVideo).setIcon(getResources().getDrawable(R.drawable.ic_input_get));
-      attachListMenu.add(0, kSubmenuAudio, 7, R.string.addAudio).setIcon(getResources().getDrawable(R.drawable.ic_input_get));
-      attachListMenu.add(0, kSubmenuRecordAudio, 8, R.string.addRecordAudio).setIcon(getResources().getDrawable(R.drawable.ic_input_get));      
+      attachListMenu.add(0, kSubmenuPictures, 3, R.string.addPictures);
+      attachListMenu.add(0, kSubmenuCapturePicture, 4, R.string.addCapturePicture);
+      attachListMenu.add(0, kSubmenuVideos, 5, R.string.addVideos);
+      attachListMenu.add(0, kSubmenuCaptureVideo, 6, R.string.addCaptureVideo);
+      attachListMenu.add(0, kSubmenuAudio, 7, R.string.addAudio);
+      attachListMenu.add(0, kSubmenuRecordAudio, 8, R.string.addRecordAudio);      
       return true;
    }
    
@@ -183,16 +186,25 @@ public class NoteEdit extends Activity {
    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
     // TODO Auto-generated method stub
     super.onActivityResult(requestCode, resultCode, data);
+    switch(requestCode) {
     // Picture taken from gallery
-    if (requestCode == TAKE_PICTURE_WITH_CAMERA) {
-    	if (resultCode == RESULT_OK){
-    		// on activity return
-    		Uri targetUri = data.getData();
-	     //textTargetUri.setText(targetUri.toString());
-    		}
-    	}
+    case TAKE_PICTURE_WITH_GALLERY:
+        if(resultCode == RESULT_OK){  
+            Uri selectedImage = data.getData();
+            String[] filePathColumn = {MediaStore.Images.Media.DATA};
+
+            Cursor cursor = getContentResolver().query(selectedImage, filePathColumn, null, null, null);
+            cursor.moveToFirst();
+
+            int columnIndex = cursor.getColumnIndex(filePathColumn[0]);
+            String filePath = cursor.getString(columnIndex);
+            cursor.close();
+            // the selected image
+            Bitmap picture = BitmapFactory.decodeFile(filePath);            
+        }
+        break;        
     // Picture taken from camera
-    if (requestCode == TAKE_PICTURE_WITH_CAMERA) {
+    case TAKE_PICTURE_WITH_CAMERA:    
     	if (resultCode == Activity.RESULT_OK) {
             // on activity return
     		String SD_CARD_TEMP_DIR = "prova";
@@ -209,13 +221,16 @@ public class NoteEdit extends Activity {
     	else {
     		Log.i("Camera", "Result code was " + resultCode);
     		}
+    	break;
 	// Audio taken from audio
-    if (requestCode == TAKE_SOUND_WITH_AUDIO) {
+    case TAKE_SOUND_WITH_AUDIO:
     	if (resultCode == Activity.RESULT_OK) {
             // on activity return
     		}
+    	break;
+    default:
+  	  //return false;
     	}
     }
-   }
 }
 /* vim: set ts=3 sw=3 smarttab expandtab cc=101 : */
