@@ -56,24 +56,21 @@ public class NoteSearch extends ListActivity {
 
       EditText tagBox = (EditText) findViewById(R.id.SearchBox);
       tagBox.addTextChangedListener(new TextWatcher() {
-    	  public void afterTextChanged(Editable s) {
-    		  refreshList();
-    	  }
-    	  public void beforeTextChanged(CharSequence s, int start, int count,
-    			  int after) {
-    	  }
-    	  public void onTextChanged(CharSequence s, int start, int count,
-    			  int after) {
-    	  }
-    });
-
+         public void afterTextChanged(Editable s) {
+            refreshList();
+         }
+         public void beforeTextChanged(CharSequence s, int start, int count, int after) {
+         }
+         public void onTextChanged(CharSequence s, int start, int count, int after) {
+         }
+      });
       refreshList();
    }
 
    @Override
    public void onResume() {
-	   super.onResume();
-	   refreshList();
+      super.onResume();
+      refreshList();
    }
 
    /**
@@ -82,7 +79,7 @@ public class NoteSearch extends ListActivity {
    protected void refreshList() {
       EditText tagBox = (EditText) findViewById(R.id.SearchBox);
       String tag = tagBox.getText().toString();
-      
+
       Cursor data = database.getAllNotesHeadersByTag(this, tag);
 
       SimpleCursorAdapter dataSource = new SimpleCursorAdapter(this, R.layout.row, data, fields,

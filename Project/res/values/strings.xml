@@ -6,13 +6,13 @@
     
     <!-- main menu NoteList -->
     <string name="addDialogTitle">New Note</string>
-    <string name="addItem">Add Note</string>   
+    <string name="addItem">Add Note</string>
     <string name="searchItem">Search Note</string>
     
     <!-- main menu NoteView -->
     <string name="editItem">Edit</string>
     <string name="deleteItem">Delete</string>
-     <string name="sendItem">Send</string>
+    <string name="sendItem">Send</string>
      
      <!-- main menu NoteEdit -->
      <string name="addAttachment">Attach</string>
@@ -22,7 +22,7 @@
      <string name="addPictures">Pictures</string>
      <string name="addCapturePicture">Capture Picture</string>
      <string name="addVideos">Videos</string>
-     <string name="addCaptureVideo">Capture Video</string>  
+     <string name="addCaptureVideo">Capture Video</string>
      <string name="addAudio">Audio</string>
-     <string name="addRecordAudio">Record Audio</string>  
+     <string name="addRecordAudio">Record Audio</string>
 </resources>

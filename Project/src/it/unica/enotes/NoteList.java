@@ -52,7 +52,7 @@ public class NoteList extends ListActivity {
       setContentView(R.layout.main);
 
       database = new NoteDB();
-      
+
       ListView view = getListView();
       view.setHeaderDividersEnabled(true);
 //      view.addHeaderView(getLayoutInflater().inflate(R.layout.row, null));
@@ -63,26 +63,26 @@ public class NoteList extends ListActivity {
       Intent intent = getIntent();
       newIntent(intent);
    }
-   
+
    @Override
    public void onResume() {
-	   super.onResume();
-	   refreshList();
+      super.onResume();
+      refreshList();
    }
 
    @Override
    public void onNewIntent(Intent intent) {
-	   super.onNewIntent(intent);
-	   newIntent(intent);
+      super.onNewIntent(intent);
+      newIntent(intent);
    }
-   
+
    protected void newIntent(Intent intent) {
-	   setIntent(intent);
-	   Log.v(kTag, "Found intent: "+ intent.toString());
-	   // act=android.intent.action.VIEW dat=file:///mnt/sdcard/download/blabla.eNote
+      setIntent(intent);
+      Log.v(kTag, "Found intent: "+ intent.toString());
+      // act=android.intent.action.VIEW dat=file:///mnt/sdcard/download/blabla.eNote
 
    }
-   
+
    /**
     * Refresh the list, re-querying the database as needed
     */
@@ -142,18 +142,18 @@ public class NoteList extends ListActivity {
          long newID = database.addNote(this, null, null, null);
          refreshList();
          if (newID >= 0) {
-        	 Intent i = new Intent(this, NoteEdit.class);
-        	 i.putExtra(Note.kID, newID);
-        	 startActivityForResult(i, 0);
+            Intent i = new Intent(this, NoteEdit.class);
+            i.putExtra(Note.kID, newID);
+            startActivityForResult(i, 0);
          }
          break;
       case kMenuItemSearch:
          Intent i = new Intent(this, NoteSearch.class);
          startActivityForResult(i, 0);
           break;
-          
+
       default:
-    	  return false;
+          return false;
       }
 
       return true;

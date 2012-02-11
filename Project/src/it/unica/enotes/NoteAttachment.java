@@ -32,7 +32,7 @@ public class NoteAttachment {
    public static final int kFileTypeAudio = 2;
    public static final int kFileTypeVideo = 3;
    public static final int kFileTypeMax = 4;
-   
+
    public static final String kAttachmentFileName = "name";
    public static final String kAttachmentFileType = "type";
    public static final String kAttachmentFileData = "data";
@@ -46,7 +46,7 @@ public class NoteAttachment {
       this._filedata = ByteBuffer.allocate(0);
       this._filetype = kFileTypeInvalid;
    }
-   
+
    public NoteAttachment(JSONObject contents) {
       this();
       if (contents == null) {
@@ -54,8 +54,8 @@ public class NoteAttachment {
       }
       try {
          if (contents.has(kAttachmentFileName)
-        		 && contents.has(kAttachmentFileType)
-        		 && contents.has(kAttachmentFileData)) {
+               && contents.has(kAttachmentFileType)
+               && contents.has(kAttachmentFileData)) {
             this.setFilename(contents.getString(kAttachmentFileName));
             this.setFiletype(contents.getInt(kAttachmentFileType));
             this.setEncodedData(contents.getString(kAttachmentFileData));
@@ -80,13 +80,13 @@ public class NoteAttachment {
       this.setFilename(filename);
       this.setRawData(filedata);
    }
-   
+
    public String getFilename() {
       return this._filename;
    }
    public void setFilename(String filename) {
       if (filename == null) {
-    	  this._filename = "";
+         this._filename = "";
       } else {
          this._filename = filename;
       }
@@ -97,7 +97,7 @@ public class NoteAttachment {
    }
    public void setRawData(ByteBuffer rawdata) {
       if (rawdata == null) {
-    	  this._filedata = ByteBuffer.allocate(0);
+         this._filedata = ByteBuffer.allocate(0);
       } else {
          this._filedata = rawdata;
       }
@@ -123,7 +123,7 @@ public class NoteAttachment {
          this._filetype = kFileTypeInvalid;
       }
    }
-   
+
    public JSONObject getJson() {
       if (this._filetype <= kFileTypeInvalid || this._filetype >= kFileTypeMax) {
          return null;
@@ -140,3 +140,4 @@ public class NoteAttachment {
       return jsObject;
    }
 }
+/* vim: set ts=3 sw=3 smarttab expandtab cc=101 : */
