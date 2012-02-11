@@ -19,10 +19,14 @@ import java.io.File;
 import java.io.FileNotFoundException;
 
 import android.app.Activity;
+import android.content.ContentValues;
 import android.content.Intent;
 import android.database.Cursor;
+<<<<<<< HEAD:Project/src/it/unica/enotes/NoteEdit.java
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
+=======
+>>>>>>> 2d88e27ed7c7c8d8a69e4a34fe22cdb37ea1217d:Project/src/it/unica/enotes/NoteEdit.java
 import android.net.Uri;
 import android.os.Bundle;
 import android.os.Environment;
@@ -164,10 +168,12 @@ public class NoteEdit extends Activity {
     	  startActivityForResult(takePictureFromGalleryIntent, TAKE_PICTURE_WITH_GALLERY);
       	}
       if (item.getItemId() == kSubmenuCapturePicture) {
-    	  String SD_CARD_TEMP_DIR = Environment.getExternalStorageDirectory() + File.separator + "tmpPhoto.jpg";
-    	  Intent takePictureFromCameraIntent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
-    	  takePictureFromCameraIntent.putExtra(android.provider.MediaStore.EXTRA_OUTPUT, Uri.fromFile(new File(SD_CARD_TEMP_DIR)));
-    	  startActivityForResult(takePictureFromCameraIntent, TAKE_PICTURE_WITH_CAMERA);    	  
+    	  ContentValues values = new ContentValues();
+    	  values.put(MediaStore.Images.Media.TITLE, "eNotesTmpPhoto.jpg");
+    	  Uri capturedImageUri = getContentResolver().insert(MediaStore.Images.Media.EXTERNAL_CONTENT_URI, values);
+    	  Intent intent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
+    	  intent.putExtra(MediaStore.EXTRA_OUTPUT, capturedImageUri);
+    	  startActivityForResult(intent, TAKE_PICTURE_WITH_CAMERA);    	  
       	} 
       if (item.getItemId() == kSubmenuVideos) {    	  
       }
@@ -188,6 +194,7 @@ public class NoteEdit extends Activity {
     super.onActivityResult(requestCode, resultCode, data);
     switch(requestCode) {
     // Picture taken from gallery
+<<<<<<< HEAD:Project/src/it/unica/enotes/NoteEdit.java
     case TAKE_PICTURE_WITH_GALLERY:
         if(resultCode == RESULT_OK){  
             Uri selectedImage = data.getData();
@@ -203,20 +210,39 @@ public class NoteEdit extends Activity {
             Bitmap picture = BitmapFactory.decodeFile(filePath);            
         }
         break;        
+=======
+    if (requestCode == TAKE_PICTURE_WITH_GALLERY) {
+    	if (resultCode == RESULT_OK){
+    		// on activity return
+    		Uri targetUri = data.getData();
+	     //textTargetUri.setText(targetUri.toString());
+    		}
+    	}
+>>>>>>> 2d88e27ed7c7c8d8a69e4a34fe22cdb37ea1217d:Project/src/it/unica/enotes/NoteEdit.java
     // Picture taken from camera
     case TAKE_PICTURE_WITH_CAMERA:    
     	if (resultCode == Activity.RESULT_OK) {
             // on activity return
-    		String SD_CARD_TEMP_DIR = "prova";
-            File f = new File(SD_CARD_TEMP_DIR);
-            try {
-            	Uri capturedImage =  Uri.parse(android.provider.MediaStore.Images.Media.insertImage(getContentResolver(), f.getAbsolutePath(), null, null));
-            	Log.i("camera", "Selected image: " + capturedImage.toString());
+    		String[] projection = { MediaStore.Images.Media.DATA };
+      	  ContentValues values = new ContentValues();
+      	  values.put(MediaStore.Images.Media.TITLE, "tmpPhoto.jpg");
+      	  Uri capturedImageUri = getContentResolver().insert(MediaStore.Images.Media.EXTERNAL_CONTENT_URI, values);
+    		Cursor cursor = managedQuery(capturedImageUri, projection, null, null, null);
+    		int column_index_data = cursor.getColumnIndexOrThrow(MediaStore.Images.Media.DATA);
+    		cursor.moveToFirst();
+    		String  capturedImageFilePath = cursor.getString(column_index_data);
+//            String SD_CARD_TEMP_DIR = Environment.getExternalStorageDirectory() + File.separator + "tmpPhoto.jpg";
+            File f = new File(capturedImageFilePath);
+            // FIXME: WIP, I'll fix this up later
+//            try {
+//            	Uri capturedImage =  Uri.parse(android.provider.MediaStore.Images.Media.insertImage(getContentResolver(), f.getAbsolutePath(), null, null));
+//            	Log.i("camera", "Selected image: " + capturedImage.toString());
+            	Log.v("camera", "Selected image: " + capturedImageFilePath + " ("+ f.getAbsolutePath() +")");
             	f.delete();
-            	} catch (FileNotFoundException e) {
+  //          	} catch (FileNotFoundException e) {
             		// TODO Auto-generated catch block
-            		e.printStackTrace();
-            		}
+    //        		e.printStackTrace();
+      //      		}
             }
     	else {
     		Log.i("Camera", "Result code was " + resultCode);
