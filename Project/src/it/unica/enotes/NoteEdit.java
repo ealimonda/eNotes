@@ -15,18 +15,11 @@
 
 package it.unica.enotes;
 
-import java.io.ByteArrayOutputStream;
 import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileNotFoundException;
-import java.io.IOException;
-import java.nio.ByteBuffer;
 import android.app.Activity;
 import android.content.ContentValues;
 import android.content.Intent;
 import android.database.Cursor;
-import android.graphics.Bitmap;
-import android.graphics.BitmapFactory;
 import android.net.Uri;
 import android.os.Bundle;
 import android.provider.MediaStore;
@@ -68,6 +61,7 @@ public class NoteEdit extends Activity {
    private static final int kRequestAudioFromMic = 105;
 
    private static final String kTempPhotoFilename = "eNotesTmpPhoto.jpg";
+   private static final String kTempVideoFilename = "eNotesTmpVideo.3gp";
 
    /** Called when the activity is first created. */
    @Override
@@ -144,12 +138,6 @@ public class NoteEdit extends Activity {
       //menu.add(0, kMenuItemAttach, 1, R.string.addAttachment).setIcon(getResources().getDrawable(R.drawable.ic_menu_attachment));
       SubMenu attachListMenu = menu.addSubMenu(0, kMenuItemAttach, 1, R.string.addAttachment).setIcon(getResources().getDrawable(R.drawable.ic_menu_attachment));
       menu.add(0, kMenuItemUrl, 2, R.string.addUrl).setIcon(getResources().getDrawable(R.drawable.ic_input_get));
-      //attachListMenu.add(0, kSubmenuPictures, 3, R.string.addPictures).setIcon(getResources().getDrawable(R.drawable.ic_input_get));
-      //attachListMenu.add(0, kSubmenuCapturePicture, 4, R.string.addCapturePicture).setIcon(getResources().getDrawable(R.drawable.ic_input_get));
-      //attachListMenu.add(0, kSubmenuVideos, 5, R.string.addVideos).setIcon(getResources().getDrawable(R.drawable.ic_input_get));
-      //attachListMenu.add(0, kSubmenuCaptureVideo, 6, R.string.addCaptureVideo).setIcon(getResources().getDrawable(R.drawable.ic_input_get));
-      //attachListMenu.add(0, kSubmenuAudio, 7, R.string.addAudio).setIcon(getResources().getDrawable(R.drawable.ic_input_get));
-      //attachListMenu.add(0, kSubmenuRecordAudio, 8, R.string.addRecordAudio).setIcon(getResources().getDrawable(R.drawable.ic_input_get));
       attachListMenu.add(0, kSubmenuPictures, 3, R.string.addPictures);
       attachListMenu.add(0, kSubmenuCapturePicture, 4, R.string.addCapturePicture);
       attachListMenu.add(0, kSubmenuVideos, 5, R.string.addVideos);
@@ -198,10 +186,14 @@ public class NoteEdit extends Activity {
       	break;
       case kSubmenuCaptureVideo:
       {
-    	  // TODO
-    	  return false;
+          ContentValues values = new ContentValues();
+          values.put(MediaStore.Video.Media.TITLE, kTempVideoFilename);
+          Uri capturedVideoUri = getContentResolver().insert(MediaStore.Video.Media.EXTERNAL_CONTENT_URI, values);
+          Intent intent = new Intent(MediaStore.ACTION_VIDEO_CAPTURE);
+          intent.putExtra(MediaStore.EXTRA_OUTPUT, capturedVideoUri);
+          startActivityForResult(intent, kRequestVideoFromCamera);
       }
-      	//break;
+      	break;
       case kSubmenuAudio:
       {
          Intent intent = new Intent(Intent.ACTION_PICK, MediaStore.Audio.Media.EXTERNAL_CONTENT_URI);
@@ -287,7 +279,24 @@ public class NoteEdit extends Activity {
       }
          break;
       case kRequestVideoFromCamera:
-    	  // TODO
+      {
+          String[] projection = { MediaStore.Video.Media.DATA };
+
+          ContentValues values = new ContentValues();
+          values.put(MediaStore.Video.Media.TITLE, kTempVideoFilename);
+
+          Uri fileUri = getContentResolver().insert(MediaStore.Video.Media.EXTERNAL_CONTENT_URI, values);
+          Cursor cursor = managedQuery(fileUri, projection, null, null, null);
+
+          int column_index_data = cursor.getColumnIndexOrThrow(MediaStore.Video.Media.DATA);
+          cursor.moveToFirst();
+          String  filePath = cursor.getString(column_index_data);
+          cursor.close();
+          
+          File f = new File(filePath);
+          this._note.setAttachment(new NoteAttachment(NoteAttachment.kFileTypeVideo, f));
+          f.delete();
+      }
     	  break;
       case kRequestAudioFromGallery:
       {   // Audio taken from gallery
