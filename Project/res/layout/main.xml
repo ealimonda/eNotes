@@ -5,8 +5,8 @@
    android:orientation="vertical"
    android:layout_width="fill_parent"
    android:layout_height="fill_parent"
-	android:background="#ffffffff"
-   >
+   android:background="#ffffffff">
+	
    <include layout="@layout/row"/>
    
    <ListView
@@ -17,4 +17,3 @@
 </LinearLayout>
     
 <!-- vim: set ts=3 sw=3 smarttab expandtab cc=101 : -->
-

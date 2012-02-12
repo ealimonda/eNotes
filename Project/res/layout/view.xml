@@ -1,9 +1,4 @@
 <?xml version="1.0" encoding="utf-8"?>
-<!-- <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android" -->
-<!-- 		android:layout_width="fill_parent" -->
-<!-- 		android:layout_height="fill_parent" -->
-<!-- 		android:orientation="vertical" -->
-<!--     	> -->
 <!-- Main layout -->
 <ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
    android:layout_width="fill_parent"
@@ -16,84 +11,110 @@
       android:layout_width="fill_parent"
       android:layout_height="fill_parent"
       >
-      <!-- Title -->
-      <TextView
-         android:id="@+id/ViewTitle"
-         android:layout_width="fill_parent"
-         android:layout_height="wrap_content"
-         android:padding="10dip"
-         android:textColor="#ff000000"
-         android:textStyle="bold" />
+      
+      <LinearLayout
+	      android:orientation="horizontal"
+	      android:layout_width="fill_parent"
+	      android:layout_height="fill_parent">      
+	      <!-- Title -->
+	      <TextView
+	          android:layout_width="wrap_content"
+	          android:layout_height="wrap_content"
+	          android:padding="10dip"
+	          android:text="Title:"
+	          android:textColor="#ff000000"
+	          android:textStyle="bold" />	
+	      <TextView
+	          android:id="@+id/ViewTitle"
+	          android:layout_width="wrap_content"
+	          android:layout_height="wrap_content"
+	          android:padding="5dip"
+	          android:textColor="#ff000000" />      
+   	  </LinearLayout>
+
       <!-- Separator -->
       <View
          android:layout_width="match_parent"
          android:layout_height="match_parent"
          android:background="?android:attr/listDivider" />
+      <!-- End Separator -->
+      
+      <LinearLayout
+	      android:orientation="horizontal"
+	      android:layout_width="fill_parent"
+	      android:layout_height="fill_parent">      
       <!-- Contents -->
-      <TextView
-         android:id="@+id/ViewContents"
-         android:layout_width="fill_parent"
-         android:layout_height="wrap_content"
-         android:singleLine="false"
-         android:padding="10dip"
-         android:textColor="#ff000000" />
+	      <TextView
+	          android:layout_width="wrap_content"
+	          android:layout_height="wrap_content"
+	          android:padding="10dip"
+	          android:text="Content:"
+	          android:textColor="#ff000000"
+	          android:textStyle="bold" />	
+	      <TextView
+	         android:id="@+id/ViewContents"
+	         android:layout_width="fill_parent"
+	         android:layout_height="wrap_content"
+	         android:singleLine="false"
+	         android:padding="5dip"
+	         android:textColor="#ff000000" />
+     </LinearLayout>
+       
       <!-- Separator -->
       <View
          android:layout_width="match_parent"
          android:layout_height="wrap_content"
          android:background="?android:attr/listDivider" />
-      <FrameLayout
-         android:layout_width="fill_parent"
-         android:layout_height="fill_parent"
-         android:layout_weight="50" />
+      <!-- End Separator -->
+      
       <LinearLayout
          android:layout_width="fill_parent"
          android:layout_height="wrap_content"
-         android:orientation="vertical"
-         >
+         android:orientation="horizontal">
          <!-- Attachments -->
          <TextView
             android:text="Attachments:"
             android:padding="10dip"
-            android:layout_width="fill_parent"
+            android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:textStyle="bold"
             android:textColor="#ff000000" />
          <TextView
                android:id="@+id/ViewUrl"
-               android:layout_width="wrap_content"
-               android:layout_height="wrap_content"
-               android:layout_weight="0.54"               
-               android:padding="10dip"
+               android:layout_width="fill_parent"
+               android:layout_height="wrap_content"      
+               android:padding="5dip"
                android:textColor="#ff000000" />
-         <!-- Separator -->
-         <View
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:background="?android:attr/listDivider" />
-         <!-- Tags -->
-         <LinearLayout
-            android:layout_width="fill_parent"
-            android:layout_height="wrap_content"
-            android:orientation="horizontal"
-            >
-            <TextView
-               android:layout_width="55dp"
-               android:layout_height="wrap_content"
-               android:padding="10dip"
-               android:text="Tags:" />
-            <TextView
-               android:id="@+id/ViewTags"
-               android:layout_width="213dp"
-               android:layout_height="wrap_content"
-               android:layout_weight="0.54"
-               android:text="(none)"
-               android:padding="10dip"
-               android:textStyle="bold"
-               android:textColor="#ff000000" />
-         </LinearLayout>
+     </LinearLayout>
+         
+     <!-- Separator -->
+     <View
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:background="?android:attr/listDivider" />
+     <!-- End Separator -->
+     
+     <LinearLayout
+         android:layout_width="fill_parent"
+         android:layout_height="wrap_content"
+         android:orientation="horizontal">     
+	    <!-- Tags -->	    
+	       <TextView
+	          android:layout_width="wrap_content"
+	          android:layout_height="wrap_content"
+	          android:padding="10dip"
+	          android:textColor="#FF000000"
+	          android:textStyle="bold"
+	          android:text="Tags:" />
+	       <TextView
+	          android:id="@+id/ViewTags"
+	          android:layout_width="wrap_content"
+	          android:layout_height="wrap_content"
+	          android:padding="5dip"
+	          android:textColor="#ff000000" />
       </LinearLayout>
-   </LinearLayout>
+         
+    </LinearLayout>
 </ScrollView>
-<!-- </LinearLayout> -->
+
 <!-- vim: set ts=3 sw=3 smarttab expandtab cc=101 : -->
