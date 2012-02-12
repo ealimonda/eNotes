@@ -121,15 +121,15 @@ public class NoteView extends Activity {
          startActivityForResult(i, 0);
       } else if (item.getItemId() == kMenuItemDelete) {
          if (database.deleteNote(this, this._noteID)) {
-            new AlertDialog.Builder(this).setTitle("Confirm Delete")
-                  .setMessage("Do you want to delete this note?")
-                  .setPositiveButton("Yes", new DialogInterface.OnClickListener() {
+            new AlertDialog.Builder(this).setTitle(R.string.deleteConf)                  
+            	  .setMessage(R.string.deleteMsg)            
+                  .setPositiveButton(R.string.yes, new DialogInterface.OnClickListener() {
                @Override
                public void onClick(DialogInterface dialogInterface, int i) {
                   finish();
                }
             })
-               .setNeutralButton("Cancel", null) // don't need to do anything but dismiss here
+               .setNeutralButton(R.string.cancel, null) // don't need to do anything but dismiss here
                .create()
                .show();
          }
