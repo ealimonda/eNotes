@@ -19,12 +19,8 @@ import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
-import java.io.FileReader;
 import java.io.IOException;
-import java.io.InputStream;
 import java.nio.ByteBuffer;
-import java.nio.CharBuffer;
-
 import android.app.Activity;
 import android.content.ContentValues;
 import android.content.Intent;
@@ -63,12 +59,13 @@ public class NoteEdit extends Activity {
    private static final int kSubmenuCaptureVideo = 107;
    private static final int kSubmenuAudio = 108;
    private static final int kSubmenuRecordAudio = 109;
-   private static final int TAKE_PICTURE_WITH_GALLERY = 110;
-   private static final int TAKE_PICTURE_WITH_CAMERA = 111;
-   private static final int TAKE_VIDEO_WITH_GALLERY = 112;
-   private static final int TAKE_VIDEO_WITH_CAMERA = 113;
-   private static final int TAKE_SOUND_WITH_AUDIO = 114;
-   private static final int TAKE_SOUND_WITH_MIC = 115;
+   
+   private static final int kRequestPictureFromGallery = 100;
+   private static final int kRequestPictureFromCamera = 101;
+   private static final int kRequestVideoFromGallery = 102;
+   private static final int kRequestVideoFromCamera = 103;
+   private static final int kRequestAudioFromGallery = 104;
+   private static final int kRequestAudioFromMic = 105;
 
    private static final String kTempPhotoFilename = "eNotesTmpPhoto.jpg";
 
@@ -168,33 +165,57 @@ public class NoteEdit extends Activity {
          Log.v(kTag, "ERROR: note is NULL!!!");
          return false;
       }
-      if (item.getItemId() == kMenuItemUrl) {
-         EditText addUrl = (EditText) findViewById(R.id.EditUrlText);
+      switch (item.getItemId()) {
+      case kMenuItemUrl:
+      {
+    	 EditText addUrl = (EditText) findViewById(R.id.EditUrlText);
          Button cancelUrl = (Button) findViewById(R.id.EditUrlButton);
          addUrl.setVisibility(View.VISIBLE);
          cancelUrl.setVisibility(View.VISIBLE);
       }
-      if (item.getItemId() == kSubmenuPictures) {
-         Intent takePictureFromGalleryIntent = new Intent(Intent.ACTION_PICK, android.provider.MediaStore.Images.Media.EXTERNAL_CONTENT_URI);
-         startActivityForResult(takePictureFromGalleryIntent, TAKE_PICTURE_WITH_GALLERY);
+      	break;
+      case kSubmenuPictures:
+      {
+          Intent intent = new Intent(Intent.ACTION_PICK, android.provider.MediaStore.Images.Media.EXTERNAL_CONTENT_URI);
+         startActivityForResult(intent, kRequestPictureFromGallery);
       }
-      if (item.getItemId() == kSubmenuCapturePicture) {
+      	break;
+      case kSubmenuCapturePicture:
+      {
          ContentValues values = new ContentValues();
          values.put(MediaStore.Images.Media.TITLE, kTempPhotoFilename);
          Uri capturedImageUri = getContentResolver().insert(MediaStore.Images.Media.EXTERNAL_CONTENT_URI, values);
          Intent intent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
          intent.putExtra(MediaStore.EXTRA_OUTPUT, capturedImageUri);
-         startActivityForResult(intent, TAKE_PICTURE_WITH_CAMERA);
+         startActivityForResult(intent, kRequestPictureFromCamera);
       }
-      if (item.getItemId() == kSubmenuVideos) {
+         break;
+      case kSubmenuVideos: {
+          Intent intent = new Intent(Intent.ACTION_GET_CONTENT, MediaStore.Video.Media.EXTERNAL_CONTENT_URI);
+          intent.setType("video/*");
+          startActivityForResult(intent, kRequestVideoFromGallery);
       }
-      if (item.getItemId() == kSubmenuCaptureVideo) {
+      	break;
+      case kSubmenuCaptureVideo:
+      {
+    	  // TODO
+    	  return false;
       }
-      if (item.getItemId() == kSubmenuAudio) {
-         Intent takeSoundFromAudio = new Intent(Intent.ACTION_PICK, android.provider.MediaStore.Audio.Media.EXTERNAL_CONTENT_URI);
-         startActivityForResult(takeSoundFromAudio, TAKE_SOUND_WITH_AUDIO);
+      	//break;
+      case kSubmenuAudio:
+      {
+         Intent intent = new Intent(Intent.ACTION_PICK, MediaStore.Audio.Media.EXTERNAL_CONTENT_URI);
+         startActivityForResult(intent, kRequestAudioFromGallery);
       }
-      if (item.getItemId() == kSubmenuRecordAudio) {
+         break;
+      case kSubmenuRecordAudio:
+      {
+    	  // TODO
+    	  return false;
+      }
+      	//break;
+      default:
+    	  return false;
       }
       return true;
    }
@@ -202,75 +223,91 @@ public class NoteEdit extends Activity {
    @Override
    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
       super.onActivityResult(requestCode, resultCode, data);
+      if (resultCode != RESULT_OK) {
+          Log.i("Camera", "Result code was " + resultCode);
+    	  return;
+      }
+      // TODO: Ensure this is valid.  Things go haywire if the screen is rotated
+      //       i.e. when the gallery or camera is open and our activity hidden
+      Log.v(kTag, "Current note ID is: " +this._noteID);
+      Log.v(kTag, "current note is: "+this._note.getTitle());
       switch (requestCode) {
-      case TAKE_PICTURE_WITH_GALLERY:
-         // Picture taken from gallery
-         //if (resultCode == RESULT_OK) {
-         //}
+      case kRequestPictureFromGallery:
+      {  // Picture taken from Gallery
          Uri selectedImage = data.getData();
-         String[] filePathColumn = {MediaStore.Images.Media.DATA};
+         String[] projection = {MediaStore.Images.Media.DATA};
 
-         Cursor cursor = getContentResolver().query(selectedImage, filePathColumn, null, null, null);
+         Cursor cursor = getContentResolver().query(selectedImage, projection, null, null, null);
          cursor.moveToFirst();
 
-         int columnIndex = cursor.getColumnIndex(filePathColumn[0]);
+         int columnIndex = cursor.getColumnIndex(projection[0]);
          String filePath = cursor.getString(columnIndex);
          cursor.close();
+
          // the selected image
-         Bitmap picture = BitmapFactory.decodeFile(filePath);
+         //Bitmap picture = BitmapFactory.decodeFile(filePath);
+         File f = new File(filePath);
+         this._note.setAttachment(new NoteAttachment(NoteAttachment.kFileTypePicture, f));
+      }
          break;
-         // Picture taken from camera
-      case TAKE_PICTURE_WITH_CAMERA:
-         if (resultCode == Activity.RESULT_OK) {
-            // on activity return
-            String[] projection = { MediaStore.Images.Media.DATA };
-            ContentValues values = new ContentValues();
-            values.put(MediaStore.Images.Media.TITLE, kTempPhotoFilename);
-            Uri capturedImageUri = getContentResolver().insert(MediaStore.Images.Media.EXTERNAL_CONTENT_URI, values);
-            Cursor myCursor = managedQuery(capturedImageUri, projection, null, null, null);
-            int column_index_data = myCursor.getColumnIndexOrThrow(MediaStore.Images.Media.DATA);
-            myCursor.moveToFirst();
-            String  capturedImageFilePath = myCursor.getString(column_index_data);
-            //String SD_CARD_TEMP_DIR = Environment.getExternalStorageDirectory() + File.separator + "tmpPhoto.jpg";
-            File f = new File(capturedImageFilePath);
-            Log.v("camera", "Selected image: " + capturedImageFilePath + " ("+ f.getAbsolutePath() +")");
-            try {
-            	// TODO: Max filesize
-            	int bufferSize = 0x20000; // ~130k
-            	FileInputStream importStream = new FileInputStream(f);
-            	byte[] buffer = new byte[bufferSize];
-            	ByteArrayOutputStream importBufferStream = new ByteArrayOutputStream((int)f.length());
-            	int read;
-            	while (true) {
-            		read = importStream.read(buffer);
-            		if (read == -1) {
-            			break;
-            		}
-            		importBufferStream.write(buffer, 0, read);
-            	}
-            	ByteBuffer importBuffer = ByteBuffer.wrap(importBufferStream.toByteArray());
-            	Log.v(kTag, "Current note ID is: " +this._noteID);
-            	Log.v(kTag, "current note is: "+this._note.getTitle());
-				this._note.setAttachment(new NoteAttachment(NoteAttachment.kFileTypePicture, f.getName(), importBuffer));
-			} catch (FileNotFoundException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-			} catch (IOException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-			} finally {
-            	f.delete();
-			}
-         } else {
-            Log.i("Camera", "Result code was " + resultCode);
-         }
+      case kRequestPictureFromCamera:
+      {  // Picture taken from camera
+         String[] projection = { MediaStore.Images.Media.DATA };
+
+         ContentValues values = new ContentValues();
+         values.put(MediaStore.Images.Media.TITLE, kTempPhotoFilename);
+
+         Uri fileUri = getContentResolver().insert(MediaStore.Images.Media.EXTERNAL_CONTENT_URI, values);
+         Cursor cursor = managedQuery(fileUri, projection, null, null, null);
+
+         int column_index_data = cursor.getColumnIndexOrThrow(MediaStore.Images.Media.DATA);
+         cursor.moveToFirst();
+         String  filePath = cursor.getString(column_index_data);
+         cursor.close();
+         
+         File f = new File(filePath);
+         this._note.setAttachment(new NoteAttachment(NoteAttachment.kFileTypePicture, f));
+         f.delete();
+      }
          break;
-         // Audio taken from audio
-      case TAKE_SOUND_WITH_AUDIO:
-         if (resultCode == Activity.RESULT_OK) {
-            // on activity return
-         }
+      case kRequestVideoFromGallery:
+      {   // Video taken from gallery
+          Uri selectedVideo = data.getData();
+          String[] projection = {MediaStore.Video.Media.DATA};
+
+          Cursor cursor = getContentResolver().query(selectedVideo, projection, null, null, null);
+          cursor.moveToFirst();
+
+          int columnIndex = cursor.getColumnIndex(projection[0]);
+          String filePath = cursor.getString(columnIndex);
+          cursor.close();
+
+          File f = new File(filePath);
+          this._note.setAttachment(new NoteAttachment(NoteAttachment.kFileTypeVideo, f));
+      }
          break;
+      case kRequestVideoFromCamera:
+    	  // TODO
+    	  break;
+      case kRequestAudioFromGallery:
+      {   // Audio taken from gallery
+          Uri selectedAudio = data.getData();
+          String[] projection = {MediaStore.Audio.Media.DATA};
+
+          Cursor cursor = getContentResolver().query(selectedAudio, projection, null, null, null);
+          cursor.moveToFirst();
+
+          int columnIndex = cursor.getColumnIndex(projection[0]);
+          String filePath = cursor.getString(columnIndex);
+          cursor.close();
+
+          File f = new File(filePath);
+          this._note.setAttachment(new NoteAttachment(NoteAttachment.kFileTypeAudio, f));
+      }
+         break;
+      case kRequestAudioFromMic:
+    	  // TODO
+    	  break;
       default:
          //return false;
       }

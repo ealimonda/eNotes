@@ -14,12 +14,18 @@
  * *************************************************************************************************/
 package it.unica.enotes;
 
+import java.io.ByteArrayOutputStream;
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
+import java.io.IOException;
 import java.nio.ByteBuffer;
 
 import org.json.JSONException;
 import org.json.JSONObject;
 
 import android.util.Base64;
+import android.util.Log;
 
 /**
  * Represents an attachment to a note
@@ -45,6 +51,36 @@ public class NoteAttachment {
       this._filename = "";
       this._filedata = ByteBuffer.allocate(0);
       this._filetype = kFileTypeInvalid;
+   }
+   
+   public NoteAttachment(int filetype, File file) {
+      this();
+      Log.v("Attachment", "Trying to import file: " + file.getAbsolutePath() +") of type "+ filetype);
+      if (!file.isFile() || filetype <= kFileTypeInvalid || filetype >= kFileTypeMax) {
+         return;
+      }
+      this._filename = file.getName();
+      this._filetype = filetype;
+      try {
+         // TODO: Max filesize
+         int bufferSize = 0x20000; // ~130k  // FIXME
+         FileInputStream importStream = new FileInputStream(file);
+         byte[] buffer = new byte[bufferSize];
+         ByteArrayOutputStream importBufferStream = new ByteArrayOutputStream((int)file.length());
+         int read;
+         while (true) {
+            read = importStream.read(buffer);
+            if (read == -1) {
+               break;
+            }
+            importBufferStream.write(buffer, 0, read);
+         }
+         this._filedata = ByteBuffer.wrap(importBufferStream.toByteArray());
+      } catch (FileNotFoundException e) {
+         e.printStackTrace();
+      } catch (IOException e) {
+         e.printStackTrace();
+      }
    }
 
    public NoteAttachment(JSONObject contents) {
