@@ -15,10 +15,17 @@
 
 package it.unica.enotes;
 
+import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.FileReader;
+import java.io.IOException;
+import java.nio.CharBuffer;
+
 import android.app.Dialog;
 import android.app.ListActivity;
 import android.content.Intent;
 import android.database.Cursor;
+import android.net.Uri;
 import android.os.Bundle;
 import android.text.format.Time;
 import android.util.Log;
@@ -79,8 +86,30 @@ public class NoteList extends ListActivity {
    protected void newIntent(Intent intent) {
       setIntent(intent);
       Log.v(kTag, "Found intent: "+ intent.toString());
-      // act=android.intent.action.VIEW dat=file:///mnt/sdcard/download/blabla.eNote
-
+      Uri importUri = intent.getData();
+      if (importUri != null) {
+         // act=android.intent.action.VIEW dat=file:///mnt/sdcard/download/blabla.eNote
+         // TODO: Make sure this won't get re-called when the device is rotated...
+         File importFile = new File(importUri.getPath());
+         if (importFile.isFile() && importFile.length() > 0) {
+            // TODO: Max length
+            try {
+               FileReader importReader = new FileReader(importFile);
+               CharBuffer importBuffer = CharBuffer.allocate((int)importFile.length());
+               importReader.read(importBuffer);
+               importReader.close();
+               long newID = database.addNote(this, null, "Imported note", importBuffer.toString());
+               refreshList();
+               if (newID >= 0) {
+                  Intent i = new Intent(this, NoteEdit.class);
+                  i.putExtra(Note.kID, newID);
+                  startActivityForResult(i, 0);
+               }
+            } catch (FileNotFoundException e) {
+            } catch (IOException e) {
+            }
+         }
+      }
    }
 
    /**
