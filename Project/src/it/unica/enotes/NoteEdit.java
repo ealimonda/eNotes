@@ -22,6 +22,8 @@ import android.app.Activity;
 import android.content.ContentValues;
 import android.content.Intent;
 import android.database.Cursor;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.net.Uri;
 import android.os.Bundle;
 import android.provider.MediaStore;
@@ -74,7 +76,7 @@ public class NoteEdit extends Activity {
       Button cancelUrl = (Button) findViewById(R.id.EditUrlButton);
       addUrl.setVisibility(View.GONE);
       cancelUrl.setVisibility(View.GONE);
-//      addUrl.setKeyListener(DialerKeyListener.getInstance());
+      //      addUrl.setKeyListener(DialerKeyListener.getInstance());
 
       Bundle extras = getIntent().getExtras();
       if (extras == null) {
@@ -138,26 +140,32 @@ public class NoteEdit extends Activity {
       //menu.add(0, kMenuItemAttach, 1, R.string.addAttachment).setIcon(getResources().getDrawable(R.drawable.ic_menu_attachment));
       SubMenu attachListMenu = menu.addSubMenu(0, kMenuItemAttach, 1, R.string.addAttachment).setIcon(getResources().getDrawable(R.drawable.ic_menu_attachment));
       menu.add(0, kMenuItemUrl, 2, R.string.addUrl).setIcon(getResources().getDrawable(R.drawable.ic_input_get));
-      attachListMenu.add(0, kSubmenuPictures, 3, R.string.addPictures).setIcon(getResources().getDrawable(R.drawable.ic_input_get));
-      attachListMenu.add(0, kSubmenuCapturePicture, 4, R.string.addCapturePicture).setIcon(getResources().getDrawable(R.drawable.ic_input_get));
-      attachListMenu.add(0, kSubmenuVideos, 5, R.string.addVideos).setIcon(getResources().getDrawable(R.drawable.ic_input_get));
-      attachListMenu.add(0, kSubmenuCaptureVideo, 6, R.string.addCaptureVideo).setIcon(getResources().getDrawable(R.drawable.ic_input_get));
-      attachListMenu.add(0, kSubmenuAudio, 7, R.string.addAudio).setIcon(getResources().getDrawable(R.drawable.ic_input_get));
-      attachListMenu.add(0, kSubmenuRecordAudio, 8, R.string.addRecordAudio).setIcon(getResources().getDrawable(R.drawable.ic_input_get));
+      //attachListMenu.add(0, kSubmenuPictures, 3, R.string.addPictures).setIcon(getResources().getDrawable(R.drawable.ic_input_get));
+      //attachListMenu.add(0, kSubmenuCapturePicture, 4, R.string.addCapturePicture).setIcon(getResources().getDrawable(R.drawable.ic_input_get));
+      //attachListMenu.add(0, kSubmenuVideos, 5, R.string.addVideos).setIcon(getResources().getDrawable(R.drawable.ic_input_get));
+      //attachListMenu.add(0, kSubmenuCaptureVideo, 6, R.string.addCaptureVideo).setIcon(getResources().getDrawable(R.drawable.ic_input_get));
+      //attachListMenu.add(0, kSubmenuAudio, 7, R.string.addAudio).setIcon(getResources().getDrawable(R.drawable.ic_input_get));
+      //attachListMenu.add(0, kSubmenuRecordAudio, 8, R.string.addRecordAudio).setIcon(getResources().getDrawable(R.drawable.ic_input_get));
+      attachListMenu.add(0, kSubmenuPictures, 3, R.string.addPictures);
+      attachListMenu.add(0, kSubmenuCapturePicture, 4, R.string.addCapturePicture);
+      attachListMenu.add(0, kSubmenuVideos, 5, R.string.addVideos);
+      attachListMenu.add(0, kSubmenuCaptureVideo, 6, R.string.addCaptureVideo);
+      attachListMenu.add(0, kSubmenuAudio, 7, R.string.addAudio);
+      attachListMenu.add(0, kSubmenuRecordAudio, 8, R.string.addRecordAudio);
       return true;
    }
 
    @Override
    public boolean onMenuItemSelected(int featureId, MenuItem item) {
       if (this._note == null) {
-              Log.v(kTag, "ERROR: note is NULL!!!");
-              return false;
+         Log.v(kTag, "ERROR: note is NULL!!!");
+         return false;
       }
       if (item.getItemId() == kMenuItemUrl) {
-          EditText addUrl = (EditText) findViewById(R.id.EditUrlText);
-          Button cancelUrl = (Button) findViewById(R.id.EditUrlButton);
-          addUrl.setVisibility(View.VISIBLE);
-          cancelUrl.setVisibility(View.VISIBLE);
+         EditText addUrl = (EditText) findViewById(R.id.EditUrlText);
+         Button cancelUrl = (Button) findViewById(R.id.EditUrlButton);
+         addUrl.setVisibility(View.VISIBLE);
+         cancelUrl.setVisibility(View.VISIBLE);
       }
       if (item.getItemId() == kSubmenuPictures) {
          Intent takePictureFromGalleryIntent = new Intent(Intent.ACTION_PICK, android.provider.MediaStore.Images.Media.EXTERNAL_CONTENT_URI);
@@ -182,51 +190,64 @@ public class NoteEdit extends Activity {
       if (item.getItemId() == kSubmenuRecordAudio) {
       }
       return true;
-      }
+   }
 
    @Override
    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
       super.onActivityResult(requestCode, resultCode, data);
-      // Picture taken from gallery
-      if (requestCode == TAKE_PICTURE_WITH_GALLERY) {
-         if (resultCode == RESULT_OK) {
-            // on activity return
-            Uri targetUri = data.getData();
-            //textTargetUri.setText(targetUri.toString());
-         }
-      }
-      // Picture taken from camera
-      if (requestCode == TAKE_PICTURE_WITH_CAMERA) {
+      switch (requestCode) {
+      case TAKE_PICTURE_WITH_GALLERY:
+         // Picture taken from gallery
+         //if (resultCode == RESULT_OK) {
+         //}
+         Uri selectedImage = data.getData();
+         String[] filePathColumn = {MediaStore.Images.Media.DATA};
+
+         Cursor cursor = getContentResolver().query(selectedImage, filePathColumn, null, null, null);
+         cursor.moveToFirst();
+
+         int columnIndex = cursor.getColumnIndex(filePathColumn[0]);
+         String filePath = cursor.getString(columnIndex);
+         cursor.close();
+         // the selected image
+         Bitmap picture = BitmapFactory.decodeFile(filePath);
+         break;
+         // Picture taken from camera
+      case TAKE_PICTURE_WITH_CAMERA:
          if (resultCode == Activity.RESULT_OK) {
             // on activity return
             String[] projection = { MediaStore.Images.Media.DATA };
             ContentValues values = new ContentValues();
             values.put(MediaStore.Images.Media.TITLE, kTempPhotoFilename);
             Uri capturedImageUri = getContentResolver().insert(MediaStore.Images.Media.EXTERNAL_CONTENT_URI, values);
-            Cursor cursor = managedQuery(capturedImageUri, projection, null, null, null);
-            int column_index_data = cursor.getColumnIndexOrThrow(MediaStore.Images.Media.DATA);
-            cursor.moveToFirst();
-            String  capturedImageFilePath = cursor.getString(column_index_data);
-            //            String SD_CARD_TEMP_DIR = Environment.getExternalStorageDirectory() + File.separator + "tmpPhoto.jpg";
+            Cursor myCursor = managedQuery(capturedImageUri, projection, null, null, null);
+            int column_index_data = myCursor.getColumnIndexOrThrow(MediaStore.Images.Media.DATA);
+            myCursor.moveToFirst();
+            String  capturedImageFilePath = myCursor.getString(column_index_data);
+            //String SD_CARD_TEMP_DIR = Environment.getExternalStorageDirectory() + File.separator + "tmpPhoto.jpg";
             File f = new File(capturedImageFilePath);
             // FIXME: WIP, I'll fix this up later
-//            try {
-//            Uri capturedImage =  Uri.parse(android.provider.MediaStore.Images.Media.insertImage(getContentResolver(), f.getAbsolutePath(), null, null));
-//            Log.i("camera", "Selected image: " + capturedImage.toString());
+            //try {
+            //Uri capturedImage =  Uri.parse(android.provider.MediaStore.Images.Media.insertImage(getContentResolver(), f.getAbsolutePath(), null, null));
+            //Log.i("camera", "Selected image: " + capturedImage.toString());
             Log.v("camera", "Selected image: " + capturedImageFilePath + " ("+ f.getAbsolutePath() +")");
             f.delete();
-          //          } catch (FileNotFoundException e) {
-          //          e.printStackTrace();
-          //          }
+            //} catch (FileNotFoundException e) {
+            // TODO Auto-generated catch block
+            //e.printStackTrace();
+            //}
+         } else {
+            Log.i("Camera", "Result code was " + resultCode);
          }
-      } else {
-         Log.i("Camera", "Result code was " + resultCode);
-      }
-      // Audio taken from audio
-      if (requestCode == TAKE_SOUND_WITH_AUDIO) {
+         break;
+         // Audio taken from audio
+      case TAKE_SOUND_WITH_AUDIO:
          if (resultCode == Activity.RESULT_OK) {
             // on activity return
          }
+         break;
+      default:
+         //return false;
       }
    }
 }

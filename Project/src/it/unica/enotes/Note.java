@@ -314,7 +314,7 @@ public class Note {
       if (text == null) {
          this._text = "";
       } else {
-          this._text = text;
+         this._text = text;
       }
       this.setDirty(true);
    }

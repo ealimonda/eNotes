@@ -18,7 +18,8 @@
          <EditText
             android:id="@+id/EditTitle"
             android:layout_width="match_parent"
-            android:layout_height="35dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="0.1"
             android:textSize="10px"
             android:text="(Untitled)" />
          <!-- Attachments box -->
@@ -30,14 +31,14 @@
             <EditText
                android:id="@+id/EditAttachmentName"
                android:layout_width="252dp"
-               android:layout_height="35dp"
+               android:layout_height="wrap_content"
+               android:layout_weight="0.1"
                android:textSize="10px"
-               android:layout_weight="0.35"
                android:text="(no attachments)" />
             <Button
                android:id="@+id/EditAttachmentButton"
                android:layout_width="wrap_content"
-               android:layout_height="35dp"
+               android:layout_height="wrap_content"
                android:textSize="10px"
                android:text="X" />
          </LinearLayout>
@@ -50,46 +51,43 @@
             <EditText
                android:id="@+id/EditUrlText"
                android:layout_width="235dp"
-               android:layout_height="35dp"
+               android:layout_height="wrap_content"
+               android:layout_weight="0.1"
                android:textSize="10px"
-               android:layout_weight="0.23"
                android:text="http://" />
             <Button
                android:id="@+id/EditUrlButton"
                android:layout_width="wrap_content"
-               android:layout_height="35dp"
+               android:layout_height="wrap_content"
                android:textSize="10px"
                android:text="X" />
          </LinearLayout>
          <!-- Content -->
          <EditText
             android:id="@+id/EditContent"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
+            android:layout_width="fill_parent"
+            android:layout_height="0px"                        
             android:text="(no text)"
+            android:layout_weight="0.7"
             android:textSize="10px" />
          <!-- Tags box -->
          <LinearLayout
             xmlns:android="http://schemas.android.com/apk/res/android"
-            android:layout_width="fill_parent"
+            android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:orientation="horizontal"
             >
             <TextView
-               android:layout_width="50dp"
+               android:layout_width="wrap_content"
                android:layout_height="wrap_content"
                android:text="Tags:"
                android:textSize="10px" />
             <EditText
                android:id="@+id/EditTags"
-               android:layout_width="213dp"
-               android:layout_height="34dp"
-               android:layout_weight="0.54"
+               android:layout_width="fill_parent"
+               android:layout_height="wrap_content"
                android:text=""
-               android:textSize="10px"
-               >
-               <requestFocus />
-            </EditText>
+               android:textSize="10px" />
          </LinearLayout>
       </LinearLayout>
    </ScrollView>

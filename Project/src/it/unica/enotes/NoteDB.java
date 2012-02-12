@@ -133,8 +133,8 @@ public class NoteDB extends ContentProvider {
       public void onUpgrade(SQLiteDatabase db, int oldVersion, int newVersion) {
          Log.v(kTag, "Upgrading database from v."+ oldVersion +" to v."+ newVersion);
          // FIXME: We're deleting everything and recreating.   Who cares :D
-          db.execSQL("DROP TABLE IF EXISTS "+ kDatabaseTableNotes +";");
-          onCreate(db);
+         db.execSQL("DROP TABLE IF EXISTS "+ kDatabaseTableNotes +";");
+         onCreate(db);
       }
    }
 
@@ -157,32 +157,32 @@ public class NoteDB extends ContentProvider {
       SQLiteQueryBuilder qb = new SQLiteQueryBuilder();
 
       switch (uriMatcher.match(uri)) {
-         case kUriNotes:
-            qb.setTables(kDatabaseTableNotes);
-            qb.setProjectionMap(notesProjectionMap);
-            break;
+      case kUriNotes:
+         qb.setTables(kDatabaseTableNotes);
+         qb.setProjectionMap(notesProjectionMap);
+         break;
 
-         case kUriNoteByID:
-             qb.setTables(kDatabaseTableNotes);
-             qb.setProjectionMap(notesProjectionMap);
-             qb.appendWhere(Note.kID + "=" + uri.getPathSegments().get(2));
-             break;
+      case kUriNoteByID:
+         qb.setTables(kDatabaseTableNotes);
+         qb.setProjectionMap(notesProjectionMap);
+         qb.appendWhere(Note.kID + "=" + uri.getPathSegments().get(2));
+         break;
 
-         case kUriNoteByGUID:
-            qb.setTables(kDatabaseTableNotes);
-            qb.setProjectionMap(notesProjectionMap);
-            qb.appendWhere(Note.kGUID + "=" + uri.getPathSegments().get(2));
-            break;
+      case kUriNoteByGUID:
+         qb.setTables(kDatabaseTableNotes);
+         qb.setProjectionMap(notesProjectionMap);
+         qb.appendWhere(Note.kGUID + "=" + uri.getPathSegments().get(2));
+         break;
 
-         case kUriNotesByTag:
-            qb.setTables(kDatabaseTableNotes);
-            qb.setProjectionMap(notesProjectionMap);
-            qb.appendWhere(Note.kTags + " LIKE '%" + uri.getLastPathSegment() + "%'");
-            break;
-            // TODO: Sanitize queries?
+      case kUriNotesByTag:
+         qb.setTables(kDatabaseTableNotes);
+         qb.setProjectionMap(notesProjectionMap);
+         qb.appendWhere(Note.kTags + " LIKE '%" + uri.getLastPathSegment() + "%'");
+         break;
+         // TODO: Sanitize queries?
 
-         default:
-            throw new IllegalArgumentException("Unknown URI " + uri);
+      default:
+         throw new IllegalArgumentException("Unknown URI " + uri);
       }
 
       // If no sort order is specified use the default
@@ -205,16 +205,16 @@ public class NoteDB extends ContentProvider {
    @Override
    public String getType(Uri uri) {
       switch (uriMatcher.match(uri)) {
-         case kUriNotes:
-         case kUriNotesByTag:
-            return Note.kContentType;
+      case kUriNotes:
+      case kUriNotesByTag:
+         return Note.kContentType;
 
-         case kUriNoteByID:
-         case kUriNoteByGUID:
-            return Note.kContentItemType;
+      case kUriNoteByID:
+      case kUriNoteByGUID:
+         return Note.kContentItemType;
 
-         default:
-            throw new IllegalArgumentException("Unknown URI " + uri);
+      default:
+         throw new IllegalArgumentException("Unknown URI " + uri);
       }
    }
 
@@ -274,24 +274,24 @@ public class NoteDB extends ContentProvider {
       SQLiteDatabase db = dbHelper.getWritableDatabase();
       int count;
       switch (uriMatcher.match(uri)) {
-         case kUriNotes:
-            count = db.delete(kDatabaseTableNotes, where, whereArgs);
-            break;
+      case kUriNotes:
+         count = db.delete(kDatabaseTableNotes, where, whereArgs);
+         break;
 
-         case kUriNoteByID:
-            String noteId = uri.getPathSegments().get(2);
-            count = db.delete(kDatabaseTableNotes, Note.kID + "=" + noteId
-                  + (!TextUtils.isEmpty(where) ? " AND (" + where + ')' : ""), whereArgs);
-            break;
+      case kUriNoteByID:
+         String noteId = uri.getPathSegments().get(2);
+         count = db.delete(kDatabaseTableNotes, Note.kID + "=" + noteId
+               + (!TextUtils.isEmpty(where) ? " AND (" + where + ')' : ""), whereArgs);
+         break;
 
-         case kUriNoteByGUID:
-            String noteGuid = uri.getPathSegments().get(2);
-            count = db.delete(kDatabaseTableNotes, Note.kGUID + "=" + noteGuid
-                  + (!TextUtils.isEmpty(where) ? " AND (" + where + ')' : ""), whereArgs);
-            break;
+      case kUriNoteByGUID:
+         String noteGuid = uri.getPathSegments().get(2);
+         count = db.delete(kDatabaseTableNotes, Note.kGUID + "=" + noteGuid
+               + (!TextUtils.isEmpty(where) ? " AND (" + where + ')' : ""), whereArgs);
+         break;
 
-         default:
-            throw new IllegalArgumentException("Unknown URI " + uri);
+      default:
+         throw new IllegalArgumentException("Unknown URI " + uri);
       }
 
       getContext().getContentResolver().notifyChange(uri, null);
@@ -303,24 +303,24 @@ public class NoteDB extends ContentProvider {
       SQLiteDatabase db = dbHelper.getWritableDatabase();
       int count;
       switch (uriMatcher.match(uri)) {
-         case kUriNotes:
-            count = db.update(kDatabaseTableNotes, values, where, whereArgs);
-            break;
+      case kUriNotes:
+         count = db.update(kDatabaseTableNotes, values, where, whereArgs);
+         break;
 
-         case kUriNoteByID:
-            String noteId = uri.getPathSegments().get(2);
-            count = db.update(kDatabaseTableNotes, values, Note.kID + "=" + noteId
-                  + (!TextUtils.isEmpty(where) ? " AND (" + where + ')' : ""), whereArgs);
-            break;
+      case kUriNoteByID:
+         String noteId = uri.getPathSegments().get(2);
+         count = db.update(kDatabaseTableNotes, values, Note.kID + "=" + noteId
+               + (!TextUtils.isEmpty(where) ? " AND (" + where + ')' : ""), whereArgs);
+         break;
 
-         case kUriNoteByGUID:
-             String noteGuid = uri.getPathSegments().get(2);
-             count = db.update(kDatabaseTableNotes, values, Note.kGUID + "=" + noteGuid
-                   + (!TextUtils.isEmpty(where) ? " AND (" + where + ')' : ""), whereArgs);
-             break;
+      case kUriNoteByGUID:
+         String noteGuid = uri.getPathSegments().get(2);
+         count = db.update(kDatabaseTableNotes, values, Note.kGUID + "=" + noteGuid
+               + (!TextUtils.isEmpty(where) ? " AND (" + where + ')' : ""), whereArgs);
+         break;
 
-         default:
-            throw new IllegalArgumentException("Unknown URI " + uri);
+      default:
+         throw new IllegalArgumentException("Unknown URI " + uri);
       }
 
       getContext().getContentResolver().notifyChange(uri, null);

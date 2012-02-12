@@ -122,13 +122,13 @@ public class NoteView extends Activity {
       } else if (item.getItemId() == kMenuItemDelete) {
          if (database.deleteNote(this, this._noteID)) {
             new AlertDialog.Builder(this).setTitle("Confirm Delete")
-               .setMessage("Do you want to delete this note?")
-               .setPositiveButton("Yes", new DialogInterface.OnClickListener() {
-                  @Override
-                  public void onClick(DialogInterface dialogInterface, int i) {
-                     finish();
-                  }
-               })
+                  .setMessage("Do you want to delete this note?")
+                  .setPositiveButton("Yes", new DialogInterface.OnClickListener() {
+               @Override
+               public void onClick(DialogInterface dialogInterface, int i) {
+                  finish();
+               }
+            })
                .setNeutralButton("Cancel", null) // don't need to do anything but dismiss here
                .create()
                .show();
@@ -151,31 +151,30 @@ public class NoteView extends Activity {
 
             Intent emailIntent = new Intent(Intent.ACTION_SEND);
             emailIntent.setType("plain/text");
-              emailIntent.putExtra(Intent.EXTRA_SUBJECT, "[eNote] "+ note.getTitle());
-              emailIntent.putExtra(Intent.EXTRA_STREAM, Uri.parse("file://"+ attachmentFile.getPath()));
-              Log.v(kTag, "Sending: "+attachmentFile.toURI());
-              startActivity(Intent.createChooser(emailIntent, "Send email:"));
-              /* Note about temporary file deletion:
-               * - We can't delete the file right away, since we don't know whether the email has
-               *   been sent yet (and since the intent returns right away, we're pretty much sure it
-               *   *hasn't*.  Emails on a mobile device may be deferred to send when a 3g or wifi
-               *   connection is available anyways.
-               * - We can't have the JVM delete the file when it's no longer needed, since on
-               *   Android, deleteOnExit() isn't reliable (cleanup done on VM termination, but VM
-               *   termination isn't part of the app's lifecycle.
-               * - We can objectively say Android sucks when it comes to temporary files and all I
-               *   can do is to, in onResume, delete all files matching my own wildcard filename
-               *   structure that are older than 24 hours, hoping the user ran into a 3g or wifi
-               *   network during the last day.  Oh well, if I delete something you care about or
-               *   leave cruft behind, you can go complain to the Android engineers.
-               *   Or switch to an Apple or MS device.
-               */
-           } catch (IOException e) {
-              Log.v(kTag, e.toString());
-              return false;
-           };
-        }
-        return true;
+            emailIntent.putExtra(Intent.EXTRA_SUBJECT, "[eNote] "+ note.getTitle());
+            emailIntent.putExtra(Intent.EXTRA_STREAM, Uri.parse("file://"+ attachmentFile.getPath()));
+            Log.v(kTag, "Sending: "+attachmentFile.toURI());
+            startActivity(Intent.createChooser(emailIntent, "Send email:"));
+            /* Note about temporary file deletion:
+             * - We can't delete the file right away, since we don't know whether the email has been
+             *   sent yet (and since the intent returns right away, we're pretty much sure it
+             *   *hasn't*.  Emails on a mobile device may be deferred to send when a 3g or wifi
+             *   connection is available anyways.
+             * - We can't have the JVM delete the file when it's no longer needed, since on Android,
+             *   deleteOnExit() isn't reliable (cleanup done on VM termination, but VM termination
+             *   isn't part of the app's lifecycle.
+             * - We can say Android sucks when it comes to temporary files and all I can do is to,
+             *   in onResume, delete all files matching my own wildcard filename structure that are
+             *   older than 24 hours, hoping the user ran into a 3g or wifi network during the last
+             *   day.  Oh well, if I delete something you care about or leave cruft behind, you can
+             *   go complain to the Android engineers.  Or switch to an Apple or MS device.
+             */
+         } catch (IOException e) {
+            Log.v(kTag, e.toString());
+            return false;
+         };
+      }
+      return true;
    }
 
 }

@@ -55,7 +55,7 @@ public class NoteList extends ListActivity {
 
       ListView view = getListView();
       view.setHeaderDividersEnabled(true);
-//      view.addHeaderView(getLayoutInflater().inflate(R.layout.row, null));
+      //      view.addHeaderView(getLayoutInflater().inflate(R.layout.row, null));
 
       refreshList();
       //setContentView(R.layout.main);
@@ -111,13 +111,6 @@ public class NoteList extends ListActivity {
       setListAdapter(dataSource);
    }
 
-   /*@Override
-   public boolean onCreateOptionsMenu(Menu menu) {
-       MenuInflater inflater = getMenuInflater();
-       inflater.inflate(R.menu.main_menu, menu);
-       return true;
-   }*/
-
    @Override
    protected void onListItemClick(ListView l, View v, int position, long id) {
       //String item = (String) getListAdapter().getItem(position);
@@ -150,10 +143,10 @@ public class NoteList extends ListActivity {
       case kMenuItemSearch:
          Intent i = new Intent(this, NoteSearch.class);
          startActivityForResult(i, 0);
-          break;
+         break;
 
       default:
-          return false;
+         return false;
       }
 
       return true;
