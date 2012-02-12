@@ -15,8 +15,15 @@
 
 package it.unica.enotes;
 
+import java.io.ByteArrayOutputStream;
 import java.io.File;
+import java.io.FileInputStream;
 import java.io.FileNotFoundException;
+import java.io.FileReader;
+import java.io.IOException;
+import java.io.InputStream;
+import java.nio.ByteBuffer;
+import java.nio.CharBuffer;
 
 import android.app.Activity;
 import android.content.ContentValues;
@@ -226,16 +233,34 @@ public class NoteEdit extends Activity {
             String  capturedImageFilePath = myCursor.getString(column_index_data);
             //String SD_CARD_TEMP_DIR = Environment.getExternalStorageDirectory() + File.separator + "tmpPhoto.jpg";
             File f = new File(capturedImageFilePath);
-            // FIXME: WIP, I'll fix this up later
-            //try {
-            //Uri capturedImage =  Uri.parse(android.provider.MediaStore.Images.Media.insertImage(getContentResolver(), f.getAbsolutePath(), null, null));
-            //Log.i("camera", "Selected image: " + capturedImage.toString());
             Log.v("camera", "Selected image: " + capturedImageFilePath + " ("+ f.getAbsolutePath() +")");
-            f.delete();
-            //} catch (FileNotFoundException e) {
-            // TODO Auto-generated catch block
-            //e.printStackTrace();
-            //}
+            try {
+            	// TODO: Max filesize
+            	int bufferSize = 0x20000; // ~130k
+            	FileInputStream importStream = new FileInputStream(f);
+            	byte[] buffer = new byte[bufferSize];
+            	ByteArrayOutputStream importBufferStream = new ByteArrayOutputStream((int)f.length());
+            	int read;
+            	while (true) {
+            		read = importStream.read(buffer);
+            		if (read == -1) {
+            			break;
+            		}
+            		importBufferStream.write(buffer, 0, read);
+            	}
+            	ByteBuffer importBuffer = ByteBuffer.wrap(importBufferStream.toByteArray());
+            	Log.v(kTag, "Current note ID is: " +this._noteID);
+            	Log.v(kTag, "current note is: "+this._note.getTitle());
+				this._note.setAttachment(new NoteAttachment(NoteAttachment.kFileTypePicture, f.getName(), importBuffer));
+			} catch (FileNotFoundException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			} catch (IOException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			} finally {
+            	f.delete();
+			}
          } else {
             Log.i("Camera", "Result code was " + resultCode);
          }
