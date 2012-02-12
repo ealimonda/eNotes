@@ -122,18 +122,18 @@ public class Note {
       this._URL = null;
       this._tags = null;
       this._loaded = false;
-      
+
       if (text != null) {
          this._text = text;
          if (URL != null) {
-        	 this._URL = URL;
+            this._URL = URL;
          }
          if (tags != null) {
-        	 this.setTagsFromString(tags);
+            this.setTagsFromString(tags);
          }
          this._loaded = true;
       }
-      
+
       if (this._text == null) {
          this._text = "";
       }
@@ -145,7 +145,7 @@ public class Note {
       }
 
       this._dirty = false;
-   }
+         }
 
    /**
     * Import note from JSON data
@@ -154,7 +154,7 @@ public class Note {
    public void NoteFromJSON(String json) {
       JSONObject jsObject;
       if (json == null) {
-    	  return;
+         return;
       }
       try {
          jsObject = new JSONObject(json);
@@ -162,13 +162,13 @@ public class Note {
          if (jsObject.has(kText)) {
             this._text = jsObject.getString(kText);
          } else {
-        	 this._text = "";
+            this._text = "";
          }
 
          if (jsObject.has(kURL)) {
             this._URL = jsObject.getString(kURL);
          } else {
-        	 this._URL = "";
+            this._URL = "";
          }
 
          // TODO: Attachments
@@ -209,7 +209,7 @@ public class Note {
     */
    public void setGUID(String GUID) {
       if (GUID == null) {
-    	  return;
+         return;
       }
       this._GUID = GUID;
       this.setDirty(true);
@@ -259,9 +259,9 @@ public class Note {
     */
    public void setTitle(String newTitle) {
       if (newTitle == null) {
-    	  this._title = "";
+         this._title = "";
       } else {
-    	  this._title = newTitle;
+         this._title = newTitle;
       }
       this.setDirty(true);
    }
@@ -298,9 +298,9 @@ public class Note {
     */
    public void setText(String text) {
       if (text == null) {
-    	  this._text = "";
+         this._text = "";
       } else {
-          this._text = text;
+         this._text = text;
       }
       this.setDirty(true);
    }
@@ -318,9 +318,9 @@ public class Note {
     */
    public void setURL(String URL) {
       if (URL == null) {
-    	  this._URL = "";
+         this._URL = "";
       } else {
-    	  this._URL = URL;
+         this._URL = URL;
       }
       this.setDirty(true);
    }
@@ -338,38 +338,38 @@ public class Note {
     */
    public void setTags(ArrayList<String> tags) {
       if (tags == null) {
-    	  this._tags = new ArrayList<String>();
+         this._tags = new ArrayList<String>();
       } else {
-    	  this._tags = tags;
+         this._tags = tags;
       }
       this.setDirty(true);
    }
    /**
     * Set the note's tags from a string
-    * @param tags	A String containing the tags to set, separated by spaces
+    * @param tags A String containing the tags to set, separated by spaces
     */
    public void setTagsFromString(String tags) {
-	   if (tags == null) {
-		   this.setTags(null);
-		   return;
-	   }
-	   tags = tags.replaceAll("\\s+", " ");
-	   tags = tags.trim();
-	   this.setTags(new ArrayList<String>(Arrays.asList(tags.split(" "))));
+      if (tags == null) {
+         this.setTags(null);
+         return;
+      }
+      tags = tags.replaceAll("\\s+", " ");
+      tags = tags.trim();
+      this.setTags(new ArrayList<String>(Arrays.asList(tags.split(" "))));
    }
    /**
     * Get the note's tags as a string
-    * @return	The note's tags as a space-delimited String.
+    * @return  The note's tags as a space-delimited String.
     */
    public String getTagsAsString() {
-	   if (this._tags == null || this._tags.size() <= 0) {
-		   return "";
-	   }
-	   String ret = " ";
-	   for (int i = 0; i < this._tags.size(); i++) {
-		   ret += this._tags.get(i) + " ";
-	   }
-	   return ret;
+      if (this._tags == null || this._tags.size() <= 0) {
+         return "";
+      }
+      String ret = " ";
+      for (int i = 0; i < this._tags.size(); i++) {
+         ret += this._tags.get(i) + " ";
+      }
+      return ret;
    }
 }
 /* vim: set ts=3 sw=3 smarttab expandtab cc=101 : */
