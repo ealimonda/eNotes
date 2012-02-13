@@ -97,12 +97,23 @@ public class NoteEdit extends Activity {
       EditText titleField = (EditText)findViewById(R.id.EditTitle);
       EditText contentField = (EditText)findViewById(R.id.EditContent);
       EditText tagsField = (EditText)findViewById(R.id.EditTags);
+      EditText attachmentField = (EditText) findViewById(R.id.EditAttachmentName);
+      Button cancelAttachment = (Button) findViewById(R.id.EditAttachmentButton);
       EditText urlField = (EditText)findViewById(R.id.EditUrlText);
       Button cancelUrl = (Button) findViewById(R.id.EditUrlButton);
 
       titleField.setText(this._note.getTitle());
       contentField.setText(this._note.getText());
       tagsField.setText(this._note.getTagsAsString());
+      //String attachment = this._note.getAttachment().getFilename();
+      if (this._note.getAttachment().getFiletype() == NoteAttachment.kFileTypeInvalid) {
+    	  attachmentField.setVisibility(View.GONE);
+    	  cancelAttachment.setVisibility(View.GONE);
+    	  } else {
+    		  attachmentField.setText(this._note.getAttachment().getFilename());
+    		  attachmentField.setVisibility(View.VISIBLE);
+        	  cancelAttachment.setVisibility(View.VISIBLE);
+    	  }    	  
       String url = this._note.getURL();
       if (url.length() > 0) {
          urlField.setText(this._note.getURL());
