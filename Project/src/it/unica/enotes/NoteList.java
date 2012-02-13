@@ -88,7 +88,6 @@ public class NoteList extends ListActivity {
       Log.v(kTag, "Found intent: "+ intent.toString());
       Uri importUri = intent.getData();
       if (importUri != null) {
-         // act=android.intent.action.VIEW dat=file:///mnt/sdcard/download/blabla.eNote
          // TODO: Make sure this won't get re-called when the device is rotated...
          File importFile = new File(importUri.getPath());
          if (importFile.isFile() && importFile.length() > 0) {

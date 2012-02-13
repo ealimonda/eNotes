@@ -16,6 +16,9 @@
 package it.unica.enotes;
 
 import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.InputStream;
+
 import android.app.Activity;
 import android.content.ContentValues;
 import android.content.Intent;
@@ -62,6 +65,7 @@ public class NoteEdit extends Activity {
 
    private static final String kTempPhotoFilename = "eNotesTmpPhoto.jpg";
    private static final String kTempVideoFilename = "eNotesTmpVideo.3gp";
+   //private static final String kTempAudioFilename = "eNotesTmpAudio.amr";
 
    /** Called when the activity is first created. */
    @Override
@@ -193,6 +197,7 @@ public class NoteEdit extends Activity {
       {
           Intent intent = new Intent(Intent.ACTION_PICK, android.provider.MediaStore.Images.Media.EXTERNAL_CONTENT_URI);
          startActivityForResult(intent, kRequestPictureFromGallery);
+         // TODO: Max size
       }
       	break;
       case kSubmenuCapturePicture:
@@ -203,12 +208,14 @@ public class NoteEdit extends Activity {
          Intent intent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
          intent.putExtra(MediaStore.EXTRA_OUTPUT, capturedImageUri);
          startActivityForResult(intent, kRequestPictureFromCamera);
+         // TODO: Max size
       }
          break;
       case kSubmenuVideos: {
           Intent intent = new Intent(Intent.ACTION_GET_CONTENT, MediaStore.Video.Media.EXTERNAL_CONTENT_URI);
           intent.setType("video/*");
           startActivityForResult(intent, kRequestVideoFromGallery);
+          // TODO: Max size
       }
       	break;
       case kSubmenuCaptureVideo:
@@ -219,22 +226,25 @@ public class NoteEdit extends Activity {
           Intent intent = new Intent(MediaStore.ACTION_VIDEO_CAPTURE);
           intent.putExtra(MediaStore.EXTRA_OUTPUT, capturedVideoUri);
           startActivityForResult(intent, kRequestVideoFromCamera);
+          // TODO: Max size
       }
       	break;
       case kSubmenuAudio:
       {
          Intent intent = new Intent(Intent.ACTION_PICK, MediaStore.Audio.Media.EXTERNAL_CONTENT_URI);
          startActivityForResult(intent, kRequestAudioFromGallery);
+         // TODO: Max size
       }
          break;
       case kSubmenuRecordAudio:
       {
-    	  // TODO
-    	  return false;
+         Intent intent = new Intent(MediaStore.Audio.Media.RECORD_SOUND_ACTION);
+         intent.putExtra(MediaStore.Audio.Media.EXTRA_MAX_BYTES, NoteAttachment.kMaxAttachmentSize);
+         startActivityForResult(intent, kRequestAudioFromMic);
       }
-      	//break;
+         break;
       default:
-    	  return false;
+         return false;
       }
       return true;
    }
@@ -243,13 +253,14 @@ public class NoteEdit extends Activity {
    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
       super.onActivityResult(requestCode, resultCode, data);
       if (resultCode != RESULT_OK) {
-          Log.i("Camera", "Result code was " + resultCode);
-    	  return;
+         Log.i("Camera", "Result code was " + resultCode);
+         return;
       }
       // TODO: Ensure this is valid.  Things go haywire if the screen is rotated
       //       i.e. when the gallery or camera is open and our activity hidden
       Log.v(kTag, "Current note ID is: " +this._noteID);
       Log.v(kTag, "current note is: "+this._note.getTitle());
+      // TODO: Max attachment size
       switch (requestCode) {
       case kRequestPictureFromGallery:
       {  // Picture taken from Gallery
@@ -283,69 +294,79 @@ public class NoteEdit extends Activity {
          cursor.moveToFirst();
          String  filePath = cursor.getString(column_index_data);
          cursor.close();
-         
+
          File f = new File(filePath);
          this._note.setAttachment(new NoteAttachment(NoteAttachment.kFileTypePicture, f));
          f.delete();
       }
          break;
       case kRequestVideoFromGallery:
-      {   // Video taken from gallery
-          Uri selectedVideo = data.getData();
-          String[] projection = {MediaStore.Video.Media.DATA};
+      {  // Video taken from gallery
+         Uri selectedVideo = data.getData();
+         String[] projection = {MediaStore.Video.Media.DATA};
 
-          Cursor cursor = getContentResolver().query(selectedVideo, projection, null, null, null);
-          cursor.moveToFirst();
+         Cursor cursor = getContentResolver().query(selectedVideo, projection, null, null, null);
+         cursor.moveToFirst();
 
-          int columnIndex = cursor.getColumnIndex(projection[0]);
-          String filePath = cursor.getString(columnIndex);
-          cursor.close();
+         int columnIndex = cursor.getColumnIndex(projection[0]);
+         String filePath = cursor.getString(columnIndex);
+         cursor.close();
 
-          File f = new File(filePath);
-          this._note.setAttachment(new NoteAttachment(NoteAttachment.kFileTypeVideo, f));
+         File f = new File(filePath);
+         this._note.setAttachment(new NoteAttachment(NoteAttachment.kFileTypeVideo, f));
       }
          break;
       case kRequestVideoFromCamera:
-      {
-          String[] projection = { MediaStore.Video.Media.DATA };
+      {  // Video taken from camera 
+         String[] projection = { MediaStore.Video.Media.DATA };
 
-          ContentValues values = new ContentValues();
-          values.put(MediaStore.Video.Media.TITLE, kTempVideoFilename);
+         ContentValues values = new ContentValues();
+         values.put(MediaStore.Video.Media.TITLE, kTempVideoFilename);
 
-          Uri fileUri = getContentResolver().insert(MediaStore.Video.Media.EXTERNAL_CONTENT_URI, values);
-          Cursor cursor = managedQuery(fileUri, projection, null, null, null);
+         Uri fileUri = getContentResolver().insert(MediaStore.Video.Media.EXTERNAL_CONTENT_URI, values);
+         Cursor cursor = managedQuery(fileUri, projection, null, null, null);
 
-          int column_index_data = cursor.getColumnIndexOrThrow(MediaStore.Video.Media.DATA);
-          cursor.moveToFirst();
-          String  filePath = cursor.getString(column_index_data);
-          cursor.close();
-          
-          File f = new File(filePath);
-          this._note.setAttachment(new NoteAttachment(NoteAttachment.kFileTypeVideo, f));
-          f.delete();
+         int column_index_data = cursor.getColumnIndexOrThrow(MediaStore.Video.Media.DATA);
+         cursor.moveToFirst();
+         String  filePath = cursor.getString(column_index_data);
+         cursor.close();
+
+         File f = new File(filePath);
+         this._note.setAttachment(new NoteAttachment(NoteAttachment.kFileTypeVideo, f));
+         f.delete();
       }
-    	  break;
+         break;
       case kRequestAudioFromGallery:
-      {   // Audio taken from gallery
-          Uri selectedAudio = data.getData();
-          String[] projection = {MediaStore.Audio.Media.DATA};
+      {  // Audio taken from gallery
+         Uri selectedAudio = data.getData();
+         String[] projection = {MediaStore.Audio.Media.DATA};
 
-          Cursor cursor = getContentResolver().query(selectedAudio, projection, null, null, null);
-          cursor.moveToFirst();
+         Cursor cursor = getContentResolver().query(selectedAudio, projection, null, null, null);
+         cursor.moveToFirst();
 
-          int columnIndex = cursor.getColumnIndex(projection[0]);
-          String filePath = cursor.getString(columnIndex);
-          cursor.close();
+         int columnIndex = cursor.getColumnIndex(projection[0]);
+         String filePath = cursor.getString(columnIndex);
+         cursor.close();
 
-          File f = new File(filePath);
-          this._note.setAttachment(new NoteAttachment(NoteAttachment.kFileTypeAudio, f));
+         File f = new File(filePath);
+         this._note.setAttachment(new NoteAttachment(NoteAttachment.kFileTypeAudio, f));
       }
          break;
       case kRequestAudioFromMic:
-    	  // TODO
-    	  break;
+      {  // Audio taken from microphone
+         Uri recordedAudio = data.getData();
+         InputStream importStream;
+         try {
+            importStream = getContentResolver().openInputStream(recordedAudio);
+
+            this._note.setAttachment(new NoteAttachment(NoteAttachment.kFileTypeAudio, "RecordedAudio.amr", importStream));
+         } catch (FileNotFoundException e) {
+            e.printStackTrace();
+         }
+      }
+         break;
       default:
-    	  return;
+         return;
       }
       this._database.saveNote(this, this._noteID, this._note);
    }

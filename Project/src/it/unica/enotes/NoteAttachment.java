@@ -19,6 +19,7 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.IOException;
+import java.io.InputStream;
 import java.nio.ByteBuffer;
 
 import org.json.JSONException;
@@ -41,48 +42,90 @@ public class NoteAttachment {
    public static final String kAttachmentFileName = "name";
    public static final String kAttachmentFileType = "type";
    public static final String kAttachmentFileData = "data";
+   
+   public static final long kMaxAttachmentSize = 1000000; // 1MB
 
    private String _filename;
    private ByteBuffer _filedata;
    private int _filetype;
 
    public NoteAttachment() {
+      this.init();
+   }
+
+   public NoteAttachment(int filetype, File file) {
+      this();
+      this.init(filetype, file);
+   }
+
+   public NoteAttachment(int filetype, String filename, InputStream stream) {
+      this();
+      this.init(filetype, filename, stream);
+   }
+
+   public NoteAttachment(JSONObject contents) {
+      this();
+      this.init(contents);
+   }
+
+   public NoteAttachment(int filetype, String filename, String filedata) {
+      this();
+      this.init(filetype, filename, filedata);
+   }
+
+   public NoteAttachment(int filetype, String filename, ByteBuffer filedata) {
+      this();
+      this.init(filetype, filename, filedata);
+   }
+   
+   private void init() {
       this._filename = "";
       this._filedata = ByteBuffer.allocate(0);
       this._filetype = kFileTypeInvalid;
    }
-   
-   public NoteAttachment(int filetype, File file) {
-      this();
-      if (!file.isFile() || filetype <= kFileTypeInvalid || filetype >= kFileTypeMax) {
+	   
+   private void init(int filetype, File file) {
+      if (!file.isFile()) {
          return;
       }
-      this._filename = file.getName();
-      this._filetype = filetype;
       try {
-         // TODO: Max filesize
-         int bufferSize = 0x20000; // ~130k  // FIXME
          FileInputStream importStream = new FileInputStream(file);
+         this.init(filetype, file.getName(), importStream);
+      } catch (FileNotFoundException e) {
+         e.printStackTrace();
+      }
+   }
+
+   private void init(int filetype, String filename, InputStream stream) {
+      if (filetype <= kFileTypeInvalid || filetype >= kFileTypeMax) {
+         return;
+      }
+      this._filename = filename;
+      this._filetype = filetype;
+      
+      try {
+         int bufferSize = 0x20000; // ~130k
          byte[] buffer = new byte[bufferSize];
-         ByteArrayOutputStream importBufferStream = new ByteArrayOutputStream((int)file.length());
+         ByteArrayOutputStream importBufferStream = new ByteArrayOutputStream(bufferSize);
          int read;
          while (true) {
-            read = importStream.read(buffer);
+            read = stream.read(buffer);
             if (read == -1) {
                break;
             }
             importBufferStream.write(buffer, 0, read);
+            if (importBufferStream.size() > kMaxAttachmentSize) {
+               this.init();
+               return;
+            }
          }
          this._filedata = ByteBuffer.wrap(importBufferStream.toByteArray());
-      } catch (FileNotFoundException e) {
-         e.printStackTrace();
       } catch (IOException e) {
          e.printStackTrace();
       }
    }
 
-   public NoteAttachment(JSONObject contents) {
-      this();
+   private void init(JSONObject contents) {
       if (contents == null) {
          return;
       }
@@ -93,7 +136,7 @@ public class NoteAttachment {
             this.setFilename(contents.getString(kAttachmentFileName));
             this.setFiletype(contents.getInt(kAttachmentFileType));
             this.setEncodedData(contents.getString(kAttachmentFileData));
-         }
+               }
       } catch (JSONException e) {
          this.setFilename(null);
          this.setFiletype(kFileTypeInvalid);
@@ -101,15 +144,12 @@ public class NoteAttachment {
       }
    }
 
-   public NoteAttachment(int filetype, String filename, String filedata) {
-      this();
+   private void init(int filetype, String filename, String filedata) {
       this.setFiletype(filetype);
       this.setFilename(filename);
       this.setEncodedData(filedata);
    }
-
-   public NoteAttachment(int filetype, String filename, ByteBuffer filedata) {
-      this();
+   private void init(int filetype, String filename, ByteBuffer filedata) {
       this.setFiletype(filetype);
       this.setFilename(filename);
       this.setRawData(filedata);
