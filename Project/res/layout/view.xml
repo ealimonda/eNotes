@@ -80,12 +80,40 @@
             android:textStyle="bold"
             android:textColor="#ff000000" />
          <TextView
-               android:id="@+id/ViewUrl"
-               android:layout_width="fill_parent"
-               android:layout_height="wrap_content"      
-               android:padding="5dip"
-               android:textColor="#ff000000" />
-     </LinearLayout>
+            android:id="@+id/ViewAttachments"
+            android:layout_width="fill_parent"
+            android:layout_height="wrap_content"      
+            android:padding="5dip"
+            android:textColor="#ff000000" />         
+         </LinearLayout>
+         
+      <!-- Separator -->
+      <View
+         android:layout_width="match_parent"
+         android:layout_height="wrap_content"
+         android:background="?android:attr/listDivider" />
+      <!-- End Separator -->
+      
+      <LinearLayout
+      android:layout_width="fill_parent"
+      android:layout_height="wrap_content"
+      android:orientation="horizontal">
+      <!-- Urls -->
+      <TextView
+         android:text="Url:"
+         android:padding="10dip"
+         android:layout_width="wrap_content"
+         android:layout_height="wrap_content"
+         android:textStyle="bold"
+         android:textColor="#ff000000" />
+      <TextView
+            android:id="@+id/ViewUrl"
+            android:layout_width="fill_parent"
+            android:layout_height="wrap_content"      
+            android:padding="5dip"
+            android:textColor="#ff000000"
+            android:autoLink="web" />
+  	  </LinearLayout>
          
      <!-- Separator -->
      <View

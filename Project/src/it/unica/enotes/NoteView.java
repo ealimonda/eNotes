@@ -26,6 +26,7 @@ import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
 import android.text.format.Time;
+import android.text.method.LinkMovementMethod;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -73,13 +74,15 @@ public class NoteView extends Activity {
 
       TextView titleField = (TextView) findViewById(R.id.ViewTitle);
       TextView contentsField = (TextView) findViewById(R.id.ViewContents);
+      TextView attachmentField = (TextView) findViewById(R.id.ViewAttachments);
+      TextView urlField = (TextView) findViewById(R.id.ViewUrl);   
       TextView tagsField = (TextView) findViewById(R.id.ViewTags);
-      TextView urlField = (TextView) findViewById(R.id.ViewUrl);
 
       titleField.setText(note.getTitle());
       contentsField.setText(note.getText());
-      tagsField.setText(note.getTagsAsString());
+      attachmentField.setText(note.getAttachment().getFilename());
       urlField.setText(note.getURL());
+      tagsField.setText(note.getTagsAsString());      
 
       // Do some temp files cleanup (Why here?  See note below.)
       String tmpDirPath = System.getProperty("java.io.tmpdir");
