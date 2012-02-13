@@ -11,6 +11,7 @@
    
    <ListView
       android:id="@android:id/list"
+      style="@style/ListView"      
       android:background="#ffffffff"
       android:layout_width="fill_parent"
       android:layout_height="fill_parent"/>

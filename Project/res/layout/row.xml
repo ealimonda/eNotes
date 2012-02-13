@@ -3,7 +3,8 @@
    xmlns:android="http://schemas.android.com/apk/res/android"
    android:layout_height="wrap_content"
    android:layout_width="fill_parent"
-   android:orientation="horizontal"   
+   android:orientation="horizontal"
+   style="@style/Row"
    android:background="#FFFFFFFF" >
    
    <LinearLayout

@@ -105,7 +105,6 @@ public class NoteEdit extends Activity {
       titleField.setText(this._note.getTitle());
       contentField.setText(this._note.getText());
       tagsField.setText(this._note.getTagsAsString());
-      //String attachment = this._note.getAttachment().getFilename();
       if (this._note.getAttachment().getFiletype() == NoteAttachment.kFileTypeInvalid) {
     	  attachmentField.setVisibility(View.GONE);
     	  cancelAttachment.setVisibility(View.GONE);
@@ -142,6 +141,23 @@ public class NoteEdit extends Activity {
 
       this._database.saveNote(this, this._noteID, this._note);
    }
+   
+   public void urlCancel(View view) {
+	   // FIXME: Url doesn't get saved
+	   Log.v(kTag, "url cancel");	   
+	   this._note.setURL(null);
+	   this._database.saveNote(this, this._noteID, this._note);
+	   //urlField.setVisibility(View.GONE);
+       //cancelUrl.setVisibility(View.GONE);
+	 }
+   
+   public void attachmentCancel(View view) {
+	   Log.v(kTag, "attachment cancel");
+	   this._note.setAttachment(null);	   	   
+	   //urlField.setVisibility(View.GONE);
+       //cancelUrl.setVisibility(View.GONE);
+	 }
+
 
    @Override
    public boolean onCreateOptionsMenu(Menu menu) {
