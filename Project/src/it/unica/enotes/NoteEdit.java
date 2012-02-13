@@ -318,8 +318,9 @@ public class NoteEdit extends Activity {
     	  // TODO
     	  break;
       default:
-         //return false;
+    	  return;
       }
+      this._database.saveNote(this, this._noteID, this._note);
    }
 }
 /* vim: set ts=3 sw=3 smarttab expandtab cc=101 : */
