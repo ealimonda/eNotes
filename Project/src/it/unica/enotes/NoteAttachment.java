@@ -25,7 +25,6 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 import android.util.Base64;
-import android.util.Log;
 
 /**
  * Represents an attachment to a note
@@ -55,7 +54,6 @@ public class NoteAttachment {
    
    public NoteAttachment(int filetype, File file) {
       this();
-      Log.v("Attachment", "Trying to import file: " + file.getAbsolutePath() +") of type "+ filetype);
       if (!file.isFile() || filetype <= kFileTypeInvalid || filetype >= kFileTypeMax) {
          return;
       }
@@ -157,7 +155,9 @@ public class NoteAttachment {
    public void setFiletype(int filetype) {
       if (filetype >= kFileTypeMax || filetype <= kFileTypeInvalid) {
          this._filetype = kFileTypeInvalid;
+         return;
       }
+      this._filetype = filetype;
    }
 
    public JSONObject getJson() {
