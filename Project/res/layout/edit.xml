@@ -8,10 +8,9 @@
    >
 
    <LinearLayout
-      android:orientation="vertical"
-      android:layout_width="fill_parent"
-      android:layout_height="fill_parent"
-      >
+       android:layout_width="fill_parent"
+       android:layout_height="fill_parent"
+       android:orientation="vertical" >
 
       <!-- Title box -->
       <LinearLayout
@@ -22,7 +21,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:padding="10dip"
-            android:text="Title:"
+            android:text="@string/Title"
             android:textColor="#ff000000"
             android:textStyle="bold" />
          <EditText
@@ -36,15 +35,17 @@
 
       <!-- Attachments box -->
       <LinearLayout
-         android:id="@+id/EditAttachmentLayout"
-         android:layout_width="fill_parent"
-         android:layout_height="fill_parent"
-         android:orientation="horizontal" >
+          android:id="@+id/EditAttachmentLayout"
+          android:layout_width="fill_parent"
+          android:layout_height="fill_parent"
+          android:gravity="center"
+          android:orientation="horizontal" >
+
          <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:padding="10dip"
-            android:text="Attachment:"
+            android:text="@string/Attachment"
             android:textColor="#ff000000"
             android:textStyle="bold" />
          <EditText
@@ -53,28 +54,30 @@
             android:layout_height="wrap_content"
             android:layout_weight="0.75"
             android:padding="5dip"
-            android:text="(no attachments)"
+            android:text="@string/noAttachment"
             android:textColor="#FF000000" />
          <Button
             android:id="@+id/EditAttachmentButton"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:padding="5dip"
-            android:text="X"
+            android:background="@drawable/ic_delete"
             android:onClick="deleteAttachment" />
       </LinearLayout>
 
       <!-- URL box -->
       <LinearLayout
-         android:id="@+id/EditUrlLayout"
-         android:layout_width="fill_parent"
-         android:layout_height="fill_parent"
-         android:orientation="horizontal" >
+          android:id="@+id/EditUrlLayout"
+          android:layout_width="fill_parent"
+          android:layout_height="fill_parent"
+          android:gravity="center"
+          android:orientation="horizontal" >
+
          <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:padding="10dip"
-            android:text="Url:"
+            android:text="@string/Url"
             android:textColor="#ff000000"
             android:textStyle="bold" />
          <EditText
@@ -83,13 +86,14 @@
             android:layout_height="wrap_content"
             android:layout_weight="0.75"
             android:padding="5dip"
+            android:text="@string/noUrl"
             android:textColor="#FF000000" />
          <Button
             android:id="@+id/EditUrlButton"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:padding="5dip"
-            android:text="X"
+            android:padding="5dip"            
+            android:background="@drawable/ic_delete"            
             android:onClick="deleteUrl" />
       </LinearLayout>
 
@@ -102,14 +106,14 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:padding="10dip"
-            android:text="Content:"
+            android:text="@string/Content"
             android:textColor="#ff000000"
             android:textStyle="bold" />
          <EditText
             android:id="@+id/EditContent"
             android:layout_width="fill_parent"
             android:layout_height="wrap_content"
-            android:text="(no text)"
+            android:text="@string/noContent"
             android:textColor="#FF000000"
             android:padding="5dip" />
       </LinearLayout>
@@ -122,7 +126,7 @@
          <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="Tags:"
+            android:text="@string/Tags"
             android:textColor="#FF000000"
             android:textSize="10px" />
          <EditText

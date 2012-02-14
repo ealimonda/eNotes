@@ -15,7 +15,7 @@
          android:id="@+id/RowTitle"
          android:layout_width="wrap_content"
          android:layout_height="wrap_content"
-         android:text="Title"
+         android:text="@string/aTitle"
          android:layout_gravity="left"
          android:padding="10dip"
          android:textColor="#FF000000"
@@ -25,7 +25,7 @@
          android:layout_width="wrap_content"
          android:layout_height="wrap_content"
          android:textColor="#FF000000"
-         android:text="(Tags)"
+         android:text="@string/aTag"
          android:layout_gravity="left"
          android:padding="10dip"
          android:textSize="15px" />
@@ -42,7 +42,7 @@
          android:layout_width="wrap_content"
          android:layout_height="wrap_content"
          android:gravity="right"
-         android:text="Last Modified"
+         android:text="@string/timeStamp"
          android:textColor="#FF000000"
          android:padding="10dip"
          android:textSize="10px" />

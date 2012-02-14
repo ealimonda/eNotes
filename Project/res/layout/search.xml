@@ -7,12 +7,14 @@
    android:layout_height="fill_parent"
    android:background="#ffffffff"
    >
+
    <EditText
-      android:id="@+id/SearchBox"
-      android:layout_width="match_parent"
-      android:layout_height="35dp"
-      android:textSize="10px"
-      android:text="" />
+       android:id="@+id/SearchBox"
+       android:layout_width="match_parent"
+       android:layout_height="wrap_content"
+       android:text=""
+       android:textSize="10px" />
+
    <include layout="@layout/row"/>
    <ListView
       android:id="@android:id/list"
@@ -21,4 +23,3 @@
       android:layout_height="fill_parent"/>
 </LinearLayout>
 <!-- vim: set ts=3 sw=3 smarttab expandtab cc=101 : -->
-
