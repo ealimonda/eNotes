@@ -43,6 +43,11 @@ public class NoteAttachment {
    public static final String kFileExtensionPicture = ".jpg";
    public static final String kFileExtensionAudio   = ".amr";
    public static final String kFileExtensionVideo   = ".3gp";
+   
+   /** MIME Types */
+   public static final String kFileMimePicture = "image/*";
+   public static final String kFileMimeAudio   = "audio/*";
+   public static final String kFileMimeVideo   = "video/*";
 
    /** JSON field names */
    public static final String kAttachmentFileName = "name";

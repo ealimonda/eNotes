@@ -441,7 +441,7 @@ public class NoteDB extends ContentProvider {
          Time noteTimestamp = new Time();
          noteTimestamp.set(cursor.getLong(cursor.getColumnIndexOrThrow(Note.kTimestamp)));
 
-         note = new Note(getContext(), noteGUID, noteTitle, noteTimestamp, noteContent, noteTags);
+         note = new Note(activity, noteGUID, noteTitle, noteTimestamp, noteContent, noteTags);
       }
 
       return note;

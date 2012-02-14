@@ -68,6 +68,7 @@
       <!-- End Separator -->
 
       <LinearLayout
+         android:id="@+id/ViewAttachmentLayout"
          android:layout_width="fill_parent"
          android:layout_height="wrap_content"
          android:orientation="horizontal">
@@ -79,12 +80,13 @@
             android:layout_height="wrap_content"
             android:textStyle="bold"
             android:textColor="#ff000000" />
-         <TextView
+         <Button
             android:id="@+id/ViewAttachments"
             android:layout_width="fill_parent"
             android:layout_height="wrap_content"
             android:padding="5dip"
-            android:textColor="#ff000000" />
+            android:textColor="#ff000000"
+            android:onClick="viewAttachment" />
       </LinearLayout>
 
       <!-- Separator -->

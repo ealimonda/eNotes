@@ -17,8 +17,11 @@ package it.unica.enotes;
 
 import java.io.File;
 import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
 import java.io.FileWriter;
 import java.io.IOException;
+import java.nio.channels.FileChannel;
+
 import android.app.Activity;
 import android.app.AlertDialog;
 import android.content.DialogInterface;
@@ -28,6 +31,8 @@ import android.os.Bundle;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.view.View;
+import android.widget.Button;
 import android.widget.TextView;
 
 /**
@@ -42,6 +47,8 @@ public class NoteView extends Activity {
    private static final int kMenuItemSend = 102;
    /** ID of the current note */
    long _noteID;
+   /** The current note */
+   Note _note;
    /** Database helper / content provider */
    private NoteDB _database;
    /** Logging tag */
@@ -71,19 +78,32 @@ public class NoteView extends Activity {
    public void onResume() {
       super.onResume();
 
-      Note note = this._database.getNoteById(this, this._noteID);
+      this._note = this._database.getNoteById(this, this._noteID);
 
       TextView titleField = (TextView) findViewById(R.id.ViewTitle);
       TextView contentsField = (TextView) findViewById(R.id.ViewContents);
-      TextView attachmentField = (TextView) findViewById(R.id.ViewAttachments);
+      Button attachmentField = (Button) findViewById(R.id.ViewAttachments);
       TextView urlField = (TextView) findViewById(R.id.ViewUrl);
       TextView tagsField = (TextView) findViewById(R.id.ViewTags);
 
-      titleField.setText(note.getTitle());
-      contentsField.setText(note.getText());
-      attachmentField.setText(note.getAttachment().getFilename());
-      urlField.setText(note.getURL());
-      tagsField.setText(note.getTagsAsString());
+      titleField.setText(this._note.getTitle());
+      contentsField.setText(this._note.getText());
+      // TODO: Improve this
+      if (this._note.getAttachment().getFiletype() != NoteAttachment.kFileTypeInvalid) {
+         attachmentField.setVisibility(View.VISIBLE);
+         attachmentField.setText(this._note.getAttachment().getFilename());
+         //findViewById(R.id.ViewAttachmentLayout).setVisibility(View.GONE);
+      } else {
+         attachmentField.setVisibility(View.GONE);
+      }
+
+      if (this._note.getURL() == "") {
+         urlField.setVisibility(View.GONE);
+      } else {
+         urlField.setText(this._note.getURL());
+         urlField.setVisibility(View.VISIBLE);
+      }
+      tagsField.setText(this._note.getTagsAsString());
    }
 
    @Override
@@ -127,17 +147,17 @@ public class NoteView extends Activity {
       case kMenuItemSend:
       {  // Send note
          // FIXME: Re-query this only if needed
-         Note note = this._database.getNoteById(this, this._noteID);
+         //this._note = this._database.getNoteById(this, this._noteID);
          try {
             File tmpDir = Note.getSharedTmpDir();
             File attachmentFile = File.createTempFile("eNote.", ".eNote", tmpDir);
             FileWriter attachmentWriter = new FileWriter(attachmentFile);
-            attachmentWriter.write(note.getJSON());
+            attachmentWriter.write(this._note.getJSON());
             attachmentWriter.close();
 
             Intent emailIntent = new Intent(Intent.ACTION_SEND);
             emailIntent.setType("plain/text");
-            emailIntent.putExtra(Intent.EXTRA_SUBJECT, "[eNote] "+ note.getTitle());
+            emailIntent.putExtra(Intent.EXTRA_SUBJECT, "[eNote] "+ this._note.getTitle());
             emailIntent.putExtra(Intent.EXTRA_STREAM, Uri.parse("file://"+ attachmentFile.getPath()));
             Log.v(kTag, "Sending: "+attachmentFile.toURI());
             startActivity(Intent.createChooser(emailIntent, getString(R.string.sendMail)));
@@ -168,6 +188,51 @@ public class NoteView extends Activity {
          return false;
       }
       return true;
+   }
+
+   /**
+    * View the note's attachment through its associated system application.
+    * The file is saved in the temporary directory before being displayed.
+    * @param view Originating view
+    */
+   public void viewAttachment(View view) {
+      NoteAttachment attachment = this._note.getAttachment();
+      String fileExtension = "";
+      String mimeType = "*/*";
+      switch (attachment.getFiletype()) {
+      case NoteAttachment.kFileTypePicture:
+         fileExtension = NoteAttachment.kFileExtensionPicture;
+         mimeType = NoteAttachment.kFileMimePicture;
+         break;
+      case NoteAttachment.kFileTypeVideo:
+         fileExtension = NoteAttachment.kFileExtensionVideo;
+         mimeType = NoteAttachment.kFileMimeVideo;
+         break;
+      case NoteAttachment.kFileTypeAudio:
+         fileExtension = NoteAttachment.kFileExtensionAudio;
+         mimeType = NoteAttachment.kFileMimeAudio;
+         break;
+      default:
+         return;
+      }
+      try {
+         File tmpDir = Note.getSharedTmpDir();
+         File attachmentFile = File.createTempFile("Attachment.", fileExtension, tmpDir);
+         FileChannel writeChannel = new FileOutputStream(attachmentFile, false).getChannel();
+         writeChannel.write(attachment.getRawData());
+         writeChannel.close();
+
+         // TODO: Make sure this actually works
+         Intent openIntent = new Intent(Intent.ACTION_VIEW);
+         openIntent.setDataAndType(Uri.fromFile(attachmentFile), mimeType);
+         startActivity(openIntent);
+      } catch (FileNotFoundException e) {
+         e.printStackTrace();
+         return;
+      } catch (IOException e) {
+         e.printStackTrace();
+         return;
+      }
    }
 }
 
