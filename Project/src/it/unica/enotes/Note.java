@@ -165,18 +165,17 @@ public class Note {
       this.setGUID(GUID);
       this.setTitle(title);
       this.setTimestamp(timestamp);
+      this.setTagsFromString(tags);
 
       if (text == null) {
          // If text is null, the note wasn't loaded
          this.setText(null);
          this.setURL(null);
-         this.setTagsFromString(null);
          this.setAttachment(null);
          this.setLoaded(false);
       } else {
          this.setText(text);
          this.setURL(URL);
-         this.setTagsFromString(tags);
          this.setAttachment(attachment);
          this.setLoaded(true);
       }
@@ -446,7 +445,7 @@ public class Note {
    // Static methods
    /**
     * Get the shared directory for temporary files
-    * @return  A File representing the remporary directory
+    * @return  A File representing the temporary directory
     * @throws  FileNotFoundException   when the directory isn't found and can't be created
     */
    public static File getSharedTmpDir() throws FileNotFoundException {
