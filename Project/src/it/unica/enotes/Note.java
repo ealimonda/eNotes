@@ -25,6 +25,7 @@ import org.json.JSONObject;
 import android.content.Context;
 import android.net.Uri;
 import android.text.format.Time;
+import android.webkit.URLUtil;
 
 /**
  * Represents each note entry and offers conversion methods from and to the JSON format.
@@ -368,8 +369,7 @@ public class Note {
     * @param URL     A new URL to attach (replacing the previous one)
     */
    public void setURL(String URL) {
-      // FIXME: Make sure the URL is valid.  Maybe check for (https?|ftp|mailto).
-      if (URL == null) {
+      if (URL == null || !URLUtil.isValidUrl(URL)) {
          this._URL = "";
       } else {
          this._URL = URL;
