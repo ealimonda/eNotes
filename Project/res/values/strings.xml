@@ -1,33 +1,41 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
 
-    <string name="hello">eNotes</string>
-    <string name="app_name">eNotes</string>
-    
-    <!-- main menu NoteList -->
-    <string name="addDialogTitle">New Note</string>
-    <string name="addItem">Add Note</string>
-    <string name="searchItem">Search Note</string>
-    
-    <!-- main menu NoteView -->
-    <string name="editItem">Edit</string>
-    <string name="deleteItem">Delete</string>
-    <string name="deleteMsg">Do you want to delete this note?</string>
-    <string name="deleteConf">Confirm Delete</string>
-    <string name="yes">Yes</string>
-    <string name="cancel">Cancel</string>
-    <string name="sendItem">Send</string>
-    <string name="sendMail">Send email:</string>    
-     
-     <!-- main menu NoteEdit -->
-     <string name="addAttachment">Attach</string>
-     <string name="addUrl">Add URL</string>
-     
-     <!-- submenu NoteEdit -->
-     <string name="addPictures">Pictures</string>
-     <string name="addCapturePicture">Capture Picture</string>
-     <string name="addVideos">Videos</string>
-     <string name="addCaptureVideo">Capture Video</string>
-     <string name="addAudio">Audio</string>
-     <string name="addRecordAudio">Record Audio</string>
+   <string name="hello">eNotes</string>
+   <string name="app_name">eNotes</string>
+
+   <!-- Note.java -->
+   <string name="untitled">(Untitled)</string>
+
+   <!-- NoteAttachment.java -->
+   <string name="noname">AttachedFile</string>
+
+   <!-- main menu NoteList -->
+   <string name="importedNote">Imported Note</string>
+   <string name="addDialogTitle">New Note</string>
+   <string name="addItem">Add Note</string>
+   <string name="searchItem">Search Note</string>
+
+   <!-- main menu NoteView -->
+   <string name="editItem">Edit</string>
+   <string name="deleteItem">Delete</string>
+   <string name="deleteMsg">Do you want to delete this note?</string>
+   <string name="deleteConf">Confirm Delete</string>
+   <string name="yes">Yes</string>
+   <string name="cancel">Cancel</string>
+   <string name="sendItem">Send</string>
+   <string name="sendMail">Send email:</string>
+
+   <!-- main menu NoteEdit -->
+   <string name="addAttachment">Attach</string>
+   <string name="addUrl">Add URL</string>
+
+   <!-- submenu NoteEdit -->
+   <string name="addPictures">Pictures</string>
+   <string name="addCapturePicture">Capture Picture</string>
+   <string name="addVideos">Videos</string>
+   <string name="addCaptureVideo">Capture Video</string>
+   <string name="addAudio">Audio</string>
+   <string name="addRecordAudio">Record Audio</string>
 </resources>
+<!-- vim: set ts=3 sw=3 smarttab expandtab cc=101 : -->

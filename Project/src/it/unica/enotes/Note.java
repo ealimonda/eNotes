@@ -20,6 +20,8 @@ import java.util.Arrays;
 import java.util.UUID;
 import org.json.JSONException;
 import org.json.JSONObject;
+
+import android.content.Context;
 import android.net.Uri;
 import android.text.format.Time;
 
@@ -69,21 +71,29 @@ public class Note {
    private String _URL;
    /** Note tags */
    private ArrayList<String> _tags;
+   /** Context (for strings, etc) */
+   private Context _context;
 
-   /** Default constructor.  Creates an empty note with an auto-generated GUID */
-   public Note() {
-      this(null, null, null, null, null, null, null);
+   /** Default constructor.  Creates an empty note with an auto-generated GUID.
+    * @param context The current context
+    */
+   public Note(Context context) {
+      this._context = context;
+      this.init();
    }
    /**
-    * Constructor.  Creates an empty note with a given title and GUID
+    * Constructor.  Creates an empty note with a given title and GUID.
+    * @param context The current context
     * @param GUID    The GUID of the note
     * @param title   The title of the note
     */
-   public Note(String GUID, String title) {
-      this(GUID, title, null, null, null, null, null);
+   public Note(Context context, String GUID, String title) {
+      this._context = context;
+      this.init(GUID, title);
    }
    /**
-    * Constructor
+    * Constructor.
+    * @param context    The current context
     * @param GUID       The GUID of the note
     * @param title      The title of the note
     * @param timestamp  Last modification timestamp
@@ -93,6 +103,7 @@ public class Note {
     * @param tags       Tags of the note, as a space-delimited string
     */
    public Note(
+         Context context,
          String GUID,
          String title,
          Time timestamp,
@@ -101,67 +112,94 @@ public class Note {
          NoteAttachment attachment,
          String tags
          ) {
-      if (GUID == null) {
-         this._GUID = UUID.randomUUID().toString();
+      this._context = context;
+      this.init(GUID, title, timestamp, text, URL, attachment, tags);
+   }
+   /**
+    * Constructor.
+    * @param context    The current context
+    * @param GUID       The GUID of the note
+    * @param title      The title of the note
+    * @param timestamp  Last modification timestamp
+    * @param json       A JSON object containing text, URL and/or attachment, in string form
+    * @param tags       Tags of the note, as a space-delimited string
+    */
+   public Note(Context context, String GUID, String title, Time timestamp, String json, String tags) {
+      this._context = context;
+      this.init(GUID, title, timestamp, json, tags);
+   }
+
+   /** Initialize an empty note with an auto-generated GUID */
+   private void init() {
+      this.init(null, null, null, null, null, null, null);
+   }
+   /**
+    * Initialize an empty note with a given title and GUID
+    * @param GUID    The GUID of the note
+    * @param title   The title of the note
+    */
+   private void init(String GUID, String title) {
+      this.init(GUID, title, null, null, null, null, null);
+   }
+   /**
+    * Initialize a note with the given values.
+    * @param GUID       The GUID of the note
+    * @param title      The title of the note
+    * @param timestamp  Last modification timestamp
+    * @param text       Content (text) of the note
+    * @param URL        Attached URL to the note
+    * @param attachment Attached file to the note
+    * @param tags       Tags of the note, as a space-delimited string
+    */
+   private void init(
+         String GUID,
+         String title,
+         Time timestamp,
+         String text,
+         String URL,
+         NoteAttachment attachment,
+         String tags
+         ) {
+      this.setGUID(GUID);
+      this.setTitle(title);
+      this.setTimestamp(timestamp);
+
+      if (text == null) {
+         // If text is null, the note wasn't loaded
+         this.setText(null);
+         this.setURL(null);
+         this.setTagsFromString(null);
+         this.setAttachment(null);
+         this.setLoaded(false);
       } else {
-         this._GUID = GUID;
+         this.setText(text);
+         this.setURL(URL);
+         this.setTagsFromString(tags);
+         this.setAttachment(attachment);
+         this.setLoaded(true);
       }
 
-      if (title != null) {
-         this._title = title;
-      } else {
-         this._title = "";
-      }
-
-      if (timestamp != null) {
-         this._timestamp = timestamp;
-      } else {
-         Time ts = new Time();
-         ts.setToNow();
-         this._timestamp = ts;
-      }
-
-      this._text = null;
-      this._URL = null;
-      this._tags = null;
-      this._attachment = null;
-      this._loaded = false;
-
-      if (text != null) {
-         this._text = text;
-         if (URL != null) {
-            this._URL = URL;
-         }
-         if (tags != null) {
-            this.setTagsFromString(tags);
-         }
-         if (attachment != null) {
-            this._attachment = attachment;
-         }
-         this._loaded = true;
-      }
-
-      if (this._text == null) {
-         this._text = "";
-      }
-      if (this._URL == null) {
-         this._URL = "";
-      }
-      if (this._attachment == null) {
-         this._attachment = new NoteAttachment();
-      }
-      if (this._tags == null) {
-         this._tags = new ArrayList<String>();
-      }
-
-      this._dirty = false;
+      this.setDirty(false);
+   }
+   /**
+    * Initialize a note with the given values and JSON data
+    * @param GUID       The GUID of the note
+    * @param title      The title of the note
+    * @param timestamp  Last modification timestamp
+    * @param json       A JSON object containing text, URL and/or attachment, in string form
+    * @param tags       Tags of the note, as a space-delimited string
+    */
+   private void init(String GUID, String title, Time timestamp, String json, String tags) {
+      this.init(GUID, title, timestamp, null, null, null, tags);
+      this.setFromJSON(json);
+      this.setDirty(false);
    }
 
    /**
-    * Import note from JSON data
-    * @param json    A JSON object representing the note
+    * Amend a note from JSON data.
+    * @param json    A JSON object representing the note, in string form
     */
-   public void NoteFromJSON(String json) {
+   public void setFromJSON(String json) {
       JSONObject jsObject;
       if (json == null) {
          return;
@@ -170,30 +208,25 @@ public class Note {
          jsObject = new JSONObject(json);
 
          if (jsObject.has(kText)) {
-            this._text = jsObject.getString(kText);
-         } else {
-            this._text = "";
+            this.setText(jsObject.getString(kText));
          }
 
          if (jsObject.has(kURL)) {
-            this._URL = jsObject.getString(kURL);
-         } else {
-            this._URL = "";
+            this.setURL(jsObject.getString(kURL));
          }
 
          if (jsObject.has(kAttachment)) {
-             this._attachment = new NoteAttachment(jsObject.getJSONObject(kAttachment));
-          } else {
-             this._attachment = new NoteAttachment();
+             this.setAttachment(new NoteAttachment(this._context,
+                      jsObject.getJSONObject(kAttachment)));
           }
       } catch (JSONException e) {
-         return;
+         e.printStackTrace();
       }
       return;
    }
 
    /**
-    * Export note to JSON data
+    * Export note to JSON data.
     * @return  A JSON object representing the note
     * */
    public String getJSON() {
@@ -204,6 +237,7 @@ public class Note {
          jsObject.put(kURL, this._URL);
          jsObject.put(kAttachment, this._attachment.getJson());
       } catch (JSONException e) {
+         e.printStackTrace();
          return "";
       }
       return jsObject.toString();
@@ -211,49 +245,49 @@ public class Note {
 
    // Accessors
    /**
-    * Get the note's GUID
+    * Get the note's GUID.
     * @return  The note's GUID
     */
    public String getGUID() {
       return this._GUID;
    }
    /**
-    * Set the note's GUID
-    * @param GUID    A new GUID to set
+    * Set the note's GUID.
+    * @param GUID    A new GUID to set or null for an auto-generated one
     */
    public void setGUID(String GUID) {
       if (GUID == null) {
-         return;
+         this._GUID = UUID.randomUUID().toString();
+      } else {
+         this._GUID = GUID;
       }
-      this._GUID = GUID;
       this.setDirty(true);
    }
 
    /**
-    * Return the note details loaded state
+    * Return the note details loaded state.
     * @return  true if details have been loaded, false otherwise
     */
    public boolean isLoaded() {
       return this._loaded;
    }
    /**
-    * Set the note details' loaded state
+    * Set the note details' loaded state.
     * @param state   State to set
     */
    public void setLoaded(boolean state) {
       this._loaded = state;
-      this.setDirty(false);
    }
 
    /**
-    * Return the note's dirty state
+    * Return the note's dirty state.
     * @return  true is the note was edited after last save, false otherwise
     */
    public boolean isDirty() {
       return this._dirty;
    }
    /**
-    * Set the dirty state for a note
+    * Set the dirty state for a note.
     * @param state   Whether the note was edited after last save
     */
    public void setDirty(boolean state) {
@@ -261,53 +295,55 @@ public class Note {
    }
 
    /**
-    * Get the note's title
-    * @return  The note's title
+    * Get the note's title.
+    * @return  The note's title.
     */
    public String getTitle() {
       return this._title;
    }
    /**
-    * Set the note's title
-    * @param title   A new title to set
+    * Set the note's title.
+    * @param title   A new title to set or null to set a default one.
     */
-   public void setTitle(String newTitle) {
-      if (newTitle == null) {
-         this._title = "";
+   public void setTitle(String title) {
+      if (title == null) {
+         this._title = this._context.getResources().getString(R.string.untitled);
       } else {
-         this._title = newTitle;
+         this._title = title;
       }
       this.setDirty(true);
    }
 
    /**
-    * Get the note's last modification timestamp
-    * @return  The last modification timestamp
+    * Get the note's last modification timestamp.
+    * @return  The last modification timestamp.
     */
    public Time getTimestamp() {
       return this._timestamp;
    }
    /**
-    * Set the note's last modification timestamp
-    * @param timestamp  The timestamp to set.  It'll be set to now if it's null
+    * Set the note's last modification timestamp.
+    * @param timestamp  The timestamp to set.  It'll be set to now if it's null.
     */
    public void setTimestamp(Time timestamp) {
       if (timestamp == null) {
+         this._timestamp = new Time();
          this._timestamp.setToNow();
       } else {
          this._timestamp = timestamp;
       }
+      this.setDirty(true);
    }
 
    /**
-    * Get the note's contents
+    * Get the note's contents.
     * @return  The note's contents (text)
     */
    public String getText() {
       return this._text;
    }
    /**
-    * Set the note's contents
+    * Set the note's contents.
     * @param text    New text contents for the note
     */
    public void setText(String text) {
@@ -320,17 +356,18 @@ public class Note {
    }
 
    /**
-    * Get the note's attached URL
+    * Get the note's attached URL.
     * @return  The note's attached URL
     */
    public String getURL() {
       return this._URL;
    }
    /**
-    * Set the note's attached URL
+    * Set the note's attached URL.
     * @param URL     A new URL to attach (replacing the previous one)
     */
    public void setURL(String URL) {
+      // FIXME: Make sure the URL is valid.  Maybe check for (https?|ftp|mailto).
       if (URL == null) {
          this._URL = "";
       } else {
@@ -339,19 +376,19 @@ public class Note {
       this.setDirty(true);
    }
    /**
-    * Get the note's attached file
+    * Get the note's attached file.
     * @return  The note's attached file
     */
    public NoteAttachment getAttachment() {
       return this._attachment;
    }
    /**
-    * Set the note's attached file
+    * Set the note's attached file.
     * @param URL     A new file to attach (replacing the previous one)
     */
    public void setAttachment(NoteAttachment attachment) {
       if (attachment == null) {
-         this._attachment = new NoteAttachment();
+         this._attachment = new NoteAttachment(this._context);
       } else {
          this._attachment = attachment;
       }
@@ -359,14 +396,14 @@ public class Note {
    }
 
    /**
-    * Get the note's tags
+    * Get the note's tags.
     * @return  The note's tags as an ArrayList.  In no tags are set, return an empty array.
     */
    public ArrayList<String> getTags() {
       return this._tags;
    }
    /**
-    * Set the note's tags
+    * Set the note's tags.
     * @param tags    An ArrayList containing the tags to set
     */
    public void setTags(ArrayList<String> tags) {
@@ -391,7 +428,7 @@ public class Note {
       this.setTags(new ArrayList<String>(Arrays.asList(tags.split(" "))));
    }
    /**
-    * Get the note's tags as a string
+    * Get the note's tags as a string.
     * @return  The note's tags as a space-delimited String.
     */
    public String getTagsAsString() {

@@ -45,12 +45,12 @@ public class NoteList extends ListActivity {
    /** Menu IDs */
    private static final int kMenuItemAdd = 100;
    private static final int kMenuItemSearch = 101;
-   /** Database helper / content provider */
-   private NoteDB database;
-   /** Fields to query */
-   private static final String fields[] = { Note.kTitle, Note.kTimestamp, Note.kTags, Note.kID };
    /** Logging tag */
    private static final String kTag = "NoteList";
+   /** Database helper / content provider */
+   private NoteDB _database;
+   /** Fields to query */
+   private static final String fields[] = { Note.kTitle, Note.kTimestamp, Note.kTags, Note.kID };
 
    @Override
    public void onCreate(Bundle savedInstanceState) {
@@ -58,14 +58,12 @@ public class NoteList extends ListActivity {
       Log.v(kTag, "created activity");
       setContentView(R.layout.main);
 
-      database = new NoteDB();
+      this._database = new NoteDB();
 
       ListView view = getListView();
       view.setHeaderDividersEnabled(true);
-      //      view.addHeaderView(getLayoutInflater().inflate(R.layout.row, null));
 
       refreshList();
-      //setContentView(R.layout.main);
 
       Intent intent = getIntent();
       newIntent(intent);
@@ -83,39 +81,50 @@ public class NoteList extends ListActivity {
       newIntent(intent);
    }
 
+   /**
+    * Import a new note from a file loaded through intent
+    * @param intent  The loading intent
+    */
    protected void newIntent(Intent intent) {
+      // TODO: Make sure this won't get re-called when the device is rotated...
       setIntent(intent);
       Log.v(kTag, "Found intent: "+ intent.toString());
       Uri importUri = intent.getData();
       if (importUri != null) {
-         // TODO: Make sure this won't get re-called when the device is rotated...
          File importFile = new File(importUri.getPath());
-         if (importFile.isFile() && importFile.length() > 0) {
-            // TODO: Max length
-            try {
-               FileReader importReader = new FileReader(importFile);
-               CharBuffer importBuffer = CharBuffer.allocate((int)importFile.length());
-               importReader.read(importBuffer);
-               importReader.close();
-               long newID = database.addNote(this, null, "Imported note", importBuffer.toString());
-               refreshList();
-               if (newID >= 0) {
-                  Intent i = new Intent(this, NoteEdit.class);
-                  i.putExtra(Note.kID, newID);
-                  startActivityForResult(i, 0);
-               }
-            } catch (FileNotFoundException e) {
-            } catch (IOException e) {
+         if (!importFile.isFile()
+               || importFile.length() <= 0
+               || importFile.length() > NoteAttachment.kMaxAttachmentSize*15/10
+               // Larger than max attachment size
+         ) {
+            return;
+         }
+         try {
+            FileReader importReader = new FileReader(importFile);
+            CharBuffer importBuffer = CharBuffer.allocate((int)importFile.length());
+            importReader.read(importBuffer);
+            importReader.close();
+            long newID = this._database.addNote(this, null, getString(R.string.importedNote),
+                  importBuffer.toString());
+            refreshList();
+            if (newID >= 0) {
+               Intent i = new Intent(this, NoteEdit.class);
+               i.putExtra(Note.kID, newID);
+               startActivityForResult(i, 0);
             }
+         } catch (FileNotFoundException e) {
+            e.printStackTrace();
+            return;
+         } catch (IOException e) {
+            e.printStackTrace();
+            return;
          }
       }
    }
 
-   /**
-    * Refresh the list, re-querying the database as needed
-    */
+   /** Refresh the list, re-querying the database as needed */
    protected void refreshList() {
-      Cursor data = database.getAllNotesHeaders(this);
+      Cursor data = this._database.getAllNotesHeaders(this);
 
       SimpleCursorAdapter dataSource = new SimpleCursorAdapter(this, R.layout.row, data, fields,
             new int[] { R.id.RowTitle, R.id.RowTimestamp, R.id.RowTags, -1 });
@@ -131,7 +140,6 @@ public class NoteList extends ListActivity {
                textView.setText(timestamp.format("%c"));
                return true;
             }
-
             return false;
          }
       });
@@ -141,12 +149,9 @@ public class NoteList extends ListActivity {
 
    @Override
    protected void onListItemClick(ListView l, View v, int position, long id) {
-      //String item = (String) getListAdapter().getItem(position);
-
       Intent i = new Intent(this, NoteView.class);
       i.putExtra(Note.kID, id);
-      // Set the request code to any code you like, you can identify the callback via this code
-      startActivityForResult(i, 0);
+      startActivity(i);
    }
 
    @Override
@@ -160,23 +165,26 @@ public class NoteList extends ListActivity {
    public boolean onMenuItemSelected(int featureId, MenuItem item) {
       switch (item.getItemId()) {
       case kMenuItemAdd:
-         long newID = database.addNote(this, null, null, null);
+      {
+         long newID = this._database.addNote(this, null, null, null);
          refreshList();
-         if (newID >= 0) {
-            Intent i = new Intent(this, NoteEdit.class);
-            i.putExtra(Note.kID, newID);
-            startActivityForResult(i, 0);
+         if (newID < 0) {
+            return false;
          }
+         Intent i = new Intent(this, NoteEdit.class);
+         i.putExtra(Note.kID, newID);
+         startActivity(i);
+      }
          break;
       case kMenuItemSearch:
+      {
          Intent i = new Intent(this, NoteSearch.class);
-         startActivityForResult(i, 0);
+         startActivity(i);
+      }
          break;
-
       default:
          return false;
       }
-
       return true;
    }
 

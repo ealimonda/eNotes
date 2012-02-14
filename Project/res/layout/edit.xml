@@ -6,132 +6,131 @@
    android:background="#ffffffff"
    android:fillViewport="false"
    >
-   
-    <LinearLayout
+
+   <LinearLayout
       android:orientation="vertical"
       android:layout_width="fill_parent"
       android:layout_height="fill_parent"
       >
-      
-        <LinearLayout
-	      android:orientation="horizontal"
-	      android:layout_width="fill_parent"
-	      android:layout_height="fill_parent">      
-		     <!-- Title -->	
-		     <TextView
-		          android:layout_width="wrap_content"
-		          android:layout_height="wrap_content"
-		          android:padding="10dip"
-		          android:text="Title:"
-		          android:textColor="#ff000000"
-		          android:textStyle="bold" />
-	         <EditText
-	            android:id="@+id/EditTitle"
-	            android:layout_width="fill_parent"
-	            android:layout_height="wrap_content"
-	            android:padding="5dip"
-	            android:textColor="#FF000000"
-	            android:text="(Untitled)" />
-        </LinearLayout>
-        
-        <LinearLayout
+
+      <LinearLayout
+         android:orientation="horizontal"
+         android:layout_width="fill_parent"
+         android:layout_height="fill_parent">
+         <!-- Title -->
+         <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:padding="10dip"
+            android:text="Title:"
+            android:textColor="#ff000000"
+            android:textStyle="bold" />
+         <EditText
+            android:id="@+id/EditTitle"
             android:layout_width="fill_parent"
-            android:layout_height="fill_parent"
-            android:orientation="horizontal" >
-            <!-- Attachments box -->
-            <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:padding="10dip"
-                android:text="Attachments:"
-                android:textColor="#ff000000"
-                android:textStyle="bold" />
-            <EditText
-                android:id="@+id/EditAttachmentName"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_weight="0.75"
-                android:padding="5dip"
-                android:text="(no attachments)"
-                android:textColor="#FF000000" />
-            <Button
-                android:id="@+id/EditAttachmentButton"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:padding="5dip"
-                android:text="X"
-                android:onClick="attachmentCancel" />
-        </LinearLayout>
-         
-         <LinearLayout
-             android:layout_width="fill_parent"
-             android:layout_height="fill_parent"
-             android:orientation="horizontal" >
-             <!-- URL box -->
-             <TextView
-                 android:layout_width="wrap_content"
-                 android:layout_height="wrap_content"
-                 android:padding="10dip"
-                 android:text="Url:"
-                 android:textColor="#ff000000"
-                 android:textStyle="bold" />
-             <EditText
-                 android:id="@+id/EditUrlText"
-                 android:layout_width="wrap_content"
-                 android:layout_height="wrap_content"
-                 android:layout_weight="0.75"
-                 android:padding="5dip"                 
-                 android:textColor="#FF000000" />
-             <Button
-                 android:id="@+id/EditUrlButton"
-                 android:layout_width="wrap_content"
-                 android:layout_height="wrap_content"
-                 android:padding="5dip"
-                 android:text="X"
-                 android:onClick="urlCancel" />
-         </LinearLayout>
-         
-         <LinearLayout
-	      android:orientation="horizontal"
-	      android:layout_width="fill_parent"
-	      android:layout_height="fill_parent">
-	         <!-- Content -->
-	         <TextView
-		          android:layout_width="wrap_content"
-		          android:layout_height="wrap_content"
-		          android:padding="10dip"
-		          android:text="Content:"
-		          android:textColor="#ff000000"
-		          android:textStyle="bold" />
-	         <EditText
-	            android:id="@+id/EditContent"
-	            android:layout_width="fill_parent"
-	            android:layout_height="wrap_content"               
-	            android:text="(no text)"
-	            android:textColor="#FF000000"
-	            android:padding="5dip" />         
-         </LinearLayout>
-         
-         <LinearLayout
-	      android:orientation="horizontal"
-	      android:layout_width="fill_parent"
-	      android:layout_height="fill_parent">
-         	<!-- Tags box -->         
-            <TextView
-               android:layout_width="wrap_content"
-               android:layout_height="wrap_content"
-               android:text="Tags:"
-               android:textColor="#FF000000"
-               android:textSize="10px" />
-            <EditText
-               android:id="@+id/EditTags"
-               android:layout_width="fill_parent"
-               android:layout_height="wrap_content"
-               android:textColor="#FF000000"
-               android:padding="5dip" />
-         </LinearLayout>
-         
+            android:layout_height="wrap_content"
+            android:padding="5dip"
+            android:textColor="#FF000000"
+            android:text="(Untitled)" />
+      </LinearLayout>
+
+      <LinearLayout
+         android:layout_width="fill_parent"
+         android:layout_height="fill_parent"
+         android:orientation="horizontal" >
+         <!-- Attachments box -->
+         <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:padding="10dip"
+            android:text="Attachments:"
+            android:textColor="#ff000000"
+            android:textStyle="bold" />
+         <EditText
+            android:id="@+id/EditAttachmentName"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_weight="0.75"
+            android:padding="5dip"
+            android:text="(no attachments)"
+            android:textColor="#FF000000" />
+         <Button
+            android:id="@+id/EditAttachmentButton"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:padding="5dip"
+            android:text="X"
+            android:onClick="deleteAttachment" />
+      </LinearLayout>
+
+      <LinearLayout
+         android:layout_width="fill_parent"
+         android:layout_height="fill_parent"
+         android:orientation="horizontal" >
+         <!-- URL box -->
+         <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:padding="10dip"
+            android:text="Url:"
+            android:textColor="#ff000000"
+            android:textStyle="bold" />
+         <EditText
+            android:id="@+id/EditUrlText"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_weight="0.75"
+            android:padding="5dip"
+            android:textColor="#FF000000" />
+         <Button
+            android:id="@+id/EditUrlButton"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:padding="5dip"
+            android:text="X"
+            android:onClick="deleteUrl" />
+      </LinearLayout>
+
+      <LinearLayout
+         android:orientation="horizontal"
+         android:layout_width="fill_parent"
+         android:layout_height="fill_parent">
+         <!-- Content -->
+         <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:padding="10dip"
+            android:text="Content:"
+            android:textColor="#ff000000"
+            android:textStyle="bold" />
+         <EditText
+            android:id="@+id/EditContent"
+            android:layout_width="fill_parent"
+            android:layout_height="wrap_content"
+            android:text="(no text)"
+            android:textColor="#FF000000"
+            android:padding="5dip" />
+      </LinearLayout>
+
+      <LinearLayout
+         android:orientation="horizontal"
+         android:layout_width="fill_parent"
+         android:layout_height="fill_parent">
+         <!-- Tags box -->
+         <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Tags:"
+            android:textColor="#FF000000"
+            android:textSize="10px" />
+         <EditText
+            android:id="@+id/EditTags"
+            android:layout_width="fill_parent"
+            android:layout_height="wrap_content"
+            android:textColor="#FF000000"
+            android:padding="5dip" />
+      </LinearLayout>
+
    </LinearLayout>
 </ScrollView>
-
 <!-- vim: set ts=3 sw=3 smarttab expandtab cc=101 : -->

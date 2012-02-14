@@ -87,6 +87,8 @@ public class NoteDB extends ContentProvider {
     * @Author Giovanni Serra
     */
    public static class NoteDBHelper extends SQLiteOpenHelper {
+      /** Current context */
+      Context _context;
 
       /**
        * Constructor
@@ -94,6 +96,7 @@ public class NoteDB extends ContentProvider {
        */
       NoteDBHelper(Context context) {
          super(context, kDatabaseName, null, kDatabaseVersion);
+         this._context = context;
       }
 
       @Override
@@ -108,13 +111,13 @@ public class NoteDB extends ContentProvider {
                + Note.kContent +    " TEXT"
                + ");");
 
-         // FIXME: TEMP testing stuff
+         // FIXME: TEMP testing stuff, remove this later
          Time testTime = new Time();
          testTime.set(0, 10, 11, 5, 1, 2012);
          Note[] testNotes = {
-            new Note(null, "First test note", null, "Text of the note\n\nBla bla", null, null, "aTag anotherTag"),
-            new Note(null, "Second test note", null, "Bla bla", "http://www.google.com", null, null),
-            new Note(null, "Another test note", testTime, "Text of the note\n\nBla bla", null, null, "aTag")
+            new Note(this._context, null, "First test note", null, "Text of the note\n\nBla bla", null, null, "aTag anotherTag"),
+            new Note(this._context, null, "Second test note", null, "Bla bla", "http://www.google.com", null, null),
+            new Note(this._context, null, "Another test note", testTime, "Text of the note\n\nBla bla", null, null, "aTag")
          };
 
          for (int i = 0; i < testNotes.length; ++i) {
@@ -139,21 +142,26 @@ public class NoteDB extends ContentProvider {
    }
 
    /** Database helper */
-   private NoteDBHelper dbHelper;
+   private NoteDBHelper _dbHelper;
 
    @Override
    public boolean onCreate() {
-      dbHelper = new NoteDBHelper(getContext());
+      this._dbHelper = new NoteDBHelper(getContext());
       Log.v(kTag, "NoteDB create");
-      if (dbHelper == null) {
+      if (this._dbHelper == null) {
          return false;
       }
       return true;
    }
 
    @Override
-   public Cursor query(Uri uri, String[] projection, String selection, String[] selectionArgs,
-         String sortOrder) {
+   public Cursor query(
+         Uri uri,
+         String[] projection,
+         String selection,
+         String[] selectionArgs,
+         String sortOrder
+         ) {
       SQLiteQueryBuilder qb = new SQLiteQueryBuilder();
 
       switch (uriMatcher.match(uri)) {
@@ -194,7 +202,7 @@ public class NoteDB extends ContentProvider {
       }
 
       // Get the database and run the query
-      SQLiteDatabase db = dbHelper.getReadableDatabase();
+      SQLiteDatabase db = this._dbHelper.getReadableDatabase();
       Cursor c = qb.query(db, projection, selection, selectionArgs, null, null, orderBy);
 
       // Tell the cursor what uri to watch, so it knows when its source data changes
@@ -255,23 +263,23 @@ public class NoteDB extends ContentProvider {
          values.put(Note.kContent, "");
       }
 
-      SQLiteDatabase db = dbHelper.getWritableDatabase();
+      SQLiteDatabase db = this._dbHelper.getWritableDatabase();
       long rowId = db.insert(kDatabaseTableNotes, null, values);
       if (rowId > 0) {
          Uri noteUri = Uri.withAppendedPath(Note.kContentURI, "id/"+rowId);
 
          getContext().getContentResolver().notifyChange(noteUri, null);
-         dbHelper.close();
+         this._dbHelper.close();
          return noteUri;
       }
 
-      dbHelper.close();
+      this._dbHelper.close();
       throw new SQLException("Failed to insert row into " + uri);
    }
 
    @Override
    public int delete(Uri uri, String where, String[] whereArgs) {
-      SQLiteDatabase db = dbHelper.getWritableDatabase();
+      SQLiteDatabase db = this._dbHelper.getWritableDatabase();
       int count;
       switch (uriMatcher.match(uri)) {
       case kUriNotes:
@@ -300,7 +308,7 @@ public class NoteDB extends ContentProvider {
 
    @Override
    public int update(Uri uri, ContentValues values, String where, String[] whereArgs) {
-      SQLiteDatabase db = dbHelper.getWritableDatabase();
+      SQLiteDatabase db = this._dbHelper.getWritableDatabase();
       int count;
       switch (uriMatcher.match(uri)) {
       case kUriNotes:
@@ -434,10 +442,7 @@ public class NoteDB extends ContentProvider {
          Time noteTimestamp = new Time();
          noteTimestamp.set(cursor.getLong(cursor.getColumnIndexOrThrow(Note.kTimestamp)));
 
-         note = new Note(noteGUID, noteTitle);
-         note.setTimestamp(noteTimestamp);
-         note.NoteFromJSON(noteContent);
-         note.setTagsFromString(noteTags);
+         note = new Note(getContext(), noteGUID, noteTitle, noteTimestamp, noteContent, noteTags);
       }
 
       return note;
@@ -471,5 +476,4 @@ public class NoteDB extends ContentProvider {
       return false;
    }
 }
-
 /* vim: set ts=3 sw=3 smarttab expandtab cc=101 : */

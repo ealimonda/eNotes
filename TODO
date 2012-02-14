@@ -3,9 +3,6 @@ Things to do:
 - Graphical tweaks all over the app
 - Testing
 - Ensure proper indentation (eclipse fails a lot)
-- Attachments
-- Fix URLs
 - Import emails
 - JavaDoc documentation
 - URL X button
-- Move text strings to a localizable file

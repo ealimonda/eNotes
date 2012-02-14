@@ -21,10 +21,10 @@ import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
 import java.nio.ByteBuffer;
-
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import android.content.Context;
 import android.util.Base64;
 
 /**
@@ -33,76 +33,140 @@ import android.util.Base64;
  * @author Giovanni Serra
  */
 public class NoteAttachment {
+   /** Constants */
    public static final int kFileTypeInvalid = 0;
    public static final int kFileTypePicture = 1;
-   public static final int kFileTypeAudio = 2;
-   public static final int kFileTypeVideo = 3;
-   public static final int kFileTypeMax = 4;
+   public static final int kFileTypeAudio   = 2;
+   public static final int kFileTypeVideo   = 3;
+   public static final int kFileTypeMax     = 4;
+
+   public static final String kFileExtensionPicture = ".jpg";
+   public static final String kFileExtensionAudio   = ".amr";
+   public static final String kFileExtensionVideo   = ".3gp";
 
    public static final String kAttachmentFileName = "name";
    public static final String kAttachmentFileType = "type";
    public static final String kAttachmentFileData = "data";
-   
+
    public static final long kMaxAttachmentSize = 1000000; // 1MB
 
+   /** Attachment's filename */
    private String _filename;
+   /** Attachment's contents */
    private ByteBuffer _filedata;
+   /** Attachment's file type (see constants) */
    private int _filetype;
+   /** Current context */
+   private Context _context;
 
-   public NoteAttachment() {
+   /**
+    * Default constructor.  Creates an empty attachment.
+    * @param context The current context
+    */
+   public NoteAttachment(Context context) {
+      this._context = context;
       this.init();
    }
 
-   public NoteAttachment(int filetype, File file) {
-      this();
+   /**
+    * Constructor.  Creates an attechment from a local file.
+    * @param context    The current context
+    * @param filetype   The file type ID
+    * @param file       A reference to the file
+    */
+   public NoteAttachment(Context context, int filetype, File file) {
+      this(context);
       this.init(filetype, file);
    }
 
-   public NoteAttachment(int filetype, String filename, InputStream stream) {
-      this();
+   /**
+    * Constructor.  Creates an attachment from an input stream.
+    * @param context    The current context
+    * @param filetype   The file type ID
+    * @param filename   The file's name
+    * @param stream     The input stream
+    */
+   public NoteAttachment(Context context, int filetype, String filename, InputStream stream) {
+      this(context);
       this.init(filetype, filename, stream);
    }
 
-   public NoteAttachment(JSONObject contents) {
-      this();
+   /**
+    * Constructor.  Creates an attachment from a JSON object.
+    * @param context    The current context
+    * @param contents   A JSON object representing the attachment
+    */
+   public NoteAttachment(Context context, JSONObject contents) {
+      this(context);
       this.init(contents);
    }
 
-   public NoteAttachment(int filetype, String filename, String filedata) {
-      this();
+   /**
+    * Constructor.  Creates an attachment from a (base64-encoded) string.
+    * @param context    The current context
+    * @param filetype   The file type ID
+    * @param filename   The file's name
+    * @param filedata   The file contents, with base64 encoding
+    */
+   public NoteAttachment(Context context, int filetype, String filename, String filedata) {
+      this(context);
       this.init(filetype, filename, filedata);
    }
 
-   public NoteAttachment(int filetype, String filename, ByteBuffer filedata) {
-      this();
+   /**
+    * Constructor.  Creates an attachment from a raw byte buffer.
+    * @param context    The current context
+    * @param filetype   The file type ID
+    * @param filename   The file's name
+    * @param filedata   The file raw contents
+    */
+   public NoteAttachment(Context context, int filetype, String filename, ByteBuffer filedata) {
+      this(context);
       this.init(filetype, filename, filedata);
    }
-   
+
+   /**
+    * Initialize an empty attachment.
+    */
    private void init() {
-      this._filename = "";
-      this._filedata = ByteBuffer.allocate(0);
-      this._filetype = kFileTypeInvalid;
+      this.setFilename(null);
+      this.setRawData(null);
+      this.setFiletype(kFileTypeInvalid);
    }
-	   
+
+   /**
+    * Initialize an attechment from a local file.
+    * @param filetype   The file type ID
+    * @param file       A reference to the file
+    */
    private void init(int filetype, File file) {
-      if (!file.isFile()) {
+      if (file == null || !file.isFile()) {
+         this.init();
          return;
       }
       try {
          FileInputStream importStream = new FileInputStream(file);
          this.init(filetype, file.getName(), importStream);
       } catch (FileNotFoundException e) {
+         this.init();
          e.printStackTrace();
       }
    }
 
+   /**
+    * Initilize an attachment from an input stream.
+    * @param filetype   The file type ID
+    * @param filename   The file's name
+    * @param stream     The input stream
+    */
    private void init(int filetype, String filename, InputStream stream) {
       if (filetype <= kFileTypeInvalid || filetype >= kFileTypeMax) {
+         this.init();
          return;
       }
-      this._filename = filename;
-      this._filetype = filetype;
-      
+      this.setFiletype(filetype);
+      this.setFilename(filename);
+
       try {
          int bufferSize = 0x20000; // ~130k
          byte[] buffer = new byte[bufferSize];
@@ -114,61 +178,117 @@ public class NoteAttachment {
                break;
             }
             importBufferStream.write(buffer, 0, read);
+            // Don't exceed max filesize
             if (importBufferStream.size() > kMaxAttachmentSize) {
                this.init();
                return;
             }
          }
-         this._filedata = ByteBuffer.wrap(importBufferStream.toByteArray());
+         this.setRawData(ByteBuffer.wrap(importBufferStream.toByteArray()));
       } catch (IOException e) {
+         this.init();
          e.printStackTrace();
       }
    }
 
+   /**
+    * Initialize an attachment from a JSON object.
+    * @param contents   A JSON object representing the attachment
+    */
    private void init(JSONObject contents) {
       if (contents == null) {
+         this.init();
          return;
       }
       try {
          if (contents.has(kAttachmentFileName)
                && contents.has(kAttachmentFileType)
-               && contents.has(kAttachmentFileData)) {
-            this.setFilename(contents.getString(kAttachmentFileName));
-            this.setFiletype(contents.getInt(kAttachmentFileType));
-            this.setEncodedData(contents.getString(kAttachmentFileData));
-               }
+               && contents.has(kAttachmentFileData)
+         ) {
+            this.init(contents.getInt(kAttachmentFileType),
+                  contents.getString(kAttachmentFileName),
+                  contents.getString(kAttachmentFileData));
+         }
       } catch (JSONException e) {
-         this.setFilename(null);
-         this.setFiletype(kFileTypeInvalid);
-         this.setRawData(null);
+         this.init();
+         e.printStackTrace();
       }
    }
 
+   /**
+    * Initialize an attachment from a (base64-encoded) string.
+    * @param filetype   The file type ID
+    * @param filename   The file's name
+    * @param filedata   The file contents, with base64 encoding
+    */
    private void init(int filetype, String filename, String filedata) {
       this.setFiletype(filetype);
       this.setFilename(filename);
       this.setEncodedData(filedata);
    }
+   /**
+    * Initialize an attachment from a raw byte buffer.
+    * @param filetype   The file type ID
+    * @param filename   The file's name
+    * @param filedata   The file raw contents
+    */
    private void init(int filetype, String filename, ByteBuffer filedata) {
       this.setFiletype(filetype);
       this.setFilename(filename);
       this.setRawData(filedata);
    }
 
+   // Accessors
+   /**
+    * Return the attachment's filename.
+    * @return  The filename
+    */
    public String getFilename() {
       return this._filename;
    }
+   /**
+    * Set the attachment's filename.
+    * @param filename   The filename to set.  null for a default filename.
+    *                   A filename extension is appended where appropriate.
+    */
    public void setFilename(String filename) {
-      if (filename == null) {
-         this._filename = "";
+      if (filename == null || filename == "") {
+         this._filename = this._context.getResources().getString(R.string.noname);
       } else {
          this._filename = filename;
       }
+      switch (this.getFiletype()) {
+      case kFileTypePicture:
+         if (!this._filename.endsWith(kFileExtensionPicture)) {
+            this._filename += kFileExtensionPicture;
+         }
+         break;
+      case kFileTypeAudio:
+         if (!this._filename.endsWith(kFileExtensionAudio)) {
+            this._filename += kFileExtensionAudio;
+         }
+         break;
+      case kFileTypeVideo:
+         if (!this._filename.endsWith(kFileExtensionVideo)) {
+            this._filename += kFileExtensionVideo;
+         }
+         break;
+      default:
+         break;
+      }
    }
 
+   /**
+    * Return the attachment contents in raw form
+    * @return  The raw attachment contents
+    */
    public ByteBuffer getRawData() {
       return this._filedata;
    }
+   /**
+    * Set the attachment's contents
+    * @param rawdata The attachment contents, in raw form
+    */
    public void setRawData(ByteBuffer rawdata) {
       if (rawdata == null) {
          this._filedata = ByteBuffer.allocate(0);
@@ -176,9 +296,16 @@ public class NoteAttachment {
          this._filedata = rawdata;
       }
    }
+   /** Return the attachment contents, base64-encoded.
+    * @return  The attachment contents, as a base64-encoded string
+    */
    public String getEncodedData() {
       return Base64.encodeToString(this._filedata.array(), Base64.DEFAULT);
    }
+   /**
+    * Set the attachment's contents.
+    * @param encodeddata   The attachment contents, as a base64-encoded string
+    */
    public void setEncodedData(String encodeddata) {
       if (encodeddata == null) {
          this._filedata = ByteBuffer.allocate(0);
@@ -189,9 +316,17 @@ public class NoteAttachment {
       }
    }
 
+   /**
+    * Return the attachment's file type ID.
+    * @return  The attachment's file type ID
+    */
    public int getFiletype() {
       return this._filetype;
    }
+   /**
+    * Set the attachment's file type ID.
+    * @param filetype   The file type ID
+    */
    public void setFiletype(int filetype) {
       if (filetype >= kFileTypeMax || filetype <= kFileTypeInvalid) {
          this._filetype = kFileTypeInvalid;
@@ -200,6 +335,10 @@ public class NoteAttachment {
       this._filetype = filetype;
    }
 
+   /**
+    * Export the attachment as a JSON object.
+    * @return  A json object containing the attachment info and data
+    */
    public JSONObject getJson() {
       if (this._filetype <= kFileTypeInvalid || this._filetype >= kFileTypeMax) {
          return null;

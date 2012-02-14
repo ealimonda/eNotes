@@ -5,7 +5,7 @@
    android:layout_width="fill_parent"
    android:orientation="horizontal"
    android:background="#FFFFFFFF" >
-   
+
    <LinearLayout
       android:layout_width="wrap_content"
       android:layout_height="wrap_content"
@@ -14,7 +14,7 @@
       <TextView
          android:id="@+id/RowTitle"
          android:layout_width="wrap_content"
-         android:layout_height="wrap_content"         
+         android:layout_height="wrap_content"
          android:text="Title"
          android:layout_gravity="left"
          android:padding="10dip"
@@ -30,25 +30,24 @@
          android:padding="10dip"
          android:textSize="15px" />
    </LinearLayout>
-   
-	   <!-- Timestamp -->
-	   <LinearLayout
-	        android:orientation="horizontal"
-	        android:layout_width="fill_parent"
-	        android:layout_height="wrap_content"
-	        android:gravity="right" >      
-		   <TextView
-		       android:id="@+id/RowTimestamp"
-		       android:layout_width="wrap_content"
-		       android:layout_height="wrap_content"
-		       android:gravity="right"
-		       android:text="Last Modified"
-		       android:textColor="#FF000000"
-		       android:padding="10dip"
-		       android:textSize="10px" />		   
 
-		</LinearLayout>
-		
+   <!-- Timestamp -->
+   <LinearLayout
+      android:orientation="horizontal"
+      android:layout_width="fill_parent"
+      android:layout_height="wrap_content"
+      android:gravity="right" >
+      <TextView
+         android:id="@+id/RowTimestamp"
+         android:layout_width="wrap_content"
+         android:layout_height="wrap_content"
+         android:gravity="right"
+         android:text="Last Modified"
+         android:textColor="#FF000000"
+         android:padding="10dip"
+         android:textSize="10px" />
+
+   </LinearLayout>
+
 </LinearLayout>
-
 <!-- vim: set ts=3 sw=3 smarttab expandtab cc=101 : -->

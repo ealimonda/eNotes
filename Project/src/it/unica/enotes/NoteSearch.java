@@ -35,21 +35,20 @@ import android.app.ListActivity;
  * @author Giovanni Serra
  */
 public class NoteSearch extends ListActivity {
-   /** Database helper / content provider */
-   private NoteDB database;
-   /** Fields to query */
-   private static final String fields[] = { Note.kTitle, Note.kTimestamp, Note.kTags, Note.kID };
    /** Logging tag */
    private static final String kTag = "NoteSearch";
+   /** Database helper / content provider */
+   private NoteDB _database;
+   /** Fields to query */
+   private static final String fields[] = { Note.kTitle, Note.kTimestamp, Note.kTags, Note.kID };
 
-   /** Called when the activity is first created. */
    @Override
    public void onCreate(Bundle savedInstanceState) {
       super.onCreate(savedInstanceState);
       Log.v(kTag, "created activity");
       setContentView(R.layout.search);
 
-      database = new NoteDB();
+      this._database = new NoteDB();
 
       ListView view = getListView();
       view.setHeaderDividersEnabled(true);
@@ -73,14 +72,12 @@ public class NoteSearch extends ListActivity {
       refreshList();
    }
 
-   /**
-    * Refresh the list, re-querying the database as needed
-    */
+   /** Refresh the list, re-querying the database as needed */
    protected void refreshList() {
       EditText tagBox = (EditText) findViewById(R.id.SearchBox);
       String tag = tagBox.getText().toString();
 
-      Cursor data = database.getAllNotesHeadersByTag(this, tag);
+      Cursor data = this._database.getAllNotesHeadersByTag(this, tag);
 
       SimpleCursorAdapter dataSource = new SimpleCursorAdapter(this, R.layout.row, data, fields,
             new int[] { R.id.RowTitle, R.id.RowTimestamp, R.id.RowTags, -1 });
@@ -106,13 +103,9 @@ public class NoteSearch extends ListActivity {
 
    @Override
    protected void onListItemClick(ListView l, View v, int position, long id) {
-      //String item = (String) getListAdapter().getItem(position);
-
       Intent i = new Intent(this, NoteView.class);
       i.putExtra(Note.kID, id);
-      // Set the request code to any code you like, you can identify the callback via this code
-      startActivityForResult(i, 0);
+      startActivity(i);
    }
-
 }
 /* vim: set ts=3 sw=3 smarttab expandtab cc=101 : */

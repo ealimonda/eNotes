@@ -18,7 +18,6 @@ package it.unica.enotes;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.InputStream;
-
 import android.app.Activity;
 import android.content.ContentValues;
 import android.content.Intent;
@@ -38,14 +37,15 @@ import android.widget.EditText;
  * Activity to edit an existing note or compose a new one
  */
 public class NoteEdit extends Activity {
-   /** Database helper / content provider */
-   private NoteDB _database;
    /** ID of the current note */
    private long _noteID;
    /** Current note */
    private Note _note;
+   /** Database helper / content provider */
+   private NoteDB _database;
    /** Logging tag */
    private static final String kTag = "NoteEdit";
+
    /** Menu IDs */
    private static final int kMenuItemUrl = 102;
    private static final int kMenuItemAttach = 103;
@@ -55,7 +55,8 @@ public class NoteEdit extends Activity {
    private static final int kSubmenuCaptureVideo = 107;
    private static final int kSubmenuAudio = 108;
    private static final int kSubmenuRecordAudio = 109;
-   
+
+   /** Request IDs */
    private static final int kRequestPictureFromGallery = 100;
    private static final int kRequestPictureFromCamera = 101;
    private static final int kRequestVideoFromGallery = 102;
@@ -63,11 +64,11 @@ public class NoteEdit extends Activity {
    private static final int kRequestAudioFromGallery = 104;
    private static final int kRequestAudioFromMic = 105;
 
+   /** Constants */
    private static final String kTempPhotoFilename = "eNotesTmpPhoto.jpg";
    private static final String kTempVideoFilename = "eNotesTmpVideo.3gp";
    //private static final String kTempAudioFilename = "eNotesTmpAudio.amr";
 
-   /** Called when the activity is first created. */
    @Override
    public void onCreate(Bundle savedInstanceState) {
       super.onCreate(savedInstanceState);
@@ -75,10 +76,9 @@ public class NoteEdit extends Activity {
       setContentView(R.layout.edit);
 
       EditText addUrl = (EditText) findViewById(R.id.EditUrlText);
-      Button cancelUrl = (Button) findViewById(R.id.EditUrlButton);
+      Button deleteUrlButton = (Button) findViewById(R.id.EditUrlButton);
       addUrl.setVisibility(View.GONE);
-      cancelUrl.setVisibility(View.GONE);
-      //      addUrl.setKeyListener(DialerKeyListener.getInstance());
+      deleteUrlButton.setVisibility(View.GONE);
 
       Bundle extras = getIntent().getExtras();
       if (extras == null) {
@@ -101,31 +101,13 @@ public class NoteEdit extends Activity {
       EditText titleField = (EditText)findViewById(R.id.EditTitle);
       EditText contentField = (EditText)findViewById(R.id.EditContent);
       EditText tagsField = (EditText)findViewById(R.id.EditTags);
-      EditText attachmentField = (EditText) findViewById(R.id.EditAttachmentName);
-      Button cancelAttachment = (Button) findViewById(R.id.EditAttachmentButton);
-      EditText urlField = (EditText)findViewById(R.id.EditUrlText);
-      Button cancelUrl = (Button) findViewById(R.id.EditUrlButton);
 
       titleField.setText(this._note.getTitle());
       contentField.setText(this._note.getText());
       tagsField.setText(this._note.getTagsAsString());
-      if (this._note.getAttachment().getFiletype() == NoteAttachment.kFileTypeInvalid) {
-    	  attachmentField.setVisibility(View.GONE);
-    	  cancelAttachment.setVisibility(View.GONE);
-    	  } else {
-    		  attachmentField.setText(this._note.getAttachment().getFilename());
-    		  attachmentField.setVisibility(View.VISIBLE);
-        	  cancelAttachment.setVisibility(View.VISIBLE);
-    	  }    	  
-      String url = this._note.getURL();
-      if (url.length() > 0) {
-         urlField.setText(this._note.getURL());
-         urlField.setVisibility(View.VISIBLE);
-         cancelUrl.setVisibility(View.VISIBLE);
-      } else {
-         urlField.setVisibility(View.GONE);
-         cancelUrl.setVisibility(View.GONE);
-      }
+
+      this.refreshAttachment();
+      this.refreshUrl();
    }
 
    @Override
@@ -141,32 +123,69 @@ public class NoteEdit extends Activity {
       this._note.setText(contentField.getText().toString());
       this._note.setTagsFromString(tagsField.getText().toString());
       this._note.setTimestamp(null);
-      this._note.setURL(urlField.getText().toString());
+      if (urlField.getVisibility() == View.VISIBLE) {
+         this._note.setURL(urlField.getText().toString());
+      } else {
+         this._note.setURL(null);
+      }
 
       this._database.saveNote(this, this._noteID, this._note);
    }
-   
-   public void urlCancel(View view) {
-	   // FIXME: Url doesn't get saved
-	   Log.v(kTag, "url cancel");	   
-	   this._note.setURL(null);
-	   this._database.saveNote(this, this._noteID, this._note);
-	   //urlField.setVisibility(View.GONE);
-       //cancelUrl.setVisibility(View.GONE);
-	 }
-   
-   public void attachmentCancel(View view) {
-	   Log.v(kTag, "attachment cancel");
-	   this._note.setAttachment(null);	   	   
-	   //urlField.setVisibility(View.GONE);
-       //cancelUrl.setVisibility(View.GONE);
-	 }
+
+   /** Refresh the attachment view */
+   private void refreshAttachment() {
+      EditText attachmentField = (EditText) findViewById(R.id.EditAttachmentName);
+      Button deleteAttachmentButton = (Button) findViewById(R.id.EditAttachmentButton);
+      if (this._note.getAttachment().getFiletype() == NoteAttachment.kFileTypeInvalid) {
+         attachmentField.setVisibility(View.GONE);
+         deleteAttachmentButton.setVisibility(View.GONE);
+      } else {
+         attachmentField.setText(this._note.getAttachment().getFilename());
+         attachmentField.setVisibility(View.VISIBLE);
+         deleteAttachmentButton.setVisibility(View.VISIBLE);
+      }
+   }
+
+   /** Refresh the URL view */
+   private void refreshUrl() {
+      EditText urlField = (EditText)findViewById(R.id.EditUrlText);
+      Button deleteUrlButton = (Button) findViewById(R.id.EditUrlButton);
+      String url = this._note.getURL();
+      if (url.length() > 0) {
+         urlField.setText(url);
+         urlField.setVisibility(View.VISIBLE);
+         deleteUrlButton.setVisibility(View.VISIBLE);
+      } else {
+         urlField.setVisibility(View.GONE);
+         deleteUrlButton.setVisibility(View.GONE);
+      }
+   }
+
+   /**
+    * Delete the current URL
+    * @param view The caller view
+    */
+   public void deleteUrl(View view) {
+      // FIXME: Url doesn't get saved // Should now be fixed. Please check.
+      Log.v(kTag, "url cancel");
+      this._note.setURL(null);
+      this._database.saveNote(this, this._noteID, this._note);
+      this.refreshUrl();
+   }
+
+   /**
+    * Delete the current attachment
+    * @param view The caller view
+    */
+   public void deleteAttachment(View view) {
+      Log.v(kTag, "attachment cancel");
+      this._note.setAttachment(null);
+      this.refreshAttachment();
+   }
 
 
    @Override
    public boolean onCreateOptionsMenu(Menu menu) {
-      //menu.add(0, 0, 1, R.string.addAttachment).setIcon(getResources().getDrawable(R.drawable.ic_menu_attachment));
-      //menu.add(0, kMenuItemAttach, 1, R.string.addAttachment).setIcon(getResources().getDrawable(R.drawable.ic_menu_attachment));
       SubMenu attachListMenu = menu.addSubMenu(0, kMenuItemAttach, 1, R.string.addAttachment).setIcon(getResources().getDrawable(R.drawable.ic_menu_attachment));
       menu.add(0, kMenuItemUrl, 2, R.string.addUrl).setIcon(getResources().getDrawable(R.drawable.ic_input_get));
       attachListMenu.add(0, kSubmenuPictures, 3, R.string.addPictures);
@@ -187,19 +206,19 @@ public class NoteEdit extends Activity {
       switch (item.getItemId()) {
       case kMenuItemUrl:
       {
-    	 EditText addUrl = (EditText) findViewById(R.id.EditUrlText);
+         EditText addUrl = (EditText) findViewById(R.id.EditUrlText);
          Button cancelUrl = (Button) findViewById(R.id.EditUrlButton);
          addUrl.setVisibility(View.VISIBLE);
          cancelUrl.setVisibility(View.VISIBLE);
       }
-      	break;
+         break;
       case kSubmenuPictures:
       {
           Intent intent = new Intent(Intent.ACTION_PICK, android.provider.MediaStore.Images.Media.EXTERNAL_CONTENT_URI);
          startActivityForResult(intent, kRequestPictureFromGallery);
          // TODO: Max size
       }
-      	break;
+         break;
       case kSubmenuCapturePicture:
       {
          ContentValues values = new ContentValues();
@@ -217,7 +236,7 @@ public class NoteEdit extends Activity {
           startActivityForResult(intent, kRequestVideoFromGallery);
           // TODO: Max size
       }
-      	break;
+         break;
       case kSubmenuCaptureVideo:
       {
           ContentValues values = new ContentValues();
@@ -228,7 +247,7 @@ public class NoteEdit extends Activity {
           startActivityForResult(intent, kRequestVideoFromCamera);
           // TODO: Max size
       }
-      	break;
+         break;
       case kSubmenuAudio:
       {
          Intent intent = new Intent(Intent.ACTION_PICK, MediaStore.Audio.Media.EXTERNAL_CONTENT_URI);
@@ -277,7 +296,7 @@ public class NoteEdit extends Activity {
          // the selected image
          //Bitmap picture = BitmapFactory.decodeFile(filePath);
          File f = new File(filePath);
-         this._note.setAttachment(new NoteAttachment(NoteAttachment.kFileTypePicture, f));
+         this._note.setAttachment(new NoteAttachment(this, NoteAttachment.kFileTypePicture, f));
       }
          break;
       case kRequestPictureFromCamera:
@@ -296,7 +315,7 @@ public class NoteEdit extends Activity {
          cursor.close();
 
          File f = new File(filePath);
-         this._note.setAttachment(new NoteAttachment(NoteAttachment.kFileTypePicture, f));
+         this._note.setAttachment(new NoteAttachment(this, NoteAttachment.kFileTypePicture, f));
          f.delete();
       }
          break;
@@ -313,11 +332,11 @@ public class NoteEdit extends Activity {
          cursor.close();
 
          File f = new File(filePath);
-         this._note.setAttachment(new NoteAttachment(NoteAttachment.kFileTypeVideo, f));
+         this._note.setAttachment(new NoteAttachment(this, NoteAttachment.kFileTypeVideo, f));
       }
          break;
       case kRequestVideoFromCamera:
-      {  // Video taken from camera 
+      {  // Video taken from camera
          String[] projection = { MediaStore.Video.Media.DATA };
 
          ContentValues values = new ContentValues();
@@ -332,7 +351,7 @@ public class NoteEdit extends Activity {
          cursor.close();
 
          File f = new File(filePath);
-         this._note.setAttachment(new NoteAttachment(NoteAttachment.kFileTypeVideo, f));
+         this._note.setAttachment(new NoteAttachment(this, NoteAttachment.kFileTypeVideo, f));
          f.delete();
       }
          break;
@@ -349,7 +368,7 @@ public class NoteEdit extends Activity {
          cursor.close();
 
          File f = new File(filePath);
-         this._note.setAttachment(new NoteAttachment(NoteAttachment.kFileTypeAudio, f));
+         this._note.setAttachment(new NoteAttachment(this, NoteAttachment.kFileTypeAudio, f));
       }
          break;
       case kRequestAudioFromMic:
@@ -359,7 +378,7 @@ public class NoteEdit extends Activity {
          try {
             importStream = getContentResolver().openInputStream(recordedAudio);
 
-            this._note.setAttachment(new NoteAttachment(NoteAttachment.kFileTypeAudio, "RecordedAudio.amr", importStream));
+            this._note.setAttachment(new NoteAttachment(this, NoteAttachment.kFileTypeAudio, "RecordedAudio.amr", importStream));
          } catch (FileNotFoundException e) {
             e.printStackTrace();
          }

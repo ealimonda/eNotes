@@ -37,13 +37,16 @@ import android.widget.TextView;
  * @author Giovanni Serra
  */
 public class NoteView extends Activity {
+   /** Constants */
    private static final int kMenuItemEdit = 100;
    private static final int kMenuItemDelete = 101;
    private static final int kMenuItemSend = 102;
+   /** ID of the current note */
    long _noteID;
-
+   /** Database helper / content provider */
+   private NoteDB _database;
+   /** Logging tag */
    private static final String kTag = "NoteView";
-   private NoteDB database;
 
    /** Called when the activity is first created. */
    @Override
@@ -62,28 +65,30 @@ public class NoteView extends Activity {
       // shows selected note's details
       this._noteID = extras.getLong(Note.kID);
       Log.v(kTag, "Loading note: " + this._noteID);
-      database = new NoteDB();
+      this._database = new NoteDB();
    }
 
    @Override
    public void onResume() {
       super.onResume();
 
-      Note note = database.getNoteById(this, this._noteID);
+      Note note = this._database.getNoteById(this, this._noteID);
 
       TextView titleField = (TextView) findViewById(R.id.ViewTitle);
       TextView contentsField = (TextView) findViewById(R.id.ViewContents);
       TextView attachmentField = (TextView) findViewById(R.id.ViewAttachments);
-      TextView urlField = (TextView) findViewById(R.id.ViewUrl);   
+      TextView urlField = (TextView) findViewById(R.id.ViewUrl);
       TextView tagsField = (TextView) findViewById(R.id.ViewTags);
 
       titleField.setText(note.getTitle());
       contentsField.setText(note.getText());
       attachmentField.setText(note.getAttachment().getFilename());
       urlField.setText(note.getURL());
-      tagsField.setText(note.getTagsAsString());      
+      tagsField.setText(note.getTagsAsString());
 
       // Do some temp files cleanup (Why here?  See note below.)
+      // TODO: This should be moved to NoteList
+      // TODO: Try to use the correct cache directories instead
       String tmpDirPath = System.getProperty("java.io.tmpdir");
       File tmpDir = new File(tmpDirPath, "eNotesTmp");
       if (tmpDir.exists() && tmpDir.isDirectory()) {
@@ -95,50 +100,59 @@ public class NoteView extends Activity {
             if (!tmpFileList[i].exists() || !tmpFileList[i].isFile()) {
                continue;
             }
-            if (!tmpFileList[i].toString().endsWith(".eNote")) {
-               continue;
-            }
             if (tmpFileList[i].lastModified() < thresholdTimestamp.toMillis(true)) {
                tmpFileList[i].delete();
                Log.v(kTag, "Deleted temp file " + tmpFileList.toString());
             }
-            Log.v(kTag, "check done");
+            Log.v(kTag, "temp file check done");
          }
       }
    }
 
    @Override
    public boolean onCreateOptionsMenu(Menu menu) {
-      menu.add(0, kMenuItemEdit, 1, R.string.editItem).setIcon(getResources().getDrawable(R.drawable.ic_menu_edit));
-      menu.add(0, kMenuItemDelete, 2, R.string.deleteItem).setIcon(getResources().getDrawable(R.drawable.ic_menu_delete));
-      menu.add(0, kMenuItemSend, 3, R.string.sendItem).setIcon(getResources().getDrawable(R.drawable.ic_menu_send));
+      menu.add(0, kMenuItemEdit, 1, R.string.editItem)
+            .setIcon(getResources().getDrawable(R.drawable.ic_menu_edit));
+      menu.add(0, kMenuItemDelete, 2, R.string.deleteItem)
+            .setIcon(getResources().getDrawable(R.drawable.ic_menu_delete));
+      menu.add(0, kMenuItemSend, 3, R.string.sendItem)
+            .setIcon(getResources().getDrawable(R.drawable.ic_menu_send));
       return true;
    }
 
    @Override
    public boolean onMenuItemSelected(int featureId, MenuItem item) {
-      if (item.getItemId() == kMenuItemEdit) {
+      switch (item.getItemId()) {
+      case kMenuItemEdit:
+      {  // Edit note
          Intent i = new Intent(this, NoteEdit.class);
          i.putExtra(Note.kID, this._noteID);
-         startActivityForResult(i, 0);
-      } else if (item.getItemId() == kMenuItemDelete) {
-         if (database.deleteNote(this, this._noteID)) {
-            new AlertDialog.Builder(this).setTitle(R.string.deleteConf)                  
-            	  .setMessage(R.string.deleteMsg)            
+         startActivity(i);
+      }
+         break;
+      case kMenuItemDelete:
+      {  // Delete note
+         if (this._database.deleteNote(this, this._noteID)) {
+            new AlertDialog.Builder(this).setTitle(R.string.deleteConf)
+                  .setMessage(R.string.deleteMsg)
                   .setPositiveButton(R.string.yes, new DialogInterface.OnClickListener() {
                @Override
                public void onClick(DialogInterface dialogInterface, int i) {
                   finish();
                }
             })
-               .setNeutralButton(R.string.cancel, null) // don't need to do anything but dismiss here
-               .create()
-               .show();
+                  .setNeutralButton(R.string.cancel, null) // don't need to do anything but dismiss here
+                  .create()
+                  .show();
          }
-      } else if (item.getItemId() == kMenuItemSend) {
+      }
+         break;
+      case kMenuItemSend:
+      {  // Send note
          try {
-            Note note = database.getNoteById(this, this._noteID);
+            Note note = this._database.getNoteById(this, this._noteID);
             String tmpDirPath = System.getProperty("java.io.tmpdir");
+            // TODO: Try to use the correct cache directories instead
             File tmpDir = new File(tmpDirPath, "eNotesTmp");
             if (tmpDir.exists() && !tmpDir.isDirectory()) {
                tmpDir.delete();
@@ -156,7 +170,7 @@ public class NoteView extends Activity {
             emailIntent.putExtra(Intent.EXTRA_SUBJECT, "[eNote] "+ note.getTitle());
             emailIntent.putExtra(Intent.EXTRA_STREAM, Uri.parse("file://"+ attachmentFile.getPath()));
             Log.v(kTag, "Sending: "+attachmentFile.toURI());
-            startActivity(Intent.createChooser(emailIntent, "Send email:"));
+            startActivity(Intent.createChooser(emailIntent, getString(R.string.sendMail)));
             /* Note about temporary file deletion:
              * - We can't delete the file right away, since we don't know whether the email has been
              *   sent yet (and since the intent returns right away, we're pretty much sure it
@@ -172,13 +186,16 @@ public class NoteView extends Activity {
              *   go complain to the Android engineers.  Or switch to an Apple or MS device.
              */
          } catch (IOException e) {
-            Log.v(kTag, e.toString());
+            e.printStackTrace();
             return false;
-         };
+         }
+      }
+         break;
+      default:
+         return false;
       }
       return true;
    }
-
 }
 
 /* vim: set ts=3 sw=3 smarttab expandtab cc=101 : */
