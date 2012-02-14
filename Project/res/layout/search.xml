@@ -9,11 +9,11 @@
    >
 
    <EditText
-       android:id="@+id/SearchBox"
-       android:layout_width="match_parent"
-       android:layout_height="wrap_content"
-       android:text=""
-       android:textSize="10px" />
+      android:id="@+id/SearchBox"
+      android:layout_width="match_parent"
+      android:layout_height="wrap_content"
+      android:text=""
+      android:textSize="10px" />
 
    <include layout="@layout/row"/>
    <ListView

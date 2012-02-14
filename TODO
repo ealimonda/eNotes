@@ -4,4 +4,4 @@ Things to do:
 - Testing
 - Ensure proper indentation (eclipse fails a lot)
 - JavaDoc documentation
-- Move all strings into strings.xml- Check screen rotation crashes- Ensure query safety with \ or ' (i.e. tag search)- Double-check email import- Add missing error messages, such as toasts (i.e. in case of attachment too big, invalid URL, failed import)
+- Check screen rotation crashes- Ensure query safety with \ or ' (i.e. tag search)- Double-check email import- Add missing error messages, such as toasts (i.e. in case of invalid URL, failed import, etc)

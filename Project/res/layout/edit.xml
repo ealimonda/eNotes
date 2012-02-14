@@ -8,9 +8,9 @@
    >
 
    <LinearLayout
-       android:layout_width="fill_parent"
-       android:layout_height="fill_parent"
-       android:orientation="vertical" >
+      android:layout_width="fill_parent"
+      android:layout_height="fill_parent"
+      android:orientation="vertical" >
 
       <!-- Title box -->
       <LinearLayout
@@ -35,11 +35,11 @@
 
       <!-- Attachments box -->
       <LinearLayout
-          android:id="@+id/EditAttachmentLayout"
-          android:layout_width="fill_parent"
-          android:layout_height="fill_parent"
-          android:gravity="center"
-          android:orientation="horizontal" >
+         android:id="@+id/EditAttachmentLayout"
+         android:layout_width="fill_parent"
+         android:layout_height="fill_parent"
+         android:gravity="center"
+         android:orientation="horizontal" >
 
          <TextView
             android:layout_width="wrap_content"
@@ -67,11 +67,11 @@
 
       <!-- URL box -->
       <LinearLayout
-          android:id="@+id/EditUrlLayout"
-          android:layout_width="fill_parent"
-          android:layout_height="fill_parent"
-          android:gravity="center"
-          android:orientation="horizontal" >
+         android:id="@+id/EditUrlLayout"
+         android:layout_width="fill_parent"
+         android:layout_height="fill_parent"
+         android:gravity="center"
+         android:orientation="horizontal" >
 
          <TextView
             android:layout_width="wrap_content"
@@ -99,7 +99,7 @@
 
       <!-- Content box -->
       <LinearLayout
-         android:orientation="horizontal"
+         android:orientation="vertical"
          android:layout_width="fill_parent"
          android:layout_height="fill_parent">
          <TextView
@@ -128,7 +128,7 @@
             android:layout_height="wrap_content"
             android:text="@string/Tags"
             android:textColor="#FF000000"
-            android:textSize="10px" />
+            android:textStyle="bold" />
          <EditText
             android:id="@+id/EditTags"
             android:layout_width="fill_parent"

@@ -40,7 +40,7 @@
    <string name="addCaptureVideo">Capture Video</string>
    <string name="addAudio">Audio</string>
    <string name="addRecordAudio">Record Audio</string>
-   
+
    <!-- edit layout -->
    <string name="Title">Title:</string>
    <string name="Attachment">Attachment:</string>
@@ -50,7 +50,7 @@
    <string name="Content">Content:</string>
    <string name="noContent">(no text)</string>
    <string name="Tags">Tags:</string>
-   
+
    <!-- row layout -->
    <string name="aTag">(Tags)</string>
    <string name="timeStamp">Last Modified</string>
