@@ -307,7 +307,7 @@ public class NoteAttachment {
     * @return  The attachment contents, as a base64-encoded string
     */
    public String getEncodedData() {
-      return Base64.encodeToString(this._filedata.array(), Base64.DEFAULT);
+      return Base64.encodeToString(this._filedata.array(), Base64.DEFAULT|Base64.NO_WRAP|Base64.URL_SAFE);
    }
    /**
     * Set the attachment's contents.
@@ -317,9 +317,8 @@ public class NoteAttachment {
       if (encodeddata == null) {
          this._filedata = ByteBuffer.allocate(0);
       } else {
-         byte[] buffer = Base64.decode(encodeddata, Base64.DEFAULT);
-         this._filedata = ByteBuffer.allocate(buffer.length);
-         this._filedata.put(buffer);
+         byte[] buffer = Base64.decode(encodeddata, Base64.DEFAULT|Base64.NO_WRAP|Base64.URL_SAFE);
+         this._filedata = ByteBuffer.wrap(buffer);
       }
    }
 

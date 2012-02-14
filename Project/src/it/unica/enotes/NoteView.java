@@ -21,7 +21,6 @@ import java.io.FileOutputStream;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.nio.channels.FileChannel;
-
 import android.app.Activity;
 import android.app.AlertDialog;
 import android.content.DialogInterface;
