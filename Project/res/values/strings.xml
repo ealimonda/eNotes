@@ -26,6 +26,9 @@
    <string name="sendItem">Send</string>
    <string name="sendMail">Send email:</string>
 
+   <!-- NoteEdit.java -->
+   <string name="attachmentTooBig">The file you chose is too big. Please select a smaller one.</string>
+   <string name="invalidAttachment">The file you chose wasn\'t recognized. Please select another one.</string>
    <!-- main menu NoteEdit -->
    <string name="addAttachment">Attach</string>
    <string name="addUrl">Add URL</string>

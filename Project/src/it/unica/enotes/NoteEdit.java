@@ -22,6 +22,7 @@ import android.app.Activity;
 import android.content.ContentValues;
 import android.content.Intent;
 import android.database.Cursor;
+import android.media.CamcorderProfile;
 import android.net.Uri;
 import android.os.Bundle;
 import android.provider.MediaStore;
@@ -32,6 +33,7 @@ import android.view.SubMenu;
 import android.view.View;
 import android.widget.EditText;
 import android.widget.LinearLayout;
+import android.widget.Toast;
 
 /**
  * Activity to edit an existing note or compose a new one
@@ -210,7 +212,7 @@ public class NoteEdit extends Activity {
           Intent intent = new Intent(Intent.ACTION_PICK,
                 MediaStore.Images.Media.EXTERNAL_CONTENT_URI);
          startActivityForResult(intent, kRequestPictureFromGallery);
-         // TODO: Max size
+         // Note: Max size handled elsewhere.  Apparently there's no reliable way to do so here.
       }
          break;
       case kSubmenuCapturePicture:
@@ -222,7 +224,7 @@ public class NoteEdit extends Activity {
          Intent intent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
          intent.putExtra(MediaStore.EXTRA_OUTPUT, capturedImageUri);
          startActivityForResult(intent, kRequestPictureFromCamera);
-         // TODO: Max size
+         // Note: Max size handled elsewhere.  Apparently there's no reliable way to do so here.
       }
          break;
       case kSubmenuVideos: {
@@ -230,7 +232,7 @@ public class NoteEdit extends Activity {
                 MediaStore.Video.Media.EXTERNAL_CONTENT_URI);
           intent.setType("video/*");
           startActivityForResult(intent, kRequestVideoFromGallery);
-          // TODO: Max size
+          // Note: Max size handled elsewhere.  Apparently there's no reliable way to do so here.
       }
          break;
       case kSubmenuCaptureVideo:
@@ -241,8 +243,12 @@ public class NoteEdit extends Activity {
                 MediaStore.Video.Media.EXTERNAL_CONTENT_URI, values);
           Intent intent = new Intent(MediaStore.ACTION_VIDEO_CAPTURE);
           intent.putExtra(MediaStore.EXTRA_OUTPUT, capturedVideoUri);
+          intent.putExtra(MediaStore.EXTRA_VIDEO_QUALITY, 0);
+          intent.putExtra("android.intent.sizeLimit", NoteAttachment.kMaxAttachmentSize);
+          CamcorderProfile camcorder = CamcorderProfile.get(CamcorderProfile.QUALITY_LOW);
+          int durationLimit = (camcorder == null ? 0 : camcorder.duration);
+          intent.putExtra("android.intent.extra.durationLimit", durationLimit);
           startActivityForResult(intent, kRequestVideoFromCamera);
-          // TODO: Max size
       }
          break;
       case kSubmenuAudio:
@@ -250,7 +256,7 @@ public class NoteEdit extends Activity {
          Intent intent = new Intent(Intent.ACTION_PICK,
                MediaStore.Audio.Media.EXTERNAL_CONTENT_URI);
          startActivityForResult(intent, kRequestAudioFromGallery);
-         // TODO: Max size
+         // Note: Max size handled elsewhere.  Apparently there's no reliable way to do so here.
       }
          break;
       case kSubmenuRecordAudio:
@@ -273,11 +279,14 @@ public class NoteEdit extends Activity {
          Log.i("Camera", "Result code was " + resultCode);
          return;
       }
+
       // TODO: Ensure this is valid.  Things go haywire if the screen is rotated
       //       i.e. when the gallery or camera is open and our activity hidden
       Log.v(kTag, "Current note ID is: " +this._noteID);
       Log.v(kTag, "current note is: "+this._note.getTitle());
-      // TODO: Max attachment size
+      
+      String errMessage = null;
+
       switch (requestCode) {
       case kRequestPictureFromGallery:
       {  // Picture taken from Gallery
@@ -292,7 +301,11 @@ public class NoteEdit extends Activity {
          cursor.close();
 
          File f = new File(filePath);
-         this._note.setAttachment(new NoteAttachment(this, NoteAttachment.kFileTypePicture, f));
+         if (f.exists() && f.isFile() && f.length() > NoteAttachment.kMaxAttachmentSize) {
+            errMessage = getString(R.string.attachmentTooBig);
+         } else {
+            this._note.setAttachment(new NoteAttachment(this, NoteAttachment.kFileTypePicture, f));
+         }
       }
          break;
       case kRequestPictureFromCamera:
@@ -312,7 +325,11 @@ public class NoteEdit extends Activity {
          cursor.close();
 
          File f = new File(filePath);
-         this._note.setAttachment(new NoteAttachment(this, NoteAttachment.kFileTypePicture, f));
+         if (f.exists() && f.isFile() && f.length() > NoteAttachment.kMaxAttachmentSize) {
+            errMessage = getString(R.string.attachmentTooBig);
+         } else {
+            this._note.setAttachment(new NoteAttachment(this, NoteAttachment.kFileTypePicture, f));
+         }
          f.delete();
       }
          break;
@@ -329,7 +346,11 @@ public class NoteEdit extends Activity {
          cursor.close();
 
          File f = new File(filePath);
-         this._note.setAttachment(new NoteAttachment(this, NoteAttachment.kFileTypeVideo, f));
+         if (f.exists() && f.isFile() && f.length() > NoteAttachment.kMaxAttachmentSize) {
+            errMessage = getString(R.string.attachmentTooBig);
+         } else {
+            this._note.setAttachment(new NoteAttachment(this, NoteAttachment.kFileTypeVideo, f));
+         }
       }
          break;
       case kRequestVideoFromCamera:
@@ -349,7 +370,11 @@ public class NoteEdit extends Activity {
          cursor.close();
 
          File f = new File(filePath);
-         this._note.setAttachment(new NoteAttachment(this, NoteAttachment.kFileTypeVideo, f));
+         if (f.exists() && f.isFile() && f.length() > NoteAttachment.kMaxAttachmentSize) {
+            errMessage = getString(R.string.attachmentTooBig);
+         } else {
+            this._note.setAttachment(new NoteAttachment(this, NoteAttachment.kFileTypeVideo, f));
+         }
          f.delete();
       }
          break;
@@ -366,7 +391,11 @@ public class NoteEdit extends Activity {
          cursor.close();
 
          File f = new File(filePath);
-         this._note.setAttachment(new NoteAttachment(this, NoteAttachment.kFileTypeAudio, f));
+         if (f.exists() && f.isFile() && f.length() > NoteAttachment.kMaxAttachmentSize) {
+            errMessage = getString(R.string.attachmentTooBig);
+         } else {
+            this._note.setAttachment(new NoteAttachment(this, NoteAttachment.kFileTypeAudio, f));
+         }
       }
          break;
       case kRequestAudioFromMic:
@@ -385,6 +414,12 @@ public class NoteEdit extends Activity {
          break;
       default:
          return;
+      }
+      if (errMessage == null && this._note.getAttachment().getFiletype() == NoteAttachment.kFileTypeInvalid) {
+         errMessage = getString(R.string.invalidAttachment);
+      }
+      if (errMessage != null) {
+         Toast.makeText(this.getApplicationContext(), errMessage, Toast.LENGTH_SHORT).show();
       }
       this._database.saveNote(this, this._noteID, this._note);
       this.refreshAttachment();
