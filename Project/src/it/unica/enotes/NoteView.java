@@ -32,6 +32,7 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.Button;
+import android.widget.LinearLayout;
 import android.widget.TextView;
 
 /**
@@ -79,30 +80,38 @@ public class NoteView extends Activity {
 
       this._note = this._database.getNoteById(this, this._noteID);
 
-      TextView titleField = (TextView) findViewById(R.id.ViewTitle);
-      TextView contentsField = (TextView) findViewById(R.id.ViewContents);
-      Button attachmentField = (Button) findViewById(R.id.ViewAttachments);
-      TextView urlField = (TextView) findViewById(R.id.ViewUrl);
-      TextView tagsField = (TextView) findViewById(R.id.ViewTags);
+      TextView titleField = (TextView)findViewById(R.id.ViewTitle);
+      TextView contentsField = (TextView)findViewById(R.id.ViewContents);
+      Button attachmentField = (Button)findViewById(R.id.ViewAttachment);
+      TextView urlField = (TextView)findViewById(R.id.ViewUrl);
+      TextView tagsField = (TextView)findViewById(R.id.ViewTags);
+      LinearLayout attachmentBox = (LinearLayout)findViewById(R.id.ViewAttachmentLayout);
+      LinearLayout urlBox = (LinearLayout)findViewById(R.id.ViewUrlLayout);
+      LinearLayout tagsBox = (LinearLayout)findViewById(R.id.ViewTagsLayout);
 
       titleField.setText(this._note.getTitle());
       contentsField.setText(this._note.getText());
-      // TODO: Improve this
+
       if (this._note.getAttachment().getFiletype() != NoteAttachment.kFileTypeInvalid) {
-         attachmentField.setVisibility(View.VISIBLE);
+         attachmentBox.setVisibility(View.VISIBLE);
          attachmentField.setText(this._note.getAttachment().getFilename());
-         //findViewById(R.id.ViewAttachmentLayout).setVisibility(View.GONE);
       } else {
-         attachmentField.setVisibility(View.GONE);
+         attachmentBox.setVisibility(View.GONE);
       }
 
       if (this._note.getURL() == "") {
-         urlField.setVisibility(View.GONE);
+         urlBox.setVisibility(View.GONE);
       } else {
          urlField.setText(this._note.getURL());
-         urlField.setVisibility(View.VISIBLE);
+         urlBox.setVisibility(View.VISIBLE);
       }
-      tagsField.setText(this._note.getTagsAsString());
+      
+      if (this._note.getTagsAsString().trim().length() <= 0) {
+         tagsBox.setVisibility(View.GONE);
+      } else {
+         tagsField.setText(this._note.getTagsAsString());
+         tagsBox.setVisibility(View.VISIBLE);
+      }
    }
 
    @Override

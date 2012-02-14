@@ -30,8 +30,8 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.view.SubMenu;
 import android.view.View;
-import android.widget.Button;
 import android.widget.EditText;
+import android.widget.LinearLayout;
 
 /**
  * Activity to edit an existing note or compose a new one
@@ -75,11 +75,6 @@ public class NoteEdit extends Activity {
       Log.v(kTag, "created activity");
       setContentView(R.layout.edit);
 
-      EditText addUrl = (EditText) findViewById(R.id.EditUrlText);
-      Button deleteUrlButton = (Button) findViewById(R.id.EditUrlButton);
-      addUrl.setVisibility(View.GONE);
-      deleteUrlButton.setVisibility(View.GONE);
-
       Bundle extras = getIntent().getExtras();
       if (extras == null) {
          this._noteID = -1;
@@ -118,12 +113,13 @@ public class NoteEdit extends Activity {
       EditText contentField = (EditText)findViewById(R.id.EditContent);
       EditText tagsField = (EditText)findViewById(R.id.EditTags);
       EditText urlField = (EditText)findViewById(R.id.EditUrlText);
+      LinearLayout urlBox = (LinearLayout)findViewById(R.id.EditUrlLayout);
 
       this._note.setTitle(titleField.getText().toString());
       this._note.setText(contentField.getText().toString());
       this._note.setTagsFromString(tagsField.getText().toString());
       this._note.setTimestamp(null);
-      if (urlField.getVisibility() == View.VISIBLE) {
+      if (urlBox.getVisibility() == View.VISIBLE) {
          this._note.setURL(urlField.getText().toString());
       } else {
          this._note.setURL(null);
@@ -134,30 +130,26 @@ public class NoteEdit extends Activity {
 
    /** Refresh the attachment view */
    private void refreshAttachment() {
-      EditText attachmentField = (EditText) findViewById(R.id.EditAttachmentName);
-      Button deleteAttachmentButton = (Button) findViewById(R.id.EditAttachmentButton);
+      EditText attachmentField = (EditText)findViewById(R.id.EditAttachmentName);
+      LinearLayout attachmentBox = (LinearLayout)findViewById(R.id.EditAttachmentLayout);
       if (this._note.getAttachment().getFiletype() == NoteAttachment.kFileTypeInvalid) {
-         attachmentField.setVisibility(View.GONE);
-         deleteAttachmentButton.setVisibility(View.GONE);
+         attachmentBox.setVisibility(View.GONE);
       } else {
          attachmentField.setText(this._note.getAttachment().getFilename());
-         attachmentField.setVisibility(View.VISIBLE);
-         deleteAttachmentButton.setVisibility(View.VISIBLE);
+         attachmentBox.setVisibility(View.VISIBLE);
       }
    }
 
    /** Refresh the URL view */
    private void refreshUrl() {
       EditText urlField = (EditText)findViewById(R.id.EditUrlText);
-      Button deleteUrlButton = (Button) findViewById(R.id.EditUrlButton);
+      LinearLayout urlBox = (LinearLayout)findViewById(R.id.EditUrlLayout);
       String url = this._note.getURL();
       if (url.length() > 0) {
          urlField.setText(url);
-         urlField.setVisibility(View.VISIBLE);
-         deleteUrlButton.setVisibility(View.VISIBLE);
+         urlBox.setVisibility(View.VISIBLE);
       } else {
-         urlField.setVisibility(View.GONE);
-         deleteUrlButton.setVisibility(View.GONE);
+         urlBox.setVisibility(View.GONE);
       }
    }
 
@@ -166,7 +158,6 @@ public class NoteEdit extends Activity {
     * @param view The caller view
     */
    public void deleteUrl(View view) {
-      // FIXME: Url doesn't get saved // Should now be fixed. Please check.
       Log.v(kTag, "url cancel");
       this._note.setURL(null);
       this._database.saveNote(this, this._noteID, this._note);
@@ -208,10 +199,10 @@ public class NoteEdit extends Activity {
       switch (item.getItemId()) {
       case kMenuItemUrl:
       {
-         EditText addUrl = (EditText) findViewById(R.id.EditUrlText);
-         Button cancelUrl = (Button) findViewById(R.id.EditUrlButton);
-         addUrl.setVisibility(View.VISIBLE);
-         cancelUrl.setVisibility(View.VISIBLE);
+         EditText urlField = (EditText)findViewById(R.id.EditUrlText);
+         LinearLayout urlBox = (LinearLayout)findViewById(R.id.EditUrlLayout);
+         urlField.setText("");
+         urlBox.setVisibility(View.VISIBLE);
       }
          break;
       case kSubmenuPictures:
@@ -396,6 +387,7 @@ public class NoteEdit extends Activity {
          return;
       }
       this._database.saveNote(this, this._noteID, this._note);
+      this.refreshAttachment();
    }
 }
 /* vim: set ts=3 sw=3 smarttab expandtab cc=101 : */

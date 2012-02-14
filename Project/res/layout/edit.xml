@@ -13,11 +13,11 @@
       android:layout_height="fill_parent"
       >
 
+      <!-- Title box -->
       <LinearLayout
          android:orientation="horizontal"
          android:layout_width="fill_parent"
          android:layout_height="fill_parent">
-         <!-- Title -->
          <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
@@ -34,16 +34,17 @@
             android:text="(Untitled)" />
       </LinearLayout>
 
+      <!-- Attachments box -->
       <LinearLayout
+         android:id="@+id/EditAttachmentLayout"
          android:layout_width="fill_parent"
          android:layout_height="fill_parent"
          android:orientation="horizontal" >
-         <!-- Attachments box -->
          <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:padding="10dip"
-            android:text="Attachments:"
+            android:text="Attachment:"
             android:textColor="#ff000000"
             android:textStyle="bold" />
          <EditText
@@ -63,11 +64,12 @@
             android:onClick="deleteAttachment" />
       </LinearLayout>
 
+      <!-- URL box -->
       <LinearLayout
+         android:id="@+id/EditUrlLayout"
          android:layout_width="fill_parent"
          android:layout_height="fill_parent"
          android:orientation="horizontal" >
-         <!-- URL box -->
          <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
@@ -91,11 +93,11 @@
             android:onClick="deleteUrl" />
       </LinearLayout>
 
+      <!-- Content box -->
       <LinearLayout
          android:orientation="horizontal"
          android:layout_width="fill_parent"
          android:layout_height="fill_parent">
-         <!-- Content -->
          <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
@@ -112,11 +114,11 @@
             android:padding="5dip" />
       </LinearLayout>
 
+      <!-- Tags box -->
       <LinearLayout
          android:orientation="horizontal"
          android:layout_width="fill_parent"
          android:layout_height="fill_parent">
-         <!-- Tags box -->
          <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
