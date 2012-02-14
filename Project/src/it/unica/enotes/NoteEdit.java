@@ -47,14 +47,14 @@ public class NoteEdit extends Activity {
    private static final String kTag = "NoteEdit";
 
    /** Menu IDs */
-   private static final int kMenuItemUrl = 102;
-   private static final int kMenuItemAttach = 103;
-   private static final int kSubmenuPictures = 104;
-   private static final int kSubmenuCapturePicture = 105;
-   private static final int kSubmenuVideos = 106;
-   private static final int kSubmenuCaptureVideo = 107;
-   private static final int kSubmenuAudio = 108;
-   private static final int kSubmenuRecordAudio = 109;
+   private static final int kMenuItemUrl = 100;
+   private static final int kMenuItemAttach = 101;
+   private static final int kSubmenuPictures = 102;
+   private static final int kSubmenuCapturePicture = 103;
+   private static final int kSubmenuVideos = 104;
+   private static final int kSubmenuCaptureVideo = 105;
+   private static final int kSubmenuAudio = 106;
+   private static final int kSubmenuRecordAudio = 107;
 
    /** Request IDs */
    private static final int kRequestPictureFromGallery = 100;
@@ -64,10 +64,10 @@ public class NoteEdit extends Activity {
    private static final int kRequestAudioFromGallery = 104;
    private static final int kRequestAudioFromMic = 105;
 
-   /** Constants */
-   private static final String kTempPhotoFilename = "eNotesTmpPhoto.jpg";
-   private static final String kTempVideoFilename = "eNotesTmpVideo.3gp";
-   //private static final String kTempAudioFilename = "eNotesTmpAudio.amr";
+   /** Filename Constants */
+   private static final String kTempPhotoFilename = "CapturedPhoto.jpg";
+   private static final String kTempVideoFilename = "CapturedVideo.3gp";
+   private static final String kTempAudioFilename = "CapturedAudio.amr";
 
    @Override
    public void onCreate(Bundle savedInstanceState) {
@@ -186,8 +186,10 @@ public class NoteEdit extends Activity {
 
    @Override
    public boolean onCreateOptionsMenu(Menu menu) {
-      SubMenu attachListMenu = menu.addSubMenu(0, kMenuItemAttach, 1, R.string.addAttachment).setIcon(getResources().getDrawable(R.drawable.ic_menu_attachment));
-      menu.add(0, kMenuItemUrl, 2, R.string.addUrl).setIcon(getResources().getDrawable(R.drawable.ic_input_get));
+      SubMenu attachListMenu = menu.addSubMenu(0, kMenuItemAttach, 1, R.string.addAttachment)
+            .setIcon(getResources().getDrawable(R.drawable.ic_menu_attachment));
+      menu.add(0, kMenuItemUrl, 2, R.string.addUrl)
+            .setIcon(getResources().getDrawable(R.drawable.ic_input_get));
       attachListMenu.add(0, kSubmenuPictures, 3, R.string.addPictures);
       attachListMenu.add(0, kSubmenuCapturePicture, 4, R.string.addCapturePicture);
       attachListMenu.add(0, kSubmenuVideos, 5, R.string.addVideos);
@@ -214,7 +216,8 @@ public class NoteEdit extends Activity {
          break;
       case kSubmenuPictures:
       {
-          Intent intent = new Intent(Intent.ACTION_PICK, android.provider.MediaStore.Images.Media.EXTERNAL_CONTENT_URI);
+          Intent intent = new Intent(Intent.ACTION_PICK,
+                MediaStore.Images.Media.EXTERNAL_CONTENT_URI);
          startActivityForResult(intent, kRequestPictureFromGallery);
          // TODO: Max size
       }
@@ -223,7 +226,8 @@ public class NoteEdit extends Activity {
       {
          ContentValues values = new ContentValues();
          values.put(MediaStore.Images.Media.TITLE, kTempPhotoFilename);
-         Uri capturedImageUri = getContentResolver().insert(MediaStore.Images.Media.EXTERNAL_CONTENT_URI, values);
+         Uri capturedImageUri = getContentResolver().insert(
+               MediaStore.Images.Media.EXTERNAL_CONTENT_URI, values);
          Intent intent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
          intent.putExtra(MediaStore.EXTRA_OUTPUT, capturedImageUri);
          startActivityForResult(intent, kRequestPictureFromCamera);
@@ -231,7 +235,8 @@ public class NoteEdit extends Activity {
       }
          break;
       case kSubmenuVideos: {
-          Intent intent = new Intent(Intent.ACTION_GET_CONTENT, MediaStore.Video.Media.EXTERNAL_CONTENT_URI);
+          Intent intent = new Intent(Intent.ACTION_GET_CONTENT,
+                MediaStore.Video.Media.EXTERNAL_CONTENT_URI);
           intent.setType("video/*");
           startActivityForResult(intent, kRequestVideoFromGallery);
           // TODO: Max size
@@ -241,7 +246,8 @@ public class NoteEdit extends Activity {
       {
           ContentValues values = new ContentValues();
           values.put(MediaStore.Video.Media.TITLE, kTempVideoFilename);
-          Uri capturedVideoUri = getContentResolver().insert(MediaStore.Video.Media.EXTERNAL_CONTENT_URI, values);
+          Uri capturedVideoUri = getContentResolver().insert(
+                MediaStore.Video.Media.EXTERNAL_CONTENT_URI, values);
           Intent intent = new Intent(MediaStore.ACTION_VIDEO_CAPTURE);
           intent.putExtra(MediaStore.EXTRA_OUTPUT, capturedVideoUri);
           startActivityForResult(intent, kRequestVideoFromCamera);
@@ -250,7 +256,8 @@ public class NoteEdit extends Activity {
          break;
       case kSubmenuAudio:
       {
-         Intent intent = new Intent(Intent.ACTION_PICK, MediaStore.Audio.Media.EXTERNAL_CONTENT_URI);
+         Intent intent = new Intent(Intent.ACTION_PICK,
+               MediaStore.Audio.Media.EXTERNAL_CONTENT_URI);
          startActivityForResult(intent, kRequestAudioFromGallery);
          // TODO: Max size
       }
@@ -293,8 +300,6 @@ public class NoteEdit extends Activity {
          String filePath = cursor.getString(columnIndex);
          cursor.close();
 
-         // the selected image
-         //Bitmap picture = BitmapFactory.decodeFile(filePath);
          File f = new File(filePath);
          this._note.setAttachment(new NoteAttachment(this, NoteAttachment.kFileTypePicture, f));
       }
@@ -306,7 +311,8 @@ public class NoteEdit extends Activity {
          ContentValues values = new ContentValues();
          values.put(MediaStore.Images.Media.TITLE, kTempPhotoFilename);
 
-         Uri fileUri = getContentResolver().insert(MediaStore.Images.Media.EXTERNAL_CONTENT_URI, values);
+         Uri fileUri = getContentResolver().insert(MediaStore.Images.Media.EXTERNAL_CONTENT_URI,
+               values);
          Cursor cursor = managedQuery(fileUri, projection, null, null, null);
 
          int column_index_data = cursor.getColumnIndexOrThrow(MediaStore.Images.Media.DATA);
@@ -342,7 +348,8 @@ public class NoteEdit extends Activity {
          ContentValues values = new ContentValues();
          values.put(MediaStore.Video.Media.TITLE, kTempVideoFilename);
 
-         Uri fileUri = getContentResolver().insert(MediaStore.Video.Media.EXTERNAL_CONTENT_URI, values);
+         Uri fileUri = getContentResolver().insert(MediaStore.Video.Media.EXTERNAL_CONTENT_URI,
+               values);
          Cursor cursor = managedQuery(fileUri, projection, null, null, null);
 
          int column_index_data = cursor.getColumnIndexOrThrow(MediaStore.Video.Media.DATA);
@@ -378,7 +385,8 @@ public class NoteEdit extends Activity {
          try {
             importStream = getContentResolver().openInputStream(recordedAudio);
 
-            this._note.setAttachment(new NoteAttachment(this, NoteAttachment.kFileTypeAudio, "RecordedAudio.amr", importStream));
+            this._note.setAttachment(new NoteAttachment(this, NoteAttachment.kFileTypeAudio,
+                     kTempAudioFilename, importStream));
          } catch (FileNotFoundException e) {
             e.printStackTrace();
          }

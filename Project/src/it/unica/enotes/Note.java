@@ -15,12 +15,13 @@
 
 package it.unica.enotes;
 
+import java.io.File;
+import java.io.FileNotFoundException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.UUID;
 import org.json.JSONException;
 import org.json.JSONObject;
-
 import android.content.Context;
 import android.net.Uri;
 import android.text.format.Time;
@@ -440,6 +441,28 @@ public class Note {
          ret += this._tags.get(i) + " ";
       }
       return ret;
+   }
+
+   // Static methods
+   /**
+    * Get the shared directory for temporary files
+    * @return  A File representing the remporary directory
+    * @throws  FileNotFoundException   when the directory isn't found and can't be created
+    */
+   public static File getSharedTmpDir() throws FileNotFoundException {
+      String systemTmpDirPath = System.getProperty("java.io.tmpdir");
+      File tmpDir = new File(systemTmpDirPath, "eNotesTmp");
+      // Ensure it's a directory
+      if (tmpDir.exists() && !tmpDir.isDirectory()) {
+         tmpDir.delete();
+      }
+      if (!tmpDir.exists() && !tmpDir.mkdirs()) {
+         throw new FileNotFoundException();
+      }      
+      if (tmpDir.exists() && tmpDir.isDirectory()) {
+         return tmpDir;
+      }
+      throw new FileNotFoundException();
    }
 }
 /* vim: set ts=3 sw=3 smarttab expandtab cc=101 : */

@@ -23,7 +23,6 @@ import java.io.InputStream;
 import java.nio.ByteBuffer;
 import org.json.JSONException;
 import org.json.JSONObject;
-
 import android.content.Context;
 import android.util.Base64;
 
@@ -33,21 +32,24 @@ import android.util.Base64;
  * @author Giovanni Serra
  */
 public class NoteAttachment {
-   /** Constants */
+   /** File type constants */
    public static final int kFileTypeInvalid = 0;
    public static final int kFileTypePicture = 1;
    public static final int kFileTypeAudio   = 2;
    public static final int kFileTypeVideo   = 3;
    public static final int kFileTypeMax     = 4;
 
+   /** File extensions */
    public static final String kFileExtensionPicture = ".jpg";
    public static final String kFileExtensionAudio   = ".amr";
    public static final String kFileExtensionVideo   = ".3gp";
 
+   /** JSON field names */
    public static final String kAttachmentFileName = "name";
    public static final String kAttachmentFileType = "type";
    public static final String kAttachmentFileData = "data";
 
+   /** Other constants */
    public static final long kMaxAttachmentSize = 1000000; // 1MB
 
    /** Attachment's filename */
@@ -69,7 +71,7 @@ public class NoteAttachment {
    }
 
    /**
-    * Constructor.  Creates an attechment from a local file.
+    * Constructor.  Creates an attachment from a local file.
     * @param context    The current context
     * @param filetype   The file type ID
     * @param file       A reference to the file
@@ -135,7 +137,7 @@ public class NoteAttachment {
    }
 
    /**
-    * Initialize an attechment from a local file.
+    * Initialize an attachment from a local file.
     * @param filetype   The file type ID
     * @param file       A reference to the file
     */
@@ -154,7 +156,7 @@ public class NoteAttachment {
    }
 
    /**
-    * Initilize an attachment from an input stream.
+    * Initialize an attachment from an input stream.
     * @param filetype   The file type ID
     * @param filename   The file's name
     * @param stream     The input stream

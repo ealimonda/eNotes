@@ -16,16 +16,15 @@
 package it.unica.enotes;
 
 import java.io.File;
+import java.io.FileNotFoundException;
 import java.io.FileWriter;
 import java.io.IOException;
-
 import android.app.Activity;
 import android.app.AlertDialog;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
-import android.text.format.Time;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -37,7 +36,7 @@ import android.widget.TextView;
  * @author Giovanni Serra
  */
 public class NoteView extends Activity {
-   /** Constants */
+   /** Menu IDs */
    private static final int kMenuItemEdit = 100;
    private static final int kMenuItemDelete = 101;
    private static final int kMenuItemSend = 102;
@@ -85,28 +84,6 @@ public class NoteView extends Activity {
       attachmentField.setText(note.getAttachment().getFilename());
       urlField.setText(note.getURL());
       tagsField.setText(note.getTagsAsString());
-
-      // Do some temp files cleanup (Why here?  See note below.)
-      // TODO: This should be moved to NoteList
-      // TODO: Try to use the correct cache directories instead
-      String tmpDirPath = System.getProperty("java.io.tmpdir");
-      File tmpDir = new File(tmpDirPath, "eNotesTmp");
-      if (tmpDir.exists() && tmpDir.isDirectory()) {
-         File[] tmpFileList = tmpDir.listFiles();
-         Time thresholdTimestamp = new Time();
-         thresholdTimestamp.setToNow();
-         thresholdTimestamp.set(thresholdTimestamp.toMillis(true)-1000*3600*24); // 24 hours
-         for (int i = 0; i < tmpFileList.length; i++) {
-            if (!tmpFileList[i].exists() || !tmpFileList[i].isFile()) {
-               continue;
-            }
-            if (tmpFileList[i].lastModified() < thresholdTimestamp.toMillis(true)) {
-               tmpFileList[i].delete();
-               Log.v(kTag, "Deleted temp file " + tmpFileList.toString());
-            }
-            Log.v(kTag, "temp file check done");
-         }
-      }
    }
 
    @Override
@@ -149,17 +126,10 @@ public class NoteView extends Activity {
          break;
       case kMenuItemSend:
       {  // Send note
+         // FIXME: Re-query this only if needed
+         Note note = this._database.getNoteById(this, this._noteID);
          try {
-            Note note = this._database.getNoteById(this, this._noteID);
-            String tmpDirPath = System.getProperty("java.io.tmpdir");
-            // TODO: Try to use the correct cache directories instead
-            File tmpDir = new File(tmpDirPath, "eNotesTmp");
-            if (tmpDir.exists() && !tmpDir.isDirectory()) {
-               tmpDir.delete();
-            }
-            if (!tmpDir.exists() && !tmpDir.mkdirs()) {
-               throw new IOException();
-            }
+            File tmpDir = Note.getSharedTmpDir();
             File attachmentFile = File.createTempFile("eNote.", ".eNote", tmpDir);
             FileWriter attachmentWriter = new FileWriter(attachmentFile);
             attachmentWriter.write(note.getJSON());
@@ -185,6 +155,9 @@ public class NoteView extends Activity {
              *   day.  Oh well, if I delete something you care about or leave cruft behind, you can
              *   go complain to the Android engineers.  Or switch to an Apple or MS device.
              */
+         } catch (FileNotFoundException e) {
+            e.printStackTrace();
+            return false;
          } catch (IOException e) {
             e.printStackTrace();
             return false;

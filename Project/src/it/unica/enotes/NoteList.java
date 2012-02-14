@@ -20,7 +20,6 @@ import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.io.IOException;
 import java.nio.CharBuffer;
-
 import android.app.Dialog;
 import android.app.ListActivity;
 import android.content.Intent;
@@ -73,6 +72,29 @@ public class NoteList extends ListActivity {
    public void onResume() {
       super.onResume();
       refreshList();
+
+      // Do some temporary files cleanup (Why here?  See note in NoteView.)
+      try {
+         File tmpDir = Note.getSharedTmpDir();
+         File[] tmpFileList = tmpDir.listFiles();
+
+         Time thresholdTimestamp = new Time();
+         thresholdTimestamp.setToNow();
+         thresholdTimestamp.set(thresholdTimestamp.toMillis(true)-1000*3600*24); // 24 hours
+
+         for (int i = 0; i < tmpFileList.length; i++) {
+            if (!tmpFileList[i].exists() || !tmpFileList[i].isFile()) {
+               continue;
+            }
+            if (tmpFileList[i].lastModified() < thresholdTimestamp.toMillis(true)) {
+               tmpFileList[i].delete();
+               Log.v(kTag, "Deleted temp file " + tmpFileList.toString());
+            }
+            Log.v(kTag, "temp file check done");
+         }
+      } catch (FileNotFoundException e) {
+         e.printStackTrace();
+      }
    }
 
    @Override

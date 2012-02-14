@@ -135,7 +135,7 @@ public class NoteDB extends ContentProvider {
       @Override
       public void onUpgrade(SQLiteDatabase db, int oldVersion, int newVersion) {
          Log.v(kTag, "Upgrading database from v."+ oldVersion +" to v."+ newVersion);
-         // FIXME: We're deleting everything and recreating.   Who cares :D
+         // We're deleting everything and recreating.   Who cares :D
          db.execSQL("DROP TABLE IF EXISTS "+ kDatabaseTableNotes +";");
          onCreate(db);
       }
@@ -253,7 +253,6 @@ public class NoteDB extends ContentProvider {
          values.put(Note.kGUID, UUID.randomUUID().toString());
       }
 
-      // TODO does this make sense?
       if (values.containsKey(Note.kTitle) == false) {
          Resources r = Resources.getSystem();
          values.put(Note.kTitle, r.getString(android.R.string.untitled));
