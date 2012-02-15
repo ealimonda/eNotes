@@ -65,8 +65,11 @@ public class NoteList extends ListActivity {
 
       refreshList();
 
-      Intent intent = getIntent();
-      newIntent(intent);
+      if (savedInstanceState == null) {
+         // Run this only if we're not resuming
+         Intent intent = getIntent();
+         newIntent(intent);
+      }
    }
 
    @Override
@@ -115,7 +118,6 @@ public class NoteList extends ListActivity {
     * @param intent  The loading intent
     */
    protected void newIntent(Intent intent) {
-      // TODO: Make sure this won't get re-called when the device is rotated...
       setIntent(intent);
       Log.v(kTag, "Found intent: "+ intent.toString());
       Uri importUri = intent.getData();
