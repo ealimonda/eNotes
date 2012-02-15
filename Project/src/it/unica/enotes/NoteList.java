@@ -120,11 +120,15 @@ public class NoteList extends ListActivity {
       Uri importUri = intent.getData();
       if (importUri != null) {
          File importFile = new File(importUri.getPath());
-         if (!importFile.isFile()
+         if (
+               // File doesn't exist
+               !importFile.isFile()
+               // File is zero bytes
                || importFile.length() <= 0
+               // File is larger than max attachment size
                || importFile.length() > NoteAttachment.kMaxAttachmentSize*15/10
-               // Larger than max attachment size
          ) {
+            // TODO: Toast
             return;
          }
          try {
@@ -132,8 +136,9 @@ public class NoteList extends ListActivity {
             CharBuffer importBuffer = CharBuffer.allocate((int)importFile.length());
             importReader.read(importBuffer);
             importReader.close();
+            Log.v(kTag, "Importing: " + String.valueOf(importBuffer.array()));
             long newID = this._database.addNote(this, null, getString(R.string.importedNote),
-                  importBuffer.toString());
+                  String.valueOf(importBuffer.array()));
             refreshList();
             if (newID >= 0) {
                Intent i = new Intent(this, NoteEdit.class);
