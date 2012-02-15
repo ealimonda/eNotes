@@ -90,8 +90,8 @@ public class NoteList extends ListActivity {
                tmpFileList[i].delete();
                Log.v(kTag, "Deleted temp file " + tmpFileList.toString());
             }
-            Log.v(kTag, "temp file check done");
          }
+         Log.v(kTag, "temp file check done");
       } catch (FileNotFoundException e) {
          e.printStackTrace();
       }

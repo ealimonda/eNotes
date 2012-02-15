@@ -16,11 +16,14 @@
 package it.unica.enotes;
 
 import java.io.File;
+import java.io.FileInputStream;
 import java.io.FileNotFoundException;
+import java.io.IOException;
 import java.io.InputStream;
 import android.app.Activity;
 import android.content.ContentValues;
 import android.content.Intent;
+import android.content.res.AssetFileDescriptor;
 import android.database.Cursor;
 import android.media.CamcorderProfile;
 import android.net.Uri;
@@ -68,8 +71,8 @@ public class NoteEdit extends Activity {
 
    /** Filename Constants */
    private static final String kTempPhotoFilename = "CapturedPhoto.jpg";
-   private static final String kTempVideoFilename = "CapturedVideo.3gp";
-   private static final String kTempAudioFilename = "CapturedAudio.amr";
+   private static final String kTempVideoFilename = "RecordedVideo.3gp";
+   private static final String kTempAudioFilename = "RecordedAudio.amr";
 
    @Override
    public void onCreate(Bundle savedInstanceState) {
@@ -238,12 +241,7 @@ public class NoteEdit extends Activity {
          break;
       case kSubmenuCaptureVideo:
       {
-          ContentValues values = new ContentValues();
-          values.put(MediaStore.Video.Media.TITLE, kTempVideoFilename);
-          Uri capturedVideoUri = getContentResolver().insert(
-                MediaStore.Video.Media.EXTERNAL_CONTENT_URI, values);
           Intent intent = new Intent(MediaStore.ACTION_VIDEO_CAPTURE);
-          intent.putExtra(MediaStore.EXTRA_OUTPUT, capturedVideoUri);
           intent.putExtra(MediaStore.EXTRA_VIDEO_QUALITY, 0);
           intent.putExtra("android.intent.sizeLimit", NoteAttachment.kMaxAttachmentSize);
           CamcorderProfile camcorder = CamcorderProfile.get(CamcorderProfile.QUALITY_LOW);
@@ -356,27 +354,21 @@ public class NoteEdit extends Activity {
          break;
       case kRequestVideoFromCamera:
       {  // Video taken from camera
-         String[] projection = { MediaStore.Video.Media.DATA };
+         Uri recordedVideo = data.getData();
 
-         ContentValues values = new ContentValues();
-         values.put(MediaStore.Video.Media.TITLE, kTempVideoFilename);
+         FileInputStream importStream;
+         try {
+            AssetFileDescriptor videoAsset = getContentResolver().openAssetFileDescriptor(recordedVideo,  "r");
+            
+            importStream = videoAsset.createInputStream();
 
-         Uri fileUri = getContentResolver().insert(MediaStore.Video.Media.EXTERNAL_CONTENT_URI,
-               values);
-         Cursor cursor = managedQuery(fileUri, projection, null, null, null);
-
-         int column_index_data = cursor.getColumnIndexOrThrow(MediaStore.Video.Media.DATA);
-         cursor.moveToFirst();
-         String  filePath = cursor.getString(column_index_data);
-         cursor.close();
-
-         File f = new File(filePath);
-         if (f.exists() && f.isFile() && f.length() > NoteAttachment.kMaxAttachmentSize) {
-            errMessage = getString(R.string.attachmentTooBig);
-         } else {
-            this._note.setAttachment(new NoteAttachment(this, NoteAttachment.kFileTypeVideo, f));
-         }
-         f.delete();
+            this._note.setAttachment(new NoteAttachment(this, NoteAttachment.kFileTypeVideo,
+                     kTempVideoFilename, importStream));
+         } catch (FileNotFoundException e) {
+            e.printStackTrace();
+         } catch (IOException e) {
+            e.printStackTrace();
+		}
       }
          break;
       case kRequestAudioFromGallery:
