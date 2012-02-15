@@ -48,7 +48,7 @@ public class NoteSearch extends ListActivity {
       Log.v(kTag, "created activity");
       setContentView(R.layout.search);
 
-      this._database = new NoteDB();
+      this._database = null;
 
       ListView view = getListView();
       view.setHeaderDividersEnabled(true);
@@ -73,11 +73,20 @@ public class NoteSearch extends ListActivity {
       refreshList();
    }
 
+   @Override
+   public void onStart() {
+      super.onStart();
+      refreshList();
+   }
+
    /** Refresh the list, re-querying the database as needed */
    protected void refreshList() {
       EditText tagBox = (EditText) findViewById(R.id.SearchBox);
       String tag = tagBox.getText().toString();
-
+      
+      if (this._database == null) {
+         this._database = new NoteDB();
+      }
       Cursor data = this._database.getAllNotesHeadersByTag(this, tag);
 
       SimpleCursorAdapter dataSource = new SimpleCursorAdapter(this, R.layout.row, data, fields,
