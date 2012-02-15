@@ -317,8 +317,13 @@ public class NoteAttachment {
       if (encodeddata == null) {
          this._filedata = ByteBuffer.allocate(0);
       } else {
-         byte[] buffer = Base64.decode(encodeddata, Base64.DEFAULT|Base64.NO_WRAP|Base64.URL_SAFE);
-         this._filedata = ByteBuffer.wrap(buffer);
+         try {
+            byte[] buffer = Base64.decode(encodeddata, Base64.DEFAULT|Base64.NO_WRAP|Base64.URL_SAFE);
+            this._filedata = ByteBuffer.wrap(buffer);
+         } catch (IllegalArgumentException e) {
+            this._filedata = ByteBuffer.allocate(0);
+            e.printStackTrace();
+         }
       }
    }
 
