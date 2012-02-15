@@ -67,18 +67,19 @@ public class NoteView extends Activity {
          Log.v(kTag, "Invalid or missing bundle");
          return;
       }
+      this._database = null;
+      this._note = null;
 
       // shows selected note's details
       this._noteID = extras.getLong(Note.kID);
       Log.v(kTag, "Loading note: " + this._noteID);
-      this._database = new NoteDB();
    }
 
    @Override
    public void onResume() {
       super.onResume();
 
-      this._note = this._database.getNoteById(this, this._noteID);
+      this.loadData();
 
       TextView titleField = (TextView)findViewById(R.id.ViewTitle);
       TextView contentsField = (TextView)findViewById(R.id.ViewContents);
@@ -111,6 +112,23 @@ public class NoteView extends Activity {
       } else {
          tagsField.setText(this._note.getTagsAsString());
          tagsBox.setVisibility(View.VISIBLE);
+      }
+   }
+
+   @Override
+   public void onStart() {
+      super.onStart();
+
+      this.loadData();
+   }
+   
+   /** Ensure activity state after rotation, etc */
+   private void loadData() {
+      if (this._database == null) {
+         this._database = new NoteDB();
+      }
+      if (this._note == null) {
+         this._note = this._database.getNoteById(this, this._noteID);
       }
    }
 
@@ -154,8 +172,6 @@ public class NoteView extends Activity {
          break;
       case kMenuItemSend:
       {  // Send note
-         // FIXME: Re-query this only if needed
-         //this._note = this._database.getNoteById(this, this._noteID);
          try {
             File tmpDir = Note.getSharedTmpDir();
             File attachmentFile = File.createTempFile("eNote.", ".eNote", tmpDir);
@@ -230,7 +246,6 @@ public class NoteView extends Activity {
          writeChannel.write(attachment.getRawData());
          writeChannel.close();
 
-         // TODO: Make sure this actually works
          Intent openIntent = new Intent(Intent.ACTION_VIEW);
          openIntent.setDataAndType(Uri.fromFile(attachmentFile), mimeType);
          startActivity(openIntent);
