@@ -54,6 +54,7 @@ public class NoteSearch extends ListActivity {
       view.setHeaderDividersEnabled(true);
 
       EditText tagBox = (EditText) findViewById(R.id.SearchBox);
+      tagBox.requestFocus();
       tagBox.addTextChangedListener(new TextWatcher() {
          public void afterTextChanged(Editable s) {
             refreshList();
