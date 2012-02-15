@@ -57,7 +57,7 @@ public class NoteList extends ListActivity {
       Log.v(kTag, "created activity");
       setContentView(R.layout.main);
 
-      this._database = new NoteDB();
+      this._database = null;
 
       ListView view = getListView();
       view.setHeaderDividersEnabled(true);
@@ -71,6 +71,12 @@ public class NoteList extends ListActivity {
    @Override
    public void onResume() {
       super.onResume();
+      refreshList();
+   }
+   
+   @Override
+   public void onStart() {
+      super.onStart();
       refreshList();
 
       // Do some temporary files cleanup (Why here?  See note in NoteView.)
@@ -146,6 +152,9 @@ public class NoteList extends ListActivity {
 
    /** Refresh the list, re-querying the database as needed */
    protected void refreshList() {
+      if (this._database == null) {
+         this._database = new NoteDB();
+      }
       Cursor data = this._database.getAllNotesHeaders(this);
 
       SimpleCursorAdapter dataSource = new SimpleCursorAdapter(this, R.layout.row, data, fields,
