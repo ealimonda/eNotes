@@ -185,9 +185,10 @@ public class NoteDB extends ContentProvider {
       case kUriNotesByTag:
          qb.setTables(kDatabaseTableNotes);
          qb.setProjectionMap(notesProjectionMap);
-         qb.appendWhere(Note.kTags + " LIKE '%" + uri.getLastPathSegment() + "%'");
+         //String searchFilter = uri.getLastPathSegment().
+         qb.appendWhere(Note.kTags + " LIKE ");
+         qb.appendWhereEscapeString("%" + uri.getLastPathSegment() + "%");
          break;
-         // TODO: Sanitize queries?
 
       default:
          throw new IllegalArgumentException("Unknown URI " + uri);

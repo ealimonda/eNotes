@@ -131,7 +131,8 @@ public class NoteList extends ListActivity {
                // File is larger than max attachment size
                || importFile.length() > NoteAttachment.kMaxAttachmentSize*15/10
          ) {
-        	 Toast.makeText(this.getApplicationContext(), R.string.invalidImportFile, Toast.LENGTH_LONG).show();
+            Toast.makeText(this.getApplicationContext(), R.string.invalidImportFile,
+                  Toast.LENGTH_LONG).show();
             return;
          }
          try {
