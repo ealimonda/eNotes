@@ -88,15 +88,14 @@ public class NoteEdit extends Activity {
       this._noteID = extras.getLong(Note.kID);
 
       this._note = null;
-
-      this._database = new NoteDB();
+      this._database = null;
    }
 
    @Override
    public void onResume() {
       super.onResume();
 
-      this._note = this._database.getNoteById(this, this._noteID);
+      this.loadData();
 
       EditText titleField = (EditText)findViewById(R.id.EditTitle);
       EditText contentField = (EditText)findViewById(R.id.EditContent);
@@ -131,6 +130,23 @@ public class NoteEdit extends Activity {
       }
 
       this._database.saveNote(this, this._noteID, this._note);
+   }
+   
+   @Override
+   public void onStart() {
+      super.onStart();
+      
+      this.loadData();
+   }
+   
+   /** Ensure activity state after rotation, etc */
+   private void loadData() {
+      if (this._database == null) {
+         this._database = new NoteDB();
+      }
+      if (this._note == null) {
+         this._note = this._database.getNoteById(this, this._noteID);
+      }
    }
 
    /** Refresh the attachment view */
@@ -275,15 +291,10 @@ public class NoteEdit extends Activity {
    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
       super.onActivityResult(requestCode, resultCode, data);
       if (resultCode != RESULT_OK) {
-         Log.i("Camera", "Result code was " + resultCode);
+         Log.i(kTag, "Activity result code was " + resultCode);
          return;
       }
 
-      // TODO: Ensure this is valid.  Things go haywire if the screen is rotated
-      //       i.e. when the gallery or camera is open and our activity hidden
-      Log.v(kTag, "Current note ID is: " +this._noteID);
-      Log.v(kTag, "current note is: "+this._note.getTitle());
-      
       String errMessage = null;
 
       switch (requestCode) {
@@ -324,6 +335,8 @@ public class NoteEdit extends Activity {
          cursor.close();
 
          File f = new File(filePath);
+         // FIXME: This is zero byte long.  We'll probably need the same treatment as the vid/snd recordings.
+         //        Please someone get me a crystal ball to figure out how things really are supposed to work.
          if (f.exists() && f.isFile() && f.length() > NoteAttachment.kMaxAttachmentSize) {
             errMessage = getString(R.string.attachmentTooBig);
          } else {
@@ -358,7 +371,8 @@ public class NoteEdit extends Activity {
 
          FileInputStream importStream;
          try {
-            AssetFileDescriptor videoAsset = getContentResolver().openAssetFileDescriptor(recordedVideo,  "r");
+            AssetFileDescriptor videoAsset =
+                  getContentResolver().openAssetFileDescriptor(recordedVideo,  "r");
             
             importStream = videoAsset.createInputStream();
 
@@ -408,7 +422,8 @@ public class NoteEdit extends Activity {
       default:
          return;
       }
-      if (errMessage == null && this._note.getAttachment().getFiletype() == NoteAttachment.kFileTypeInvalid) {
+      if (errMessage == null
+            && this._note.getAttachment().getFiletype() == NoteAttachment.kFileTypeInvalid) {
          errMessage = getString(R.string.invalidAttachment);
       }
       if (errMessage != null) {
