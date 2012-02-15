@@ -130,6 +130,8 @@ public class NoteEdit extends Activity {
       }
 
       this._database.saveNote(this, this._noteID, this._note);
+      // We'll want a new copy of this anyways if we resume.  Let's put it away now.
+      this._note = null;
    }
    
    @Override

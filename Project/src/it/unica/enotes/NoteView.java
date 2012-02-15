@@ -116,6 +116,14 @@ public class NoteView extends Activity {
    }
 
    @Override
+   public void onPause() {
+      super.onPause();
+
+      // We'll want a fresh copy of this anyways.  Let's put it away now.
+      this._note = null;
+   }
+
+   @Override
    public void onStart() {
       super.onStart();
 
