@@ -185,7 +185,6 @@ public class NoteDB extends ContentProvider {
       case kUriNotesByTag:
          qb.setTables(kDatabaseTableNotes);
          qb.setProjectionMap(notesProjectionMap);
-         //String searchFilter = uri.getLastPathSegment().
          qb.appendWhere(Note.kTags + " LIKE ");
          qb.appendWhereEscapeString("%" + uri.getLastPathSegment() + "%");
          break;
@@ -465,9 +464,12 @@ public class NoteDB extends ContentProvider {
     * @return           success status
     */
    public boolean saveNote(Activity activity, long id, Note note) {
+      // Update timestamp
+      note.setTimestamp(null);
       ContentResolver cr = activity.getContentResolver();
       ContentValues values = new ContentValues();
       values.put(Note.kTitle, note.getTitle());
+      values.put(Note.kTimestamp, note.getTimestamp().toMillis(false));
       values.put(Note.kContent, note.getJSON());
       values.put(Note.kTags, note.getTagsAsString());
       if (cr.update(Uri.withAppendedPath(Note.kContentURI, "id/"+id), values, null, null) > 0) {
