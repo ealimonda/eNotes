@@ -205,6 +205,7 @@ public class NoteEdit extends Activity {
          LinearLayout urlBox = (LinearLayout)findViewById(R.id.EditUrlLayout);
          urlField.setText("");
          urlBox.setVisibility(View.VISIBLE);
+         urlField.requestFocus();
       }
          break;
       case kSubmenuPictures:
