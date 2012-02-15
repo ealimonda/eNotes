@@ -34,6 +34,7 @@ import android.view.View;
 import android.widget.ListView;
 import android.widget.SimpleCursorAdapter;
 import android.widget.TextView;
+import android.widget.Toast;
 
 /**
  * Activity to list all existing notes
@@ -128,7 +129,7 @@ public class NoteList extends ListActivity {
                // File is larger than max attachment size
                || importFile.length() > NoteAttachment.kMaxAttachmentSize*15/10
          ) {
-            // TODO: Toast
+        	 Toast.makeText(this.getApplicationContext(), R.string.invalidImportFile, Toast.LENGTH_LONG).show();
             return;
          }
          try {

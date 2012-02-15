@@ -15,6 +15,7 @@
    <string name="addDialogTitle">New Note</string>
    <string name="addItem">Add Note</string>
    <string name="searchItem">Search Note</string>
+   <string name="invalidImportFile">Input file is too big. Try with a smaller file.</string>
 
    <!-- main menu NoteView -->
    <string name="editItem">Edit</string>
@@ -29,6 +30,7 @@
    <!-- NoteEdit.java -->
    <string name="attachmentTooBig">The file you chose is too big. Please select a smaller one.</string>
    <string name="invalidAttachment">The file you chose wasn\'t recognized. Please select another one.</string>
+   
    <!-- main menu NoteEdit -->
    <string name="addAttachment">Attach</string>
    <string name="addUrl">Add URL</string>
