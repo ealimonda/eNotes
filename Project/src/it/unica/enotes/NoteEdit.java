@@ -179,7 +179,6 @@ public class NoteEdit extends Activity {
     * @param view The caller view
     */
    public void deleteUrl(View view) {
-      Log.v(kTag, "url cancel");
       this._note.setURL(null);
       this._database.saveNote(this, this._noteID, this._note);
       this.refreshUrl();
@@ -190,7 +189,6 @@ public class NoteEdit extends Activity {
     * @param view The caller view
     */
    public void deleteAttachment(View view) {
-      Log.v(kTag, "attachment cancel");
       this._note.setAttachment(null);
       this.refreshAttachment();
    }
@@ -237,10 +235,21 @@ public class NoteEdit extends Activity {
          break;
       case kSubmenuCapturePicture:
       {
-         ContentValues values = new ContentValues();
-         values.put(MediaStore.Images.Media.TITLE, kTempPhotoFilename);
-         Uri capturedImageUri = getContentResolver().insert(
-               MediaStore.Images.Media.EXTERNAL_CONTENT_URI, values);
+         Uri capturedImageUri;
+         if (Note.hasImageCaptureBug()) {
+            try {
+               capturedImageUri = Uri.withAppendedPath(Uri.fromFile(Note.getSharedTmpDir()),
+                     kTempPhotoFilename);
+            } catch (FileNotFoundException e) {
+               e.printStackTrace();
+               return false;
+            }
+         } else {
+            ContentValues values = new ContentValues();
+            values.put(MediaStore.Images.Media.TITLE, kTempPhotoFilename);
+            capturedImageUri = getContentResolver().insert(
+                  MediaStore.Images.Media.EXTERNAL_CONTENT_URI, values);
+         }
          Intent intent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
          intent.putExtra(MediaStore.EXTRA_OUTPUT, capturedImageUri);
          startActivityForResult(intent, kRequestPictureFromCamera);
@@ -320,23 +329,53 @@ public class NoteEdit extends Activity {
          break;
       case kRequestPictureFromCamera:
       {  // Picture taken from camera
-         String[] projection = { MediaStore.Images.Media.DATA };
+         Uri fileUri = null;
+         File f = null;
 
-         ContentValues values = new ContentValues();
-         values.put(MediaStore.Images.Media.TITLE, kTempPhotoFilename);
+         // Each device works its own way, let's try some approaches (ref: Note.hasImageCaptureBug())
+         try {
+            fileUri = data.getData();
+            fileUri = Uri.withAppendedPath(Uri.fromFile(Note.getSharedTmpDir()), kTempPhotoFilename);
+            f = new File(fileUri.getEncodedPath());
+         } catch (FileNotFoundException e) {
+            e.printStackTrace();
+            fileUri = null;
+            f = null;
+         } catch (NullPointerException e) {
+            e.printStackTrace();
+            fileUri = null;
+            f = null;
+         }
+         if (f == null || fileUri == null || Note.hasImageCaptureBug()) {
+            try {
+               fileUri = Uri.withAppendedPath(Uri.fromFile(Note.getSharedTmpDir()),
+                     kTempPhotoFilename);
+               f = new File(fileUri.getEncodedPath());
+            } catch (FileNotFoundException e) {
+               e.printStackTrace();
+               fileUri = null;
+               f = null;
+               return;
+            }
+         }
+         if (f == null || fileUri == null ) {
+            ContentValues values = new ContentValues();
+            values.put(MediaStore.Images.Media.TITLE, kTempPhotoFilename);
+            fileUri = getContentResolver().insert(MediaStore.Images.Media.EXTERNAL_CONTENT_URI,
+                  values);
 
-         Uri fileUri = getContentResolver().insert(MediaStore.Images.Media.EXTERNAL_CONTENT_URI,
-               values);
-         Cursor cursor = managedQuery(fileUri, projection, null, null, null);
+            String[] projection = { MediaStore.Images.Media.DATA };
 
-         int column_index_data = cursor.getColumnIndexOrThrow(MediaStore.Images.Media.DATA);
-         cursor.moveToFirst();
-         String  filePath = cursor.getString(column_index_data);
-         cursor.close();
+            Cursor cursor = managedQuery(fileUri, projection, null, null, null);
 
-         File f = new File(filePath);
-         // FIXME: This is zero byte long.  We'll probably need the same treatment as the vid/snd recordings.
-         //        Please someone get me a crystal ball to figure out how things really are supposed to work.
+            int column_index_data = cursor.getColumnIndexOrThrow(MediaStore.Images.Media.DATA);
+            cursor.moveToFirst();
+            String  filePath = cursor.getString(column_index_data);
+            cursor.close();
+            // This is zero byte long some times.  And documentation is pokerface about it.
+            // Please someone get me a crystal ball to figure out how things really are supposed to work.
+            f = new File(filePath);
+         }
          if (f.exists() && f.isFile() && f.length() > NoteAttachment.kMaxAttachmentSize) {
             errMessage = getString(R.string.attachmentTooBig);
          } else {
@@ -371,9 +410,9 @@ public class NoteEdit extends Activity {
 
          FileInputStream importStream;
          try {
-            AssetFileDescriptor videoAsset =
-                  getContentResolver().openAssetFileDescriptor(recordedVideo,  "r");
-            
+            AssetFileDescriptor videoAsset = getContentResolver().openAssetFileDescriptor(
+                  recordedVideo,  "r");
+
             importStream = videoAsset.createInputStream();
 
             this._note.setAttachment(new NoteAttachment(this, NoteAttachment.kFileTypeVideo,
@@ -382,7 +421,7 @@ public class NoteEdit extends Activity {
             e.printStackTrace();
          } catch (IOException e) {
             e.printStackTrace();
-		}
+         }
       }
          break;
       case kRequestAudioFromGallery:

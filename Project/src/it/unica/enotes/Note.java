@@ -463,5 +463,25 @@ public class Note {
       }
       throw new FileNotFoundException();
    }
+   
+   /**
+    * Check if our current device has some _well documented_ bug
+    * (why don't they just fix it and be done with?  Nope, it's better to have devs cope with it, hooray),
+    * as per http://code.google.com/p/android/issues/detail?id=1480
+    * (Oh my, it's over three years old.)
+    */
+   public static boolean hasImageCaptureBug() {
+      // List of known devices affected by the bug (we'll never know whether this is a complete list, oh well)
+      ArrayList<String> buggyDevices = new ArrayList<String>();
+      buggyDevices.add("android-devphone1/dream_devphone/dream");
+      buggyDevices.add("generic/sdk/generic");
+      buggyDevices.add("generic/google_sdk/generic");
+      buggyDevices.add("vodafone/vfpioneer/sapphire");
+      buggyDevices.add("tmobile/kila/dream");
+      buggyDevices.add("verizon/voles/sholes");
+      buggyDevices.add("google_ion/google_ion/sapphire");
+      
+      return buggyDevices.contains(android.os.Build.BRAND +"/"+ android.os.Build.PRODUCT +"/"+ android.os.Build.DEVICE);
+   }
 }
 /* vim: set ts=3 sw=3 smarttab expandtab cc=101 : */
